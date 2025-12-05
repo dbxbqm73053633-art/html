@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>정보</title>
+    <title>로그인폼</title>
     <style>
         li{list-style: none; margin-bottom:24px ;}
         input[type="email"],input[type="password"]{
@@ -15,37 +15,23 @@
         label{
             margin-right: 16px;
         }
-        .label1{margin: 22px;}
-        .label2{margin: 15px;}
-
+        .label1{margin-right: 30px;}
+        form{
+            margin-bottom: 50px;
+        }
     </style>
 </head>
 <body>
-    <form action="">
-    <!-- 필드 테두리선 -->
-    <fieldset>
-        <!-- 폼의 이름 -->
-        <legend>개인 정보</legend>
-        <ul>
-            <li>
-                <label for="em" class="label1">이름</label>
-                <input type="email" placeholder="아이디 또는 이메일주소" id="em">
-            </li>
-            <li>
-                <label for="pw">메일주소</label>
-                <input type="password" placeholder="비밀번호를 입력하세요" id="pw">
-            </li>
-        </ul>
-    </fieldset>
-   </form>
+   <h1>[폼구성 요소 알아보기]</h1>
+   <!-- 사용자로 부터 Data를 받아서 전송할때 -->
    <form action="">
     <!-- 필드 테두리선 -->
     <fieldset>
         <!-- 폼의 이름 -->
-        <legend>로그인 정보</legend>
+        <legend>로그인 폼</legend>
         <ul>
             <li>
-                <label for="em" class="label2">아이디</label>
+                <label for="em" class="label1">이메일</label>
                 <input type="email" placeholder="아이디 또는 이메일주소" id="em">
             </li>
             <li>
@@ -59,6 +45,16 @@
     <!-- 사용자로부터 입력한 Data를 취소(초기화) -->
     <input type="reset" value="취소">
    </form>
-   
+   <form action="">
+    <fieldset>
+        <legend>개인정보</legend>
+        <ul>
+            <li>
+                <input type="radio"> <label for="">남자</label>
+                <input type="radio"> <label for="">여자</label>
+            </li>
+        </ul>
+    </fieldset>
+   </form>
 </body>
 </html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 가입</title>
+    <style>
+        li{list-style: none; margin-bottom:24px ;}
+        input[type="email"],input[type="password"]{
+            width: 410px;
+            height: 56px;
+            font-size: 20px;
+        }
+        label{
+            margin-right: 5px;
+        }
+        .label1{margin-right: 5px;}
+    </style>
+</head>
+<body>
+    <h1>회원 가입</h1>
+    <form action="">
+    <fieldset>
+        <legend>필수 정보</legend>
+        <ul>
+            <li>
+                <label for="em" class="label1">이름 : </label>
+                <input type="email" placeholder="이름을 입력하세요" id="em">
+            </li>
+        </ul>
+    </fieldset>
+   </form>
+   <form action="">
+    <fieldset>
+        <legend>선택 정보</legend>
+        <ul>
+            <li>
+                <label for="em" class="label1">생일 : </label>
+                <input type="date">
+            </li>
+        </ul>
+    </fieldset>
+    <input type="submit" value="선택">
+    <input type="reset" value="취소">
+   </form>
+</body>
+</html>
