@@ -11,6 +11,8 @@
         .tel{width: 25px;}
         .tel2{width: 30px;}
         legend{color: #e1b8a2;}
+        .aa{background: #000; color: #fff;}
+        .bb{background:#fff;}
     </style>
 </head>
 <body>
@@ -78,15 +80,19 @@
                 <label for="book">04</label> <input type="checkbox" checked id="book">
             </li>
             <li>
-                <label for="">r01</label> <input type="checkbox">
-                <label for="">r02</label> <input type="checkbox">
-                <label for="book">r03</label> <input type="checkbox">
-                <label for="book">r04</label> <input type="checkbox" checked id="book">
+                <input type="radio"> <label for="">r01</label>
+                <input type="radio"> <label for="">r02</label>
+                <input type="radio"> <label for="">r03</label>
+                <input type="radio" checked id="man"> <label for="">r04</label>
             </li>
         </ul>
         </fieldset>
-        <input type="submit" value="주문하기">
-        <input type="reset" value="취소">
+        <fieldset>
+            <legend>버틴 모음</legend>
+            <input type="submit" value="주문하기" class="aa">
+            <input type="reset" value="취소" class="bb">
+        </fieldset>
+        
     </form> 
 </body>
 </html>
