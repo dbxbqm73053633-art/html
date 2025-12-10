@@ -3,11 +3,12 @@ body{
 
 }
 *{margin: 0; padding:0;}
+li{list-style: none;}
 .box{
     width: 1000px;
     height: 300px;
     border: 1px solid #000;
-    margin: 0 auto;
+    margin: 0 auto
 }
 .box div{
     width: 235px;
@@ -15,7 +16,24 @@ body{
     background: blue;
     float: left;
     margin-right: 20px;
+    margin-bottom: 5px;
 }
 .box .last{
+    margin: 0;
+}
+.ul3{
+    width: 1000px;
+    height: 300px;
+    border: 1px solid #000;
+    margin: 0 auto;
+}
+.ul3 li{
+    width: 235px;
+    height: 300px;
+    background: green;
+    float: left;
+    margin-right: 20px;
+}
+.ul3 .last{
     margin: 0;
 }
