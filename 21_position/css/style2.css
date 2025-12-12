@@ -1,0 +1,117 @@
+@charset "utf-8";
+body{
+
+}
+*{margin: 0;padding: 0;}
+
+.bigbox{
+    width: 1000px;
+    height: 1000px;
+    margin: 0 auto;
+    position: relative;
+    background: #99ccff;
+}
+.bigbox .box1{
+    width: 200px;
+    height: 200px;
+    background: #990066;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.bigbox .box2{
+    width: 200px;
+    height: 200px;
+    background: #ffff00;
+    position: absolute;
+    left: 100px;
+    top: 100px;
+}
+.bigbox .box3{
+    width: 200px;
+    height: 200px;
+    background: #ff0000;
+    position: absolute;
+    left: 200px;
+    top: 200px;
+}
+.bigbox .box4{
+    width: 200px;
+    height: 200px;
+    background: #000;
+    position: absolute;
+    left: 400px;
+    top: 400px;
+}
+.bigbox .box5{
+    width: 200px;
+    height: 200px;
+    background: #ff0000;
+    position: absolute;
+    left: 600px;
+    top: 600px;
+}
+.bigbox .box6{
+    width: 200px;
+    height: 200px;
+    background: #ffff00;
+    position: absolute;
+    left: 700px;
+    top: 700px;
+}
+.bigbox .box7{
+    width: 200px;
+    height: 200px;
+    background: #990066;
+    position: absolute;
+    left: 800px;
+    top: 800px;
+}
+.bigbox .box8{
+    width: 200px;
+    height: 200px;
+    background: #990066;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.bigbox .box9{
+    width: 200px;
+    height: 200px;
+    background: #ffff00;
+    position: absolute;
+    right: 100px;
+    top: 100px;
+}
+.bigbox .box10{
+    width: 200px;
+    height: 200px;
+    background: #ff0000;
+    position: absolute;
+    right: 200px;
+    top: 200px;
+}
+.bigbox .box11{
+    width: 200px;
+    height: 200px;
+    background: #ff0000;
+    position: absolute;
+    right: 600px;
+    top: 600px;
+}
+.bigbox .box12{
+    width: 200px;
+    height: 200px;
+    background: #ffff00;
+    position: absolute;
+    right: 700px;
+    top: 700px;
+}
+.bigbox .box13{
+    width: 200px;
+    height: 200px;
+    background: #990066;
+    position: absolute;
+    right: 800px;
+    top: 800px;
+}
