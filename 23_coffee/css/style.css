@@ -1,6 +1,6 @@
 @charset "utf-8";
 body{
-    font-family: "맑은 고딕", "malgun gothic",sans-serif;
+    font-family: "맑은 고딕","malgun gothic",sans-serif;
 }
 *{margin: 0;padding: 0;}
 li{list-style: none;}
@@ -27,4 +27,18 @@ button{border: none; background: none;}
 .visual img{
     width: 100%;
     height: 100%;
+}
+ul{
+    width: 100%;
+    height: 50px;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+    position: fixed;
+    left: 0;
+    bottom: 0;
 }
