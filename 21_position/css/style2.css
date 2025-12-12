@@ -40,8 +40,10 @@ body{
     height: 200px;
     background: #000;
     position: absolute;
-    left: 400px;
-    top: 400px;
+    left: 50%;
+    top: 50%;
+    margin-left: -100px;
+    margin-top: -100px;
 }
 .bigbox .box5{
     width: 200px;
@@ -50,6 +52,7 @@ body{
     position: absolute;
     left: 600px;
     top: 600px;
+    z-index: 3;
 }
 .bigbox .box6{
     width: 200px;
@@ -58,6 +61,7 @@ body{
     position: absolute;
     left: 700px;
     top: 700px;
+    z-index: 2;
 }
 .bigbox .box7{
     width: 200px;
@@ -66,6 +70,7 @@ body{
     position: absolute;
     left: 800px;
     top: 800px;
+    z-index: 1;
 }
 .bigbox .box8{
     width: 200px;
@@ -98,6 +103,7 @@ body{
     position: absolute;
     right: 600px;
     top: 600px;
+    z-index: 3;
 }
 .bigbox .box12{
     width: 200px;
@@ -106,6 +112,7 @@ body{
     position: absolute;
     right: 700px;
     top: 700px;
+    z-index: 2;
 }
 .bigbox .box13{
     width: 200px;
@@ -114,4 +121,5 @@ body{
     position: absolute;
     right: 800px;
     top: 800px;
+    z-index: 1;
 }
