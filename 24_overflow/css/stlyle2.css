@@ -1,0 +1,41 @@
+@charset "utf-8";
+body{
+    background: #99cc00;
+
+}
+*{margin: 0; padding: 0;}
+
+.box{
+    width: 520px;
+    height: 270px;
+    background: #ffff08;
+    border: 10px solid #316831;
+    margin: 0 auto;
+    position: relative;
+    overflow: auto;
+
+}
+.box .red{
+    width: 200px;
+    height: 400px;
+    background: #ff6666;
+    position: absolute;
+    left: 50px;
+    top: 50px;
+}
+.box .green{
+    width: 200px;
+    height: 400px;
+    background: #99ff66;
+    position: absolute;
+    left: 100px;
+    top: 100px;
+}
+.box .blue{
+    width: 200px;
+    height: 400px;
+    background: #0066cc;
+    position: absolute;
+    left: 150px;
+    top: 150px;
+}
