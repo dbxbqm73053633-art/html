@@ -1,0 +1,46 @@
+@charset "utf-8";
+body{
+
+}
+*{margin: 0;padding: 0;}
+button{border: none;background: none;}
+
+
+.box{
+    width: 500px;
+    height: 300px;
+    background-color: #fff;
+    border: 3px solid #000;
+    /* background: gold; */
+    /* 포지션 띠워서 가로 가운데 / 세로 가운데 정열 */
+    /* 부모가 position이 있으면 자동으로 부모기준 */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    overflow: hidden;
+}
+.box .left{
+    position: absolute;
+    left: 10%;
+    top: -50%;
+    /* 애니메이션 실행 */
+    animation: left_ani 2s ease-in-out forwards;
+}
+/* 애니메이션 설정 */
+@keyframes left_ani {
+    0%{top:-50%;}
+    100%{top: 50%;}
+    
+}
+.box .right{
+    position: absolute;
+    right: -10%;
+    bottom: -100%;
+    animation: right_ani 3s ease-in-out forwards 3s;
+}
+/* 애니메이션 설정 */
+@keyframes right_ani {
+    0%{bottom: -100%;}
+    100%{bottom: -2%;}
+}
