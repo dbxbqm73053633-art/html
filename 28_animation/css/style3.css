@@ -22,7 +22,7 @@ body{
 
 }
 .box1{
-        width: 1000px;
+    width: 1000px;
     height: 300px;
     margin: 0   auto;
     border: 3px solid red;
@@ -36,7 +36,7 @@ body{
     position: absolute;
     left: 0;
     top: 0;
-    animation:kyw2 4s ease-in-out 1 forwards 2s;
+    animation:kyw2 5s ease-in-out 1 forwards 2s;
 }
 @keyframes kyw {
     0%{left: 0;}
@@ -48,9 +48,9 @@ body{
 }
 @keyframes kyw2 {
     0%{left: 0;}
-    25%{left: 900px;top: 0;}
-    50%{left: 900px;top: 200px;}
-    75%{left: 0;top: 200px;}
-    95%{left: 0;top: 0;}
+    20%{left: 900px;top: 0;}
+    40%{left: 900px;top: 200px;}
+    60%{left: 0;top: 200px;}
+    80%{left: 0;top: 0;}
     100%{left: -103px;top: 0;}
 }
