@@ -25,7 +25,7 @@ button{border: none;background: none;}
     left: 10%;
     top: -50%;
     /* 애니메이션 실행 */
-    animation: left_ani 2s ease-in-out forwards;
+    animation: left_ani 1s ease-in-out forwards 1s;
 }
 /* 애니메이션 설정 */
 @keyframes left_ani {
@@ -37,7 +37,7 @@ button{border: none;background: none;}
     position: absolute;
     right: -10%;
     bottom: -100%;
-    animation: right_ani 3s ease-in-out forwards 3s;
+    animation: right_ani 1s ease-in-out forwards 2s;
 }
 /* 애니메이션 설정 */
 @keyframes right_ani {
