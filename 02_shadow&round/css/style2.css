@@ -20,6 +20,7 @@ body{
     border: 1px solid #000;
     margin: 30px auto 0;
     padding: 35px;
+    box-shadow: 0 0 8px #000;
     box-sizing: border-box;
     border-radius: 8px 8px 8px 8px;
 
