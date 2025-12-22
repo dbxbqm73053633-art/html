@@ -1,0 +1,13 @@
+@charset "utf-8";
+body{
+
+}
+*{margin: 0;padding: 0;}
+
+div{
+    width: 1000px;
+    height: 300px;
+    border: 1px solid #000;
+    margin: 50px auto 0;
+    background-image: linear-gradient(to right, red, Orange, yellow, green, blue, Indigo, Purple);
+}
