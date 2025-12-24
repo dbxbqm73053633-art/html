@@ -3,7 +3,17 @@ body{
 
 }
 *{margin: 0;padding: 0;}
+a{text-decoration: none}
+li{list-style: none}
 
 div{
-    padding: ;
+    width: ;
+    height: ;
+    margin: ;
+    display: flex;
+    align-items: center;
+    background:green;
+    gap: ;
+    justify-content:space-between;
+    box-sizing: border-box;
 }
