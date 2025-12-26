@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./css/style3.css">
+    <title>응용문제</title>
 </head>
 <body>
-    <div class="box">
-        <div class="boxm"> 
-        </div>
-    </div>
-    <div class="box1">
-        <div class="boxm1"> 
-        </div>
-    </div>
+    <script>
+        let num =prompt("번호를 입력하세요?")
+        let name =prompt("이름을 입력하세요?")
+        let a =prompt("국어점수를 입력하세요?")
+        let b =prompt("영어점수를 입력하세요?")
+        let c =prompt("수학점수를 입력하세요?")
+
+        let sum = Number(a) + Number(b) + Number(c)
+        let ccc = sum/3
+
+        alert("번호 : " + num + "\n" + "이름 : " + name + "님" + "\n" + "국어점수 : " + a + "점" + "\n" + "영어점수 : " + b + "점" + 
+            "\n" + "수학점수 : " + c + "점" + "\n" + "총점 : " + sum + "점" + "\n" + "평균 : " + ccc + "점"
+        )
+
+    </script>
 </body>
 </html>
