@@ -1,0 +1,331 @@
+@charset "utf-8";
+
+/* 기본 리셋 및 설정 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+/* 헤더 */
+.header {
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.header .inner {
+    max-width: 940px;
+    width: 100%;
+    padding: 0 20px;
+    height: 73px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.line {
+    width: 100%;
+    height: 4px;
+    background: url(../images/bg_gnb.gif) no-repeat center top;
+    background-size: cover;
+}
+
+.header .inner h1 a {
+    display: block;
+    width: 158px;
+    height: 35px;
+    background: url(../images/h1_logo_sub.gif) no-repeat;
+    background-size: contain;
+    text-indent: -99999px;
+    overflow: hidden;
+}
+
+/* 메인 */
+.main {
+    width: 100%;
+    min-height: 100vh;
+    background: #e9eef2;
+    padding: 40px 20px;
+}
+
+/* 푸터 */
+.footer {
+    width: 100%;
+    border-top: 1px solid #d6e0df;
+    background: #fff;
+    padding: 30px 20px;
+}
+
+.footer .inner {
+    max-width: 940px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* 푸터 링크 리스트 */
+.footer .inner .wrap {
+    flex: 1;
+    min-width: 280px;
+}
+
+.footer .inner .wrap .list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    margin-bottom: 15px;
+}
+
+.footer .inner .wrap .list li {
+    position: relative;
+    padding-left: 12px;
+}
+
+.footer .inner .wrap .list li a {
+    font-size: 12px;
+    color: #575757;
+    letter-spacing: -0.5px;
+    transition: color 0.2s ease;
+}
+
+.footer .inner .wrap .list li a:hover {
+    color: #0f53a8;
+}
+
+/* 경계선 */
+.footer .inner .wrap .list li::before {
+    content: '';
+    width: 1px;
+    height: 10px;
+    background: #bbb;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 첫 번째와 줄바꿈 후 첫 항목의 경계선 숨김 */
+.footer .inner .wrap .list li:nth-child(1)::before,
+.footer .inner .wrap .list li:nth-child(7)::before {
+    display: none;
+}
+
+/* 특정 링크 색상 변경 */
+.footer .inner .wrap .list li:nth-child(1) a,
+.footer .inner .wrap .list li:nth-child(2) a,
+.footer .inner .wrap .list li:nth-child(3) a,
+.footer .inner .wrap .list li:nth-child(8) a,
+.footer .inner .wrap .list li:nth-child(9) a {
+    color: #0f53a8;
+    font-weight: 500;
+}
+
+.footer .inner .wrap .copy {
+    color: #575757;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* 패밀리 사이트 버튼 */
+.footer .inner .family_wrap {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.footer .inner .family_wrap .family,
+.footer .inner .family_wrap .family2 {
+    position: relative;
+}
+
+.footer .inner .family_wrap button {
+    width: 140px;
+    height: 30px;
+    border: 1px solid #bec9ca;
+    background: #fff;
+    text-align: left;
+    padding: 0 30px 0 12px;
+    font-size: 12px;
+    color: #575757;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.footer .inner .family_wrap button:hover {
+    border-color: #0f53a8;
+    color: #0f53a8;
+}
+
+.footer .inner .family_wrap button::after {
+    content: '';
+    width: 9px;
+    height: 5px;
+    background: url(../images/select_ico.png) no-repeat center;
+    background-size: contain;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+}
+
+.footer .inner .family_wrap button.active::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* 패밀리 사이트 목록 */
+.footer .inner .family_wrap .family_list {
+    width: 140px;
+    max-height: 135px;
+    background: #fff;
+    border: 1px solid #bec9ca;
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 5px);
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.footer .inner .family_wrap .family_list.show {
+    display: block;
+}
+
+.footer .inner .family_wrap .family_list li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.footer .inner .family_wrap .family_list li:last-child {
+    border-bottom: none;
+}
+
+.footer .inner .family_wrap .family_list li a {
+    display: block;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #575757;
+    letter-spacing: -0.5px;
+    transition: all 0.2s ease;
+}
+
+.footer .inner .family_wrap .family_list li:hover {
+    background: #f8f9fa;
+}
+
+.footer .inner .family_wrap .family_list li:hover a {
+    color: #0f53a8;
+}
+
+/* 스크롤바 스타일링 */
+.footer .inner .family_wrap .family_list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.footer .inner .family_wrap .family_list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.footer .inner .family_wrap .family_list::-webkit-scrollbar-thumb {
+    background: #bec9ca;
+    border-radius: 3px;
+}
+
+.footer .inner .family_wrap .family_list::-webkit-scrollbar-thumb:hover {
+    background: #0f53a8;
+}
+
+/* 태블릿 반응형 */
+@media (max-width: 768px) {
+    .header .inner {
+        height: 60px;
+        padding: 0 15px;
+    }
+
+    .header .inner h1 a {
+        width: 130px;
+        height: 28px;
+    }
+
+    .main {
+        padding: 30px 15px;
+    }
+
+    .footer {
+        padding: 25px 15px;
+    }
+
+    .footer .inner {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .footer .inner .wrap {
+        width: 100%;
+    }
+
+    .footer .inner .family_wrap {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .footer .inner .family_wrap button {
+        flex: 1;
+        min-width: 140px;
+    }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 480px) {
+    .header .inner h1 a {
+        width: 110px;
+        height: 24px;
+    }
+
+    .footer .inner .wrap .list {
+        gap: 10px 12px;
+    }
+
+    .footer .inner .wrap .list li {
+        padding-left: 10px;
+    }
+
+    .footer .inner .wrap .list li a {
+        font-size: 11px;
+    }
+
+    .footer .inner .wrap .copy {
+        font-size: 11px;
+    }
+
+    .footer .inner .family_wrap {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .footer .inner .family_wrap button {
+        width: 100%;
+    }
+
+    .footer .inner .family_wrap .family_list {
+        width: 100%;
+    }
+}
