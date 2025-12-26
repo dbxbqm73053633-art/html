@@ -3,26 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>div&span</title>
-    <style>
-        *{margin: 0; padding: 0;}
-        div{
-            border: 1px solid #000;
-            width: 320px;
-            padding: 40px 12px;
-        }
-        div h1{margin-bottom: 40px;}
-        div p{margin-bottom: 50px; font-size: 20px; color: #0000ff;}
-        div .last{margin-bottom: 0;}
-        div span{font-size: 37px; color: red; font-weight: 900;}
-    </style>
+    <title>조건문3형식(다중 if)</title>
 </head>
 <body>
-    <div>
-        <h1>표준 <span>웹</span>  기술</h1>
-        <p><span>H</span>TML</p>
-        <p><span>C</span>SS</p>
-        <p class="last"><span>J</span>avascript</p>
-    </div>
+    <pre>
+        if문 제 3형식
+        if(조건삭){
+            참일때 실행
+        }else if(조건식){
+            참일때 실행
+        }else if(조건식){
+            참일때 실행
+        }else if(조건식){
+            참일때 실행
+        }else{
+            거짓일때 실행
+        }
+    </pre>
+    <hr>
+    <script>
+        // 이름,국어,영어,수학 입력 받아서 총점,평균을 구함
+        // 평균이 90점이상이면 "수"
+        // 평균이 80점이상이면 "우"
+        // 평균이 70점이상이면 "미"
+        // 평균이 60점이상이면 "양"
+        // 나머지는 "가"
+
+        let name = prompt("이름을 입력해주세요?")
+        let kor = prompt("국어점수를 입력해주세요?")
+        let eng = prompt("영어점수를 입력해주세요?")
+        let mat = prompt("수학점수를 입력해주세요?")
+
+        //  데이터 처리
+        let tot = Number(kor) + Number(eng) + Number(mat)
+        alert("총점은" + tot)
+        let avg = tot/3
+
+        let res = ''
+
+        if(avg>=90){
+            res = "수"
+        }
+        else if(avg>=80){
+            res = "우"
+        }
+        else if(avg>=70){
+            res = "미"
+        }
+        else if(avg>=60){
+            res = "양"
+            // 마지막엔 else로 끝냄
+        }
+        else{
+            res = "가"
+        }
+
+        let aaa = ''
+
+        if(avg>=95){
+            aaa = "A+"
+        }
+        else if(avg>=90){
+            aaa = "A"
+        }
+        else if(avg>=85){
+            aaa = "B+"
+        }
+        else if(avg>=80){
+            aaa = "B"
+            // 마지막엔 else로 끝냄
+        }
+        else if(avg>=75){
+            aaa = "C+"
+        }
+        else if(avg>=70){
+            aaa = "C"
+        }
+        else if(avg>=65){
+            aaa = "D+"
+        }
+
+        else if(avg>=60){
+            aaa = "D"
+        }
+        else {
+            aaa = "F"
+        }
+
+        // 출력
+        document.write("이름=" + name + "님<br>")
+        document.write("국어점수=" + kor + "점<br>")
+        document.write("영어점수=" + eng + "점<br>")
+        document.write("수학점수=" + mat + "점<br>")
+        document.write("총점=" + tot + "점<br>")
+        document.write("평균=" + avg + "점<br>")
+        document.write("평점=" + res + "<br>")
+        document.write("학점=" + aaa + "<br>")
+
+    </script>
 </body>
 </html>
