@@ -3,26 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마끼야또</title>
-    <style>
-        span{font-style: italic}
-    </style>
+    <title>응용3</title>
 </head>
 <body>
-    <h1>카라멜 마끼아또</h1>
-    <h2>제품 영양 정보</h2>
-    <p>
-        <ul>
-            <li>
-                <label for="">1회 제공량 : <span>200kal</span></label>
-            </li>
-            <li>
-                <label for="">포화지방 : <span>4.5g</span></label>
-            </li>
-            <li>
-                <label for="">카페인 : <span>75mg</span></label>
-            </li>
-        </ul>
-    </p>
+    <script>
+        // 외부로 부터 이름을 입력받고, 체중하고, 키 를 입력 받아서
+        // BMI 지수를 계산하는 프로그램
+        let name = prompt("이름을 입력해주세요?")
+        let weight = prompt("몸무게를 입력하세요?")
+        let height = prompt("키를 입력하세요?")
+
+        // 체질량 지수 구하는 수식
+
+        // BMI = 체중(kg) ÷ (키(m) × 키(m))
+        let bmi = weight / (height * height)*10000
+
+        let res = ''
+        if(bmi>=25){
+            res="비만"
+        }
+        else if(bmi>=23){
+            res="과체중"
+        }
+        else if(bmi>=18.5){
+            res="정상체중"
+        }
+        else{
+            res = "저체중"
+        }
+
+
+        // 출력
+        alert("고객님의 성명은" + name + "이고 \n" + "입력하신 체질량 지수는" + bmi + "입니다" + "\n" + "고객님의 판정기준은" + res + "입니다")
+
+    </script>
 </body>
 </html>
