@@ -78,12 +78,10 @@ button{border: none;background: none;}
 .gnb>li>.depth2 li:hover a{
     color: #333;
 }
-.visual {
-    width: 1360px;
-    height: 610px; 
-    margin: 0 auto;   
-}
-.visual img{
+.swiper{
     width: 100%;
-    height: 100%;
+    /* ,뷰포트 높이 */
+}
+.swiper img{
+    width: 100%;
 }
