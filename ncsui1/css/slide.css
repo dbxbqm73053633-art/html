@@ -79,7 +79,7 @@ body {
 
 /* 하단 영역 */
 .bottom-area {
-  padding: 16px 24px 28px;
+  padding: 16px 24px 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
