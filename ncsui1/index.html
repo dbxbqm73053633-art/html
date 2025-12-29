@@ -36,6 +36,37 @@
       margin-bottom: 16px;
     }
 
+    /* 🔹 로딩바 스타일 */
+    .loading-bar {
+      width: 100%;
+      max-width: 260px;
+      height: 4px;
+      border-radius: 999px;
+      background-color: #e3e9f5; /* 연한 배경 */
+      overflow: hidden;
+      margin-bottom: 12px; /* 글자와 간격 */
+    }
+
+    .loading-fill {
+      width: 40%;
+      height: 100%;
+      border-radius: inherit;
+      background-color: #5b7db1;
+      animation: loading 1.2s infinite ease-in-out;
+    }
+
+    @keyframes loading {
+      0% {
+        transform: translateX(-100%);
+      }
+      50% {
+        transform: translateX(50%);
+      }
+      100% {
+        transform: translateX(150%);
+      }
+    }
+
     .logo-text {
       font-size: 32px;
       letter-spacing: 0.24em;
@@ -105,6 +136,11 @@
         stroke-linecap="round"
       />
     </svg>
+
+    <!-- 🔹 로고 바로 밑 로딩바 -->
+    <div class="loading-bar">
+      <div class="loading-fill"></div>
+    </div>
 
     <!-- Text -->
     <div class="logo-text">CAMBAK</div>
