@@ -89,7 +89,6 @@ button{border: none;background: none;}
     /* ,뷰포트 높이 */
 }
 
-
 .swiper img{
     width: 100%;
 }
@@ -101,4 +100,11 @@ button{border: none;background: none;}
     width: auto !important;
     text-align: right;
     z-index: 10;          /* 이미지보다 위에 오도록 */
+}
+.swiper-pagination-bullet{
+  background: #ccc;   /* 회색 */
+  opacity: 1;         /* 흐려 보이지 않게 */
+}
+.swiper-pagination-bullet-active{
+  background: #666;   /* 원하는 포인트 컬러 */
 }
