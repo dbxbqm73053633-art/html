@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>캠박 온보딩</title>
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <!-- 내 스타일 -->
+  <link rel="stylesheet" href="./css/slide.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Swiper 영역 -->
+    <div class="swiper myOnboardingSwiper">
+      <div class="swiper-wrapper">
+
+        <!-- Slide 1 -->
+        <div class="swiper-slide">
+          <div class="slide-text">
+            <h2 class="slide-title">
+              차박,<br />
+              어디로 떠나야 할지 모르겠나요?
+            </h2>
+            <p class="slide-subtitle">
+              지도 기반 위치 앱 및 키워드 검색으로 내가 원하는 장소를 한번에!
+            </p>
+          </div>
+          <div class="slide-illust-wrapper">
+            <img
+              class="slide-illust"
+              src="./images/Frame 3.png"
+              alt="온보딩 이미지 1"
+            />
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="swiper-slide">
+          <div class="slide-text">
+            <h2 class="slide-title">
+              차만 있다면<br />
+              장비는 가격부담 적은 렌탈로
+            </h2>
+            <p class="slide-subtitle">
+              차박에 필요한 물품들을 용도별로 둘러보세요.
+            </p>
+          </div>
+          <div class="slide-illust-wrapper">
+            <img
+              class="slide-illust"
+              src="./images/Frame 4.png"
+              alt="온보딩 이미지 2"
+            />
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="swiper-slide">
+          <div class="slide-text">
+            <h2 class="slide-title">
+              일상이 바쁠 땐<br />
+              실시간 라이브로 대리만족 하세요.
+            </h2>
+            <p class="slide-subtitle">
+              라이브로 나를 뽐내고 시청자들과 소통하는 즐거움!
+            </p>
+          </div>
+          <div class="slide-illust-wrapper">
+            <img
+              class="slide-illust"
+              src="./images/Frame 5.png"
+              alt="온보딩 이미지 3"
+            />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 하단: 페이지네이션 + 시작 버튼 -->
+    <div class="bottom-area">
+      <div class="swiper-pagination"></div>
+      <button class="start-button" type="button">시작하기</button>
+    </div>
+  </div>
+
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- 내 JS -->
+  <script src="./js/slide.js"></script>
+</body>
+</html>
