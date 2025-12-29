@@ -1,6 +1,6 @@
 const swiper = new Swiper('.swiper', {
   // Optional parameters
-//   effect:"fade",
+  effect:"fade",
   direction: 'horizontal',
   loop: true,
 //   자동실행
