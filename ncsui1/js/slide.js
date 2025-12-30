@@ -13,8 +13,8 @@ const swiper = new Swiper('.myOnboardingSwiper', {
 });
 
 // 시작하기 버튼 (예시 액션)
-document.querySelector('.start-button').addEventListener('click', () => {
-  console.log('시작하기 버튼 클릭');
+document.querySelector(".start-button").addEventListener("click", function () {
+  window.location.href = "login.html";   // 파일 경로가 같다면 이대로 OK
+});
   // 실제 서비스에서는 이동 URL 지정
   // window.location.href = '/home';
-});

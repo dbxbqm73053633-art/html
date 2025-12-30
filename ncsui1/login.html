@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CAMBAK 로그인</title>
+
+  <!-- Webfont -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- 외부 CSS -->
+  <link rel="stylesheet" href="./css/login.css" />
+</head>
+<body>
+  <div class="mobile-wrap">
+    <!-- 로고 영역 -->
+    <header class="logo-area">
+      <!-- 텐트 아이콘 -->
+      <svg class="logo-icon" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- 텐트 몸체 -->
+        <polygon points="60,5 20,75 100,75" fill="#4f68b8" />
+        <!-- 출입구 -->
+        <polygon points="60,26 42,72 78,72" fill="#ffffff" />
+        <!-- 바닥 라인 양 끝 장식 -->
+        <rect x="18" y="73" width="4" height="4" fill="#4f68b8" />
+        <rect x="98" y="73" width="4" height="4" fill="#4f68b8" />
+        <!-- 윗부분 장식 -->
+        <line x1="56" y1="4" x2="60" y2="0" stroke="#4f68b8" stroke-width="2" stroke-linecap="round" />
+        <line x1="64" y1="4" x2="60" y2="0" stroke="#4f68b8" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <div class="logo-text">CAMBAK</div>
+    </header>
+
+    <!-- 아이디 -->
+    <div class="form-group">
+  <div class="field-label">아이디</div>
+  <input
+    class="text-input"
+    type="text"
+    id="userId"
+    placeholder="아이디를 입력해주세요"
+  />
+</div>
+
+    <!-- 비밀번호 (입력 가능) -->
+    <div class="form-group">
+      <div class="field-label">비밀번호</div>
+      <input class="text-input" type="password" id="userPw" placeholder="비밀번호를 입력하세요" />
+    </div>
+
+    <!-- 버튼 -->
+    <button class="btn-primary" type="button" id="loginBtn">로 그 인</button>
+    <button class="btn-secondary" type="button" id="signupBtn">회원가입</button>
+
+    <!-- 하단 링크 / SNS 로그인 -->
+    <div class="bottom-area">
+      <div class="link-row">
+        <span>아이디 찾기</span>
+        <span class="divider">|</span>
+        <span>비밀번호 찾기</span>
+        <span class="divider">|</span>
+        <span>둘러보기</span>
+      </div>
+
+      <div class="simple-login-row">
+        <span>간편 로그인</span>
+      </div>
+
+      <div class="social-row">
+        <div class="social-icon kakao">T</div>
+        <div class="social-icon naver">N</div>
+        <div class="social-icon google">G</div>
+        <div class="social-icon facebook">f</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 외부 JS -->
+  <script src="./js/login.js"></script>
+</body>
+</html>
