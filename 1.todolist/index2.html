@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>오늘 할 일</title>
+  <!-- 분리된 CSS 파일 -->
+  <link rel="stylesheet" href="./css/index2.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="status-bar">
+      <div class="status-left">
+        <span id="status-time">09:45</span>
+        <span>&bull;</span>
+        <span>오늘</span>
+      </div>
+      <div class="status-right">
+        <span>LTE</span>
+        <div class="battery">
+          <div class="battery-level"></div>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <div class="title-block">
+        <h1>오늘 할 일</h1>
+        <span class="date" id="today-date">2025. 12. 30. 화요일</span>
+      </div>
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all">전체</button>
+        <button class="chip" data-filter="active">진행중</button>
+        <button class="chip" data-filter="completed">완료</button>
+      </div>
+    </header>
+
+    <div class="summary-card">
+      <div class="summary-main">
+        <strong id="summary-title">오늘 0개 할 일</strong>
+        <span id="summary-sub">가볍게 시작해볼까?</span>
+      </div>
+      <div class="progress-ring" id="progress-ring">
+        <span id="progress-text">0%</span>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <input id="task-input" type="text" placeholder="오늘 할 일을 입력하세요" />
+        <span class="time-indicator" id="time-indicator">지금</span>
+      </div>
+      <button class="add-btn" id="add-btn">+</button>
+    </div>
+
+    <div class="list-container">
+      <div class="section-title">
+        <strong>목록</strong>
+        <span id="task-counter">0개</span>
+      </div>
+      <div class="task-list" id="task-list"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active">
+        <span class="icon">✅</span>
+        <span>오늘</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">📅</span>
+        <span>캘린더</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">⭐</span>
+        <span>중요</span>
+      </div>
+      <div class="nav-item">
+        <span class="icon">☁️</span>
+        <span>돌아보기</span>
+      </div>
+    </nav>
+  </div>
+
+  <button class="fab-today">
+    <div>+</div>
+    <div>오늘</div>
+  </button>
+
+  <!-- 분리된 JS 파일 -->
+  <script src="./js/index2.js"></script>
+</body>
+</html>
