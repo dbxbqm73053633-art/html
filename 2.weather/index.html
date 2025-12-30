@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Weather App · Korean Geo Search</title>
+  <!-- 분리한 CSS 파일 -->
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+  <div class="sky-overlay"></div>
+  <div class="app-wrapper">
+    <div class="app-card">
+      <header class="header">
+        <div class="header-icon" aria-hidden="true"></div>
+        <div class="header-title-wrap">
+          <div class="header-title">오늘의 날씨</div>
+          <p class="header-sub">현재 위치와 도시 검색으로 전세계 하늘 상태를 한눈에 확인하세요.</p>
+        </div>
+      </header>
+
+      <div class="divider"></div>
+
+      <section class="search-area">
+        <p class="search-label">도시 검색 (한글/영문 모두 가능)</p>
+        <div class="search-row">
+          <input
+            id="city-input"
+            class="search-input"
+            type="text"
+            placeholder="예: 서울, 부산, 도쿄, New York"
+          />
+          <button id="search-btn" class="btn btn-primary">검색</button>
+        </div>
+        <button id="current-location-btn" class="btn btn-secondary">📍 현재 위치 날씨 보기</button>
+      </section>
+
+      <div class="status-area">
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>실시간 날씨 정보를 불러오는 중입니다...</p>
+        </div>
+        <div id="error" class="error hidden"></div>
+      </div>
+
+      <main id="weather-wrapper" class="hidden">
+        <div class="today-label">
+          <span class="today-dot"></span>
+          TODAY · 오늘 하늘 상태
+        </div>
+        <div class="weather-card">
+          <div>
+            <div class="main-temp">
+              <span id="temp">--</span><span class="temp-unit">°C</span>
+            </div>
+            <div class="city-name" id="city-name">도시명</div>
+            <div class="description" id="description">날씨 설명</div>
+          </div>
+          <div class="details">
+            <div>
+              <span class="details-label">풍속</span>
+              <span class="value" id="wind">--</span> m/s
+            </div>
+            <div>
+              <span class="details-label">습도</span>
+              <span class="value" id="humidity">--</span>%
+            </div>
+            <div>
+              <span class="details-label">체감온도</span>
+              <span class="value" id="feels-like">--</span>°C
+            </div>
+          </div>
+        </div>
+
+        <div class="chip-row">
+          <div class="chip" id="coord-chip">
+            <span class="chip-dot"></span>
+            위도 · 경도 정보
+          </div>
+          <div class="chip" id="time-chip">
+            <span class="chip-dot"></span>
+            업데이트 시간
+          </div>
+        </div>
+
+        <!-- 추가 중요한 요소 4개 박스 -->
+        <section class="extra-metrics">
+          <div class="metric-card">
+            <div class="metric-title">오늘 최고 / 최저</div>
+            <div class="metric-value" id="minmax-temp">-- / -- °C</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">기압</div>
+            <div class="metric-value" id="pressure">-- hPa</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">시정</div>
+            <div class="metric-value" id="visibility">-- km</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">일출 · 일몰</div>
+            <div class="metric-value" id="sunrise-sunset">-- / --</div>
+          </div>
+        </section>
+      </main>
+
+      <!-- 세계 주요 국가 날씨 고정 카드 -->
+      <section class="fixed-cities">
+        <p class="fixed-cities-title">세계 주요 국가 날씨</p>
+        <div class="fixed-city-list">
+          <div class="fixed-city-card" data-city-id="us">
+            <div class="fixed-city-name">🇺🇸 뉴욕 (미국)</div>
+            <div class="fixed-city-info">
+              <span class="fixed-city-emoji" id="fixed-emoji-us">⏳</span>
+              <span class="fixed-city-temp" id="fixed-temp-us">--°C</span>
+            </div>
+          </div>
+
+          <div class="fixed-city-card" data-city-id="cn">
+            <div class="fixed-city-name">🇨🇳 베이징 (중국)</div>
+            <div class="fixed-city-info">
+              <span class="fixed-city-emoji" id="fixed-emoji-cn">⏳</span>
+              <span class="fixed-city-temp" id="fixed-temp-cn">--°C</span>
+            </div>
+          </div>
+
+          <div class="fixed-city-card" data-city-id="jp">
+            <div class="fixed-city-name">🇯🇵 도쿄 (일본)</div>
+            <div class="fixed-city-info">
+              <span class="fixed-city-emoji" id="fixed-emoji-jp">⏳</span>
+              <span class="fixed-city-temp" id="fixed-temp-jp">--°C</span>
+            </div>
+          </div>
+
+          <div class="fixed-city-card" data-city-id="uk">
+            <div class="fixed-city-name">🇬🇧 런던 (영국)</div>
+            <div class="fixed-city-info">
+              <span class="fixed-city-emoji" id="fixed-emoji-uk">⏳</span>
+              <span class="fixed-city-temp" id="fixed-temp-uk">--°C</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <p class="footer-caption">
+        OpenWeather 데이터 기준 · 기온, 풍속, 습도, 기압, 시정은 실시간에 가깝게 갱신됩니다.
+      </p>
+    </div>
+  </div>
+
+  <!-- 분리한 JS 파일 -->
+  <script src="./js/index.js"></script>
+</body>
+</html>
