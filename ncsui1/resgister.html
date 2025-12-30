@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CAMBAK 회원가입</title>
+
+  <!-- Webfont -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- 공통 CSS -->
+  <link rel="stylesheet" href="./css/resgister.css" />
+</head>
+<body>
+  <div class="mobile-wrap">
+    <!-- 로고/타이틀 영역 -->
+    <header class="logo-area" style="margin-bottom: 40px;">
+      <svg class="logo-icon" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,5 20,75 100,75" fill="#4f68b8" />
+        <polygon points="60,26 42,72 78,72" fill="#ffffff" />
+        <rect x="18" y="73" width="4" height="4" fill="#4f68b8" />
+        <rect x="98" y="73" width="4" height="4" fill="#4f68b8" />
+        <line x1="56" y1="4" x2="60" y2="0" stroke="#4f68b8" stroke-width="2" stroke-linecap="round" />
+        <line x1="64" y1="4" x2="60" y2="0" stroke="#4f68b8" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <div class="logo-text">CAMBAK</div>
+    </header>
+
+    <div class="page-title">회원가입</div>
+    <div class="page-subtitle">간단한 정보 입력 후 CAMBAK을 시작해보세요</div>
+
+    <!-- 회원가입 폼 -->
+    <div class="form-group">
+      <div class="field-label">아이디</div>
+      <input
+        class="text-input"
+        type="text"
+        id="signupId"
+        placeholder="아이디를 입력해주세요"
+      />
+    </div>
+
+    <div class="form-group">
+      <div class="field-label">비밀번호</div>
+      <input
+        class="text-input"
+        type="password"
+        id="signupPw"
+        placeholder="비밀번호를 입력해주세요"
+      />
+    </div>
+
+    <div class="form-group">
+      <div class="field-label">비밀번호 확인</div>
+      <input
+        class="text-input"
+        type="password"
+        id="signupPwConfirm"
+        placeholder="비밀번호를 다시 입력해주세요"
+      />
+    </div>
+
+    <div class="form-group">
+      <div class="field-label">이름</div>
+      <input
+        class="text-input"
+        type="text"
+        id="signupName"
+        placeholder="이름을 입력해주세요"
+      />
+    </div>
+
+    <div class="form-group">
+      <div class="field-label">이메일</div>
+      <input
+        class="text-input"
+        type="email"
+        id="signupEmail"
+        placeholder="example@cambak.com"
+      />
+    </div>
+
+    <div class="form-group">
+      <div class="field-label">전화번호</div>
+      <input
+        class="text-input"
+        type="tel"
+        id="signupPhone"
+        placeholder="010-0000-0000"
+      />
+    </div>
+
+    <!-- 버튼 영역 -->
+    <button class="btn-primary" type="button" id="submitSignup">가입 완료</button>
+    <button class="btn-secondary" type="button" id="backToLogin">로그인 화면으로</button>
+
+  </div>
+
+  <!-- 회원가입 페이지 전용 JS -->
+  <script src="signup.js"></script>
+</body>
+</html>

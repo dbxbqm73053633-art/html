@@ -36,8 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 회원가입 버튼 클릭
-  signupBtn.addEventListener("click", () => {
-    alert("회원가입 페이지로 이동 (예시)");
+  document.getElementById("signupBtn").addEventListener("click", function () {
+  location.href = "resgister.html";
+});
     // 예: location.href = "signup.html";
   });
-});
