@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const id = userId.value.trim();
     const pw = userPw.value.trim();
 
+
+
     if (!id) {
       alert("아이디를 입력하세요");
       userId.focus();
@@ -23,7 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    alert(`로그인 시도: ${id}`);
+    document.getElementById("loginBtn").addEventListener("click", () => {
+  location.href = "center.html";
+});
     // 실제 로그인 처리 로직을 여기에 추가
     // 예: location.href = "main.html";
   });

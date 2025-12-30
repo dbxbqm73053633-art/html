@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CAMBAK 메인</title>
+
+  <!-- Webfont -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- 외부 CSS -->
+  <link rel="stylesheet" href="./css/center.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 상단 이미지 -->
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="hero-top">
+          <div class="hero-logo">CAMBAK</div>
+
+          <button class="hero-bell-btn" type="button" aria-label="알림">
+            <span>🔔</span>
+            <div class="hero-bell-dot"></div>
+          </button>
+        </div>
+
+        <p class="hero-title">자연 속에서 누리는 가장 완벽한 쉼표</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- 테마별 카테고리 -->
+      <section class="section">
+        <h2>테마별 카테고리</h2>
+
+        <div class="theme-grid">
+          <button class="theme-item" type="button"><span class="theme-emoji">🐶</span><span>반려견</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">🔥</span><span>불멍</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">🏙️</span><span>도시</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">🍖</span><span>바베큐</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">🌳</span><span>산책</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">⛰️</span><span>오지</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">✨</span><span>별감상</span></button>
+          <button class="theme-item" type="button"><span class="theme-emoji">⛺</span><span>장비</span></button>
+        </div>
+      </section>
+
+      <!-- 쿠폰 / 이벤트 / 해택 -->
+      <section class="section">
+        <div class="shortcut-row">
+          <button class="shortcut-btn" type="button"><span class="shortcut-icon">🎫</span><span>쿠폰</span></button>
+          <button class="shortcut-btn" type="button"><span class="shortcut-icon">📣</span><span>이벤트</span></button>
+          <button class="shortcut-btn" type="button"><span class="shortcut-icon">🎁</span><span>해택</span></button>
+        </div>
+      </section>
+
+      <!-- 장소 랭킹 -->
+      <section class="ranking-section">
+        <h2>장소 랭킹 TOP10</h2>
+
+        <div class="tab-row">
+          <button class="tab-item active" data-tab="home" type="button"><div class="tab-icon">⛺</div><span>홈</span></button>
+          <button class="tab-item" data-tab="search" type="button"><div class="tab-icon">🔍</div><span>검색</span></button>
+          <button class="tab-item" data-tab="group" type="button"><div class="tab-icon">👥</div><span>모임</span></button>
+          <button class="tab-item" data-tab="live" type="button"><div class="tab-icon">📺</div><span>LIVE</span></button>
+          <button class="tab-item" data-tab="my" type="button"><div class="tab-icon">🙂</div><span>마이</span></button>
+        </div>
+
+        <div class="gallery">
+          <div class="gallery-row-top">
+            <div class="gallery-card" style="background-image:url(./images/차2.png);"></div>
+            <div class="gallery-card" style="background-image:url(./images/차3.png);"></div>
+            <div class="gallery-card" style="background-image:url(./images/차4.png);"></div>
+          </div>
+
+          <div class="gallery-card-wide" style="background-image:url(./images/자연.png);"></div>
+        </div>
+
+        <div class="place-info">
+          <div class="place-text">
+            <div class="place-title">테마별 카테고리</div>
+            <div class="place-desc">강원도 원주시 치악면 치악산 1번지</div>
+          </div>
+
+          <button class="bookmark-btn" id="bookmarkBtn" type="button">♡</button>
+        </div>
+
+        <div class="place-actions">
+          <button class="place-btn" type="button">길찾기</button>
+          <button class="place-btn" type="button">길찾기</button>
+          <button class="place-btn secondary" type="button">해제하기</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 외부 JS -->
+  <script src="./js/center.js"></script>
+</body>
+</html>
