@@ -1,196 +1,340 @@
 @charset "utf-8";
 
-*{box-sizing:border-box;margin:0;padding:0;}
-
-body{
-  font-family:"Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#f4f6fb;
-  display:flex;
-  justify-content:center;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.app{
-  width:100%;
-  max-width:430px;
-  background:#fff;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
+body {
+  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #f4f6fb;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
-/* HERO */
-.hero{
-  position:relative;
-  min-height:260px;
-  background:url(../images/차1.png) center/cover no-repeat;
-  padding:20px;
-  border-bottom-left-radius:30px;
-  border-bottom-right-radius:30px;
-  color:#fff;
+.app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
 }
 
-.hero::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to bottom,rgba(255,255,255,.2),rgba(0,0,0,.2));
+/* 상단 히어로 영역 */
+.hero {
+  position: relative;
+  padding: 20px 20px 24px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  background: url("../images/차1.png") center/cover no-repeat;
+  color: #fff;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
 }
 
-.hero-inner{position:relative;height:100%;display:flex;flex-direction:column;}
-
-.hero-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2));
 }
 
-.hero-logo{
-  font-weight:700;
-  font-size:32px;
-  letter-spacing:.28em;
-  text-indent:.28em;
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.hero-bell-btn{
-  width:36px;height:36px;border-radius:50%;
-  border:none;background:rgba(255,255,255,.7);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.hero-bell-dot{
-  width:7px;height:7px;border-radius:50%;background:#ff4b6a;
-  position:absolute;right:8px;top:8px;
+.hero-logo {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
 }
 
-.hero-title{
-  margin-top:auto;
-  padding-top:20px;
-  font-weight:600;
+.hero-bell-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
 }
 
-/* SECTION */
-.section{padding:20px 20px 0;}
-.section h2{color:#314ba6;font-size:18px;margin-bottom:14px;font-weight:700;}
-
-/* THEME GRID */
-.theme-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  row-gap:18px;
+.hero-bell-btn span {
+  font-size: 20px;
 }
 
-.theme-item{
-  border:none;
-  background:none;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  font-size:13px;
-  color:#555f7e;
+.hero-bell-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ff4b6a;
 }
 
-.theme-emoji{font-size:26px;margin-bottom:4px;}
-
-/* SHORTCUT */
-.shortcut-row{
-  display:flex;
-  gap:12px;
-  padding:20px 0;
+.hero-title {
+  margin-top: auto;
+  padding-top: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
 }
 
-.shortcut-btn{
-  flex:1;
-  border:none;
-  background:#e6ecff;
-  color:#4d5fb1;
-  border-radius:16px;
-  padding:14px 0;
+/* 스크롤 영역 */
+main {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 16px;
 }
 
-/* RANKING */
-.ranking-section{padding:10px 20px;}
-
-.tab-row{
-  display:flex;
-  justify-content:space-around;
-  border-bottom:1px solid #e2e6f3;
-  padding-bottom:6px;
+/* 섹션 공통 */
+.section {
+  padding: 20px 20px 0;
 }
 
-.tab-item{
-  border:none;
-  background:none;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  font-size:11px;
-  color:#c2c7db;
+.section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #314ba6;
+  margin-bottom: 14px;
 }
 
-.tab-item.active{color:#314ba6;font-weight:700;}
-
-.tab-item.active .tab-icon{
-  background:#314ba6;
-  color:#fff;
-  border-radius:50%;
+/* 테마별 카테고리 */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 18px;
+  column-gap: 6px;
+  margin-bottom: 12px;
 }
 
-.gallery{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  margin-top:10px;
+.theme-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: #555f7e;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.gallery-row-top{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
+.theme-emoji {
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+/* 쿠폰 / 이벤트 / 해택 */
+.shortcut-row {
+  display: flex;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.shortcut-btn {
+  flex: 1;
+  padding: 14px 0;
+  border-radius: 16px;
+  border: none;
+  background-color: #e6ecff;
+  color: #4d5fb1;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.shortcut-icon {
+  font-size: 18px;
+}
+
+/* 장소 랭킹 */
+.ranking-section {
+  padding: 0 20px 12px;
+}
+
+.ranking-section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #314ba6;
+  margin-bottom: 12px;
+}
+
+/* 갤러리 */
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.gallery-row-top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
 .gallery-card,
-.gallery-card-wide{
-  background-size:cover;
-  background-position:center;
-  border-radius:12px;
+.gallery-card-wide {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #d0d7ea;
+  background-size: cover;
+  background-position: center;
 }
 
-.gallery-card{height:150px;}
-.gallery-card-wide{height:180px;}
-
-.place-info{
-  display:flex;
-  justify-content:space-between;
-  margin:14px 0;
+.gallery-card {
+  height: 150px;
 }
 
-.place-title{color:#314ba6;font-weight:700;}
-.place-desc{color:#6a748f;font-size:13px;}
-
-.bookmark-btn{
-  border:none;
-  background:none;
-  font-size:20px;
-  color:#314ba6;
+.gallery-card-wide {
+  height: 180px;
 }
 
-.place-actions{
-  display:flex;
-  gap:10px;
+/* 장소 정보 */
+.place-info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 6px;
+  margin-bottom: 14px;
 }
 
-.place-btn{
-  flex:1;
-  border-radius:999px;
-  padding:12px;
-  font-weight:700;
-  border:1px solid #4f68b8;
-  background:#4f68b8;
-  color:#fff;
+.place-text {
+  max-width: calc(100% - 40px);
 }
 
-.place-btn.secondary{
-  background:#fff;
-  color:#4f68b8;
+.place-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #314ba6;
+  margin-bottom: 4px;
+}
+
+.place-desc {
+  font-size: 13px;
+  color: #6a748f;
+  line-height: 1.4;
+}
+
+.bookmark-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  color: #314ba6;
+}
+
+/* 액션 버튼 */
+.place-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.place-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 999px;
+  border: 1px solid #4f68b8;
+  background-color: #4f68b8;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.place-btn.secondary {
+  background-color: #ffffff;
+  color: #4f68b8;
+}
+
+/* ✅ 하단 고정 탭바 */
+.bottom-tabbar {
+  position: sticky;          /* 앱 안에서는 항상 하단에 보이도록 */
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 6px 0 8px;
+  border-top: 1px solid #e2e6f3;
+  background-color: #ffffff;
+}
+
+.tab-item {
+  border: none;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: #c2c7db;
+  cursor: pointer;
+}
+
+.tab-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.tab-item.active {
+  color: #314ba6;
+  font-weight: 600;
+}
+
+.tab-item.active .tab-icon {
+  background-color: #314ba6;
+  color: #ffffff;
+}
+
+/* 조금 넓은 화면에서 높이만 살짝 키움 */
+@media (min-width: 480px) {
+  .hero {
+    min-height: 280px;
+  }
+
+  .gallery-card {
+    height: 170px;
+  }
+
+  .gallery-card-wide {
+    height: 200px;
+  }
 }
