@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오늘 할 일 - One Line</title>
+
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="./css/index.css" />
+
+  <!-- Pretendard 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="app-shell">
+    <div class="card">
+      <!-- 상단 타이틀/요약 -->
+      <div class="top-row">
+        <div class="title-wrap">
+          <h1>오늘 할 일 <span class="title-pill">ONE LINE</span></h1>
+          <p class="subtitle">모든 정보가 한 줄에 정리되는 투두 리스트</p>
+        </div>
+        <button id="clearAllBtn" class="summary-chip">
+          <span>완료</span>
+          <strong id="doneCount">0</strong>
+        </button>
+      </div>
+
+      <!-- 날짜 + 필터 -->
+      <div class="date-row">
+        <div class="date-box">
+          <span id="todayDate"></span>
+          <span id="todayWeekday"></span>
+        </div>
+        <div class="filter-wrap">
+          <button class="chip filter-chip active" data-filter="all">전체</button>
+          <button class="chip filter-chip" data-filter="active">진행중</button>
+          <button class="chip filter-chip" data-filter="done">완료</button>
+        </div>
+      </div>
+
+      <!-- 입력 -->
+      <div class="input-row">
+        <input id="todoInput" type="text" placeholder="할 일을 한 줄로 적어보세요" />
+        <button id="addBtn" class="btn-main">추가</button>
+      </div>
+
+      <!-- 리스트 -->
+      <div class="list-section">
+        <ul id="todoList" class="todo-list"></ul>
+      </div>
+
+      <!-- 하단 요약 + 네비 -->
+      <div class="bottom-row">
+        <span>오늘 집중 지수 · <span id="focusRate">0%</span></span>
+        <div class="bottom-nav">
+          <button class="nav-item active">오늘</button>
+          <button class="nav-item">달력</button>
+          <button class="nav-item">리포트</button>
+          <button class="nav-item">설정</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스크립트 -->
+  <script src="./js/index.js"></script>
+</body>
+</html>
