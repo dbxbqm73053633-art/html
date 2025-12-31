@@ -1,105 +1,962 @@
+<!-- index3.html: OTTMOVI 버전 + 상단 메뉴 변경 + 새로고침 시 메인 영화 랜덤 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>조건문3형식(다중 if)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OTTMOVI - TMDB Movies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-main: #141414;
+      --bg-elevated: #181818;
+      --text-main: #ffffff;
+      --text-sub: #b3b3b3;
+      --accent: #e50914;
+      --radius: 4px;
+    }
+
+    body {
+      font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    /* 헤더 */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 0 4vw;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.9),
+        rgba(0, 0, 0, 0.4),
+        transparent
+      );
+      z-index: 20;
+    }
+
+    .header__left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .nav__item {
+      font-size: 14px;
+      text-decoration: none;
+      color: var(--text-sub);
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav__item:hover,
+    .nav__item--active {
+      color: var(--text-main);
+    }
+
+    .header__right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    .header__label {
+      color: #ffffff;
+      font-size: 14px;
+      opacity: 0.9;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    .profile__avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* 메인 전체 레이아웃 */
+    .main {
+      padding-top: 60px;
+    }
+
+    /* 히어로 영역 */
+    .hero {
+      position: relative;
+      height: 60vh;
+      min-height: 380px;
+      color: #fff;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 4vw 60px;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(
+          circle at 20% 20%,
+          rgba(0, 0, 0, 0.45),
+          transparent 55%
+        ),
+        linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 60%);
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 3; /* overlay보다 항상 위 */
+      max-width: 560px;
+    }
+
+    .hero__title {
+      font-size: clamp(26px, 4vw, 44px);
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #ffffff;
+      line-height: 1.2;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55), 0 0 1px rgba(0,0,0,0.6);
+    }
+
+    .hero__meta {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-bottom: 10px;
+    }
+
+    .hero__overview {
+      font-size: 14px;
+      line-height: 1.5;
+      max-height: 4.2em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 18px;
+    }
+
+    .hero__buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: var(--radius);
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s ease, background-color 0.15s ease,
+        color 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+    }
+
+    .btn--primary {
+      background: #fff;
+      color: #000;
+    }
+
+    .btn--secondary {
+      background: rgba(109, 109, 110, 0.7);
+      color: #fff;
+    }
+
+    .hero__fade-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background-image: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(20, 20, 20, 0.95)
+      );
+      z-index: 1;
+    }
+
+    /* 영화 리스트 영역 */
+    .rows {
+      position: relative;
+      z-index: 5;
+      padding: 0 4vw 40px;
+      margin-top: 0;
+      padding-top: 20px;
+    }
+
+    .row {
+      margin-bottom: 26px;
+    }
+
+    .row__title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0,0,0,.6);
+    }
+
+    .row__subtitle {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+
+    .row__scroller-wrapper {
+      position: relative;
+    }
+
+    .row__posters {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 0 8px;
+      scroll-behavior: smooth;
+    }
+
+    .row__posters::-webkit-scrollbar {
+      height: 6px;
+    }
+    .row__posters::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .row__posters::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 999px;
+    }
+
+    .row__scroll-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: rgba(0, 0, 0, 0.4);
+      width: 32px;
+      height: 80px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    .row__scroll-btn--left {
+      left: -8px;
+    }
+
+    .row__scroll-btn--right {
+      right: -8px;
+    }
+
+    .row__scroll-btn:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .card {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      max-width: 42vw;
+      cursor: pointer;
+    }
+
+    .card__image-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #222;
+    }
+
+    .card__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover .card__image {
+      transform: scale(1.08);
+    }
+
+    .card__rating {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    .card__title {
+      font-size: 13px;
+      margin-top: 4px;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status {
+      padding: 10px 4vw 20px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    /* 풋터 */
+    .footer {
+      border-top: 1px solid #333;
+      padding: 24px 4vw 40px;
+      font-size: 12px;
+      color: var(--text-sub);
+      background: #000000;
+      margin-top: 16px;
+    }
+
+    .footer__inner {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .footer__service {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .footer__links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px 16px;
+      margin-bottom: 18px;
+    }
+
+    .footer__link {
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .footer__link:hover {
+      color: var(--text-main);
+      text-decoration: underline;
+    }
+
+    .footer__bottom {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .footer__lang-select {
+      background: #000000;
+      border: 1px solid #333;
+      color: #ffffff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .hero {
+        height: 70vh;
+      }
+
+      .row__posters {
+        padding-bottom: 14px;
+      }
+
+      .row__scroll-btn {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 0 3vw;
+      }
+
+      .nav {
+        display: none;
+      }
+
+      .rows {
+        padding: 0 3vw 32px;
+      }
+
+      .card {
+        width: 120px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 0 3vw 40px;
+      }
+
+      .hero__overview {
+        font-size: 13px;
+      }
+
+      .row__title {
+        font-size: 16px;
+      }
+
+      .card {
+        width: 110px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <pre>
-        if문 제 3형식
-        if(조건삭){
-            참일때 실행
-        }else if(조건식){
-            참일때 실행
-        }else if(조건식){
-            참일때 실행
-        }else if(조건식){
-            참일때 실행
-        }else{
-            거짓일때 실행
-        }
-    </pre>
-    <hr>
-    <script>
-        // 이름,국어,영어,수학 입력 받아서 총점,평균을 구함
-        // 평균이 90점이상이면 "수"
-        // 평균이 80점이상이면 "우"
-        // 평균이 70점이상이면 "미"
-        // 평균이 60점이상이면 "양"
-        // 나머지는 "가"
+  <header class="header">
+    <div class="header__left">
+      <div class="logo">OTTMOVI</div>
+      <nav class="nav">
+        <a href="#" class="nav__item nav__item--active">홈</a>
+        <a href="#" class="nav__item">시리즈</a>
+        <a href="#" class="nav__item">영화</a>
+        <a href="#" class="nav__item">게임</a>
+        <a href="#" class="nav__item">NEW 요즘 대세 컨텐츠</a>
+        <a href="#" class="nav__item">내가 찜한 리스트</a>
+        <a href="#" class="nav__item">언어별로 찾아보기</a>
+      </nav>
+    </div>
+    <div class="header__right">
+      <button class="icon-btn" aria-label="검색">🔍</button>
+      <button class="icon-btn" aria-label="알림">🔔</button>
+      <div class="header__label" id="header-label">최신 상영작</div>
+      <div class="profile">
+        <div class="profile__avatar">W</div>
+      </div>
+    </div>
+  </header>
 
-        let name = prompt("이름을 입력해주세요?")
-        let kor = prompt("국어점수를 입력해주세요?")
-        let eng = prompt("영어점수를 입력해주세요?")
-        let mat = prompt("수학점수를 입력해주세요?")
+  <main class="main">
+    <section class="hero" id="hero">
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <h1 class="hero__title" id="hero-title">로딩 중...</h1>
+        <p class="hero__meta" id="hero-meta"></p>
+        <p class="hero__overview" id="hero-overview"></p>
+        <div class="hero__buttons">
+          <button class="btn btn--primary">▶ 재생</button>
+          <button class="btn btn--secondary">ℹ️ 상세 정보</button>
+        </div>
+      </div>
+      <div class="hero__fade-bottom"></div>
+    </section>
 
-        //  데이터 처리
-        let tot = Number(kor) + Number(eng) + Number(mat)
-        alert("총점은" + tot)
-        let avg = tot/3
+    <section class="rows">
+      <!-- 1. 최신 상영작 -->
+      <div class="row">
+        <h2 class="row__title">최신 상영작</h2>
+        <p class="row__subtitle">극장에서 막 개봉했거나 상영 중인 최신 작품들</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="now-playing-row">◀</button>
+          <div class="row__posters" id="now-playing-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="now-playing-row">▶</button>
+        </div>
+      </div>
 
-        let res = ''
+      <!-- 2. 넷플릭스에서만 상영작 (upcoming 기반으로 OTT 전용 느낌) -->
+      <div class="row">
+        <h2 class="row__title">넷플릭스에서만 상영작</h2>
+        <p class="row__subtitle">OTT 전용 혹은 스트리밍으로 만나는 단독/한정 상영작</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="latest-row">◀</button>
+          <div class="row__posters" id="latest-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="latest-row">▶</button>
+        </div>
+      </div>
 
-        if(avg>=90){
-            res = "수"
+      <!-- 3. 최신 트렌드 상영화 (popular) -->
+      <div class="row">
+        <h2 class="row__title">최신 트렌드 상영화</h2>
+        <p class="row__subtitle">요즘 가장 화제가 되고 있는 트렌디한 상영작</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="trending-row">◀</button>
+          <div class="row__posters" id="trending-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="trending-row">▶</button>
+        </div>
+      </div>
+
+      <!-- 4. 최신 인기작 (top_rated) -->
+      <div class="row">
+        <h2 class="row__title">최신 인기작</h2>
+        <p class="row__subtitle">관객과 평단 모두에게 인정받은 높은 평점의 작품</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="top-rated-row">◀</button>
+          <div class="row__posters" id="top-rated-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="top-rated-row">▶</button>
+        </div>
+      </div>
+
+      <!-- 5. 액션영화 -->
+      <div class="row">
+        <h2 class="row__title">액션영화</h2>
+        <p class="row__subtitle">짜릿한 박진감과 스케일을 느낄 수 있는 액션 컬렉션</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="action-row">◀</button>
+          <div class="row__posters" id="action-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="action-row">▶</button>
+        </div>
+      </div>
+
+      <!-- 6. 코메디영화 -->
+      <div class="row">
+        <h2 class="row__title">코메디영화</h2>
+        <p class="row__subtitle">가볍게 웃으면서 보기 좋은 유쾌한 작품들</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="comedy-row">◀</button>
+          <div class="row__posters" id="comedy-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="comedy-row">▶</button>
+        </div>
+      </div>
+
+      <!-- 7. 공포영화 -->
+      <div class="row">
+        <h2 class="row__title">공포영화</h2>
+        <p class="row__subtitle">등골이 서늘해지는 서스펜스 & 호러 무비</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="horror-row">◀</button>
+          <div class="row__posters" id="horror-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="horror-row">▶</button>
+        </div>
+      </div>
+
+      <!-- 8. 로맨스영화 -->
+      <div class="row">
+        <h2 class="row__title">로맨스영화</h2>
+        <p class="row__subtitle">두근두근 감성을 자극하는 사랑 이야기</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="romance-row">◀</button>
+          <div class="row__posters" id="romance-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="romance-row">▶</button>
+        </div>
+      </div>
+
+      <!-- 9. 다큐멘터리영화 -->
+      <div class="row">
+        <h2 class="row__title">다큐멘터리영화</h2>
+        <p class="row__subtitle">현실을 깊이 있게 바라보는 다큐멘터리 작품</p>
+        <div class="row__scroller-wrapper">
+          <button class="row__scroll-btn row__scroll-btn--left" data-target="documentary-row">◀</button>
+          <div class="row__posters" id="documentary-row"></div>
+          <button class="row__scroll-btn row__scroll-btn--right" data-target="documentary-row">▶</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="status" id="status"></div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__service">서비스 코드: 123-456-OTTMOVI</div>
+      <div class="footer__links">
+        <a href="#" class="footer__link">고객 센터</a>
+        <a href="#" class="footer__link">투자 정보</a>
+        <a href="#" class="footer__link">이용 약관</a>
+        <a href="#" class="footer__link">개인정보 처리방침</a>
+        <a href="#" class="footer__link">쿠키 설정</a>
+        <a href="#" class="footer__link">회사 정보</a>
+      </div>
+      <div class="footer__bottom">
+        <div>© 2025 OTTMOVI – TMDB 데이터를 활용한 데모 페이지</div>
+        <div>
+          <select class="footer__lang-select" aria-label="언어 선택">
+            <option>한국어</option>
+            <option>English</option>
+            <option>日本語</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const TMDB_ACCESS_TOKEN =
+      "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwZGE0NzZjMTQyOGY4NzZkMWY2N2MyZWNhYWUyMzE2YSIsIm5iZiI6MTc2NzA3ODQzMS43MDg5OTk5LCJzdWIiOiI2OTUzN2ExZmE5OTMxMTliNmRlNDE5ZWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.nZVmFjRrGQPJim1CQoNmv6V8DWYvVLwQCms5O-ec7Hk";
+
+    const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+    const IMAGE_BASE_ORIGINAL = "https://image.tmdb.org/t/p/original";
+    const IMAGE_BASE_W500 = "https://image.tmdb.org/t/p/w500";
+
+    const statusEl = document.getElementById("status");
+    const heroSection = document.getElementById("hero");
+    const heroTitle = document.getElementById("hero-title");
+    const heroMeta = document.getElementById("hero-meta");
+    const heroOverview = document.getElementById("hero-overview");
+    const headerLabel = document.getElementById("header-label");
+
+    const nowPlayingRow = document.getElementById("now-playing-row");
+    const latestRow = document.getElementById("latest-row");
+    const trendingRow = document.getElementById("trending-row");
+    const topRatedRow = document.getElementById("top-rated-row");
+
+    const actionRow = document.getElementById("action-row");
+    const comedyRow = document.getElementById("comedy-row");
+    const horrorRow = document.getElementById("horror-row");
+    const romanceRow = document.getElementById("romance-row");
+    const documentaryRow = document.getElementById("documentary-row");
+
+    function setStatus(message) {
+      if (statusEl) {
+        statusEl.textContent = message;
+      }
+    }
+
+    function setHeaderLabel(text) {
+      if (headerLabel) headerLabel.textContent = text;
+    }
+
+    function setupHero(movie) {
+      const {
+        title,
+        name,
+        original_title,
+        release_date,
+        vote_average,
+        overview,
+        backdrop_path,
+        poster_path,
+      } = movie;
+
+      const displayTitle = title || name || original_title || "제목 정보 없음";
+      heroTitle.textContent = displayTitle;
+
+      const year = release_date ? release_date.slice(0, 4) : "연도 정보 없음";
+      const rating = vote_average ? vote_average.toFixed(1) : "평점 없음";
+      heroMeta.textContent = `${year} • 평점 ${rating}`;
+
+      heroOverview.textContent =
+        overview && overview.trim().length > 0
+          ? overview
+          : "줄거리 정보가 제공되지 않습니다.";
+
+      const bgPath = backdrop_path || poster_path;
+      if (bgPath) {
+        heroSection.style.backgroundImage = `url("${IMAGE_BASE_ORIGINAL}${bgPath}")`;
+      } else {
+        heroSection.style.backgroundColor = "#000";
+      }
+    }
+
+    function createMovieCard(movie, labelText) {
+      const { title, name, original_title, poster_path, vote_average } = movie;
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.tabIndex = 0; // 키보드 포커스 가능
+
+      const imgWrapper = document.createElement("div");
+      imgWrapper.className = "card__image-wrapper";
+
+      const img = document.createElement("img");
+      img.className = "card__image";
+
+      if (poster_path) {
+        img.src = `${IMAGE_BASE_W500}${poster_path}`;
+      } else {
+        img.src =
+          "https://via.placeholder.com/300x450/222222/ffffff?text=No+Image";
+      }
+
+      img.alt = title || name || original_title || "영화 포스터";
+
+      const ratingBadge = document.createElement("div");
+      ratingBadge.className = "card__rating";
+      ratingBadge.textContent = vote_average
+        ? `★ ${vote_average.toFixed(1)}`
+        : "평점 없음";
+
+      imgWrapper.appendChild(img);
+      imgWrapper.appendChild(ratingBadge);
+
+      const titleEl = document.createElement("div");
+      titleEl.className = "card__title";
+      titleEl.textContent = title || name || original_title || "제목 정보 없음";
+
+      card.appendChild(imgWrapper);
+      card.appendChild(titleEl);
+
+      function activateCard() {
+        setupHero(movie);
+        if (labelText) setHeaderLabel(labelText);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      card.addEventListener("click", activateCard);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          activateCard();
         }
-        else if(avg>=80){
-            res = "우"
-        }
-        else if(avg>=70){
-            res = "미"
-        }
-        else if(avg>=60){
-            res = "양"
-            // 마지막엔 else로 끝냄
-        }
-        else{
-            res = "가"
+      });
+
+      return card;
+    }
+
+    function renderMoviesToRow(movies, rowElement, labelText) {
+      if (!rowElement) return;
+      rowElement.innerHTML = "";
+      movies.forEach((movie) => {
+        const card = createMovieCard(movie, labelText);
+        rowElement.appendChild(card);
+      });
+    }
+
+    async function fetchNowPlaying() {
+      try {
+        setStatus("최신 상영작을 불러오는 중입니다...");
+
+        const res = await fetch(
+          `${TMDB_BASE_URL}/movie/now_playing?language=ko-KR&page=1`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+              "Content-Type": "application/json;charset=utf-8",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("TMDB now_playing 요청 실패: " + res.status);
         }
 
-        let aaa = ''
+        const data = await res.json();
+        const results = data.results || [];
 
-        if(avg>=95){
-            aaa = "A+"
-        }
-        else if(avg>=90){
-            aaa = "A"
-        }
-        else if(avg>=85){
-            aaa = "B+"
-        }
-        else if(avg>=80){
-            aaa = "B"
-            // 마지막엔 else로 끝냄
-        }
-        else if(avg>=75){
-            aaa = "C+"
-        }
-        else if(avg>=70){
-            aaa = "C"
-        }
-        else if(avg>=65){
-            aaa = "D+"
+        if (!results.length) {
+          setStatus("불러올 최신 상영작이 없습니다.");
+          return;
         }
 
-        else if(avg>=60){
-            aaa = "D"
-        }
-        else {
-            aaa = "F"
+        // 새로고침마다 다른 메인 영화가 나오도록 랜덤 선택
+        const randomIndex = Math.floor(Math.random() * results.length);
+        const heroMovie = results[randomIndex];
+        setupHero(heroMovie);
+
+        renderMoviesToRow(results, nowPlayingRow, "최신 상영작");
+        setHeaderLabel("최신 상영작");
+        setStatus(`최신 상영작 ${results.length}편을 불러왔습니다.`);
+      } catch (err) {
+        console.error(err);
+        setStatus("데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      }
+    }
+
+    async function fetchLatest() {
+      try {
+        const res = await fetch(
+          `${TMDB_BASE_URL}/movie/upcoming?language=ko-KR&region=KR&page=1`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+              "Content-Type": "application/json;charset=utf-8",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("TMDB upcoming 요청 실패: " + res.status);
         }
 
-        // 출력
-        document.write("이름=" + name + "님<br>")
-        document.write("국어점수=" + kor + "점<br>")
-        document.write("영어점수=" + eng + "점<br>")
-        document.write("수학점수=" + mat + "점<br>")
-        document.write("총점=" + tot + "점<br>")
-        document.write("평균=" + avg + "점<br>")
-        document.write("평점=" + res + "<br>")
-        document.write("학점=" + aaa + "<br>")
+        const data = await res.json();
+        const results = data.results || [];
+        if (!results.length) return;
 
-    </script>
+        results.sort((a, b) => {
+          const da = a.release_date || "9999-12-31";
+          const db = b.release_date || "9999-12-31";
+          return da.localeCompare(db);
+        });
+
+        renderMoviesToRow(results, latestRow, "넷플릭스에서만 상영작");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function fetchTrending() {
+      try {
+        const randomPage = Math.floor(Math.random() * 3) + 1;
+        const res = await fetch(
+          `${TMDB_BASE_URL}/movie/popular?language=ko-KR&page=${randomPage}`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+              "Content-Type": "application/json;charset=utf-8",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("TMDB popular 요청 실패: " + res.status);
+        }
+
+        const data = await res.json();
+        let results = data.results || [];
+        if (!results.length) return;
+
+        const picked = results.slice(0, 20);
+        renderMoviesToRow(picked, trendingRow, "최신 트렌드 상영화");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function fetchTopRated() {
+      try {
+        const res = await fetch(
+          `${TMDB_BASE_URL}/movie/top_rated?language=ko-KR&page=1`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+              "Content-Type": "application/json;charset=utf-8",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("TMDB top_rated 요청 실패: " + res.status);
+        }
+
+        const data = await res.json();
+        const results = data.results || [];
+        if (!results.length) return;
+
+        const sliced = results.slice(0, 20);
+        renderMoviesToRow(sliced, topRatedRow, "최신 인기작");
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 장르별 섹션 공통 함수 (TMDB discover/movie 사용)
+    async function fetchGenreRow(genreId, rowElement, labelText) {
+      if (!rowElement) return;
+      try {
+        const res = await fetch(
+          `${TMDB_BASE_URL}/discover/movie?language=ko-KR&sort_by=popularity.desc&with_genres=${genreId}&page=1&region=KR`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+              "Content-Type": "application/json;charset=utf-8",
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(`TMDB discover 장르 요청 실패 (${genreId}): ` + res.status);
+        }
+
+        const data = await res.json();
+        const results = data.results || [];
+        if (!results.length) return;
+
+        const sliced = results.slice(0, 20);
+        renderMoviesToRow(sliced, rowElement, labelText);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function initRowScrollButtons() {
+      const buttons = document.querySelectorAll(".row__scroll-btn");
+
+      buttons.forEach((btn) => {
+        const targetId = btn.getAttribute("data-target");
+        const target = document.getElementById(targetId);
+        if (!target) return;
+
+        btn.addEventListener("click", () => {
+          const scrollAmount = target.clientWidth * 0.8;
+          if (btn.classList.contains("row__scroll-btn--left")) {
+            target.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+          } else {
+            target.scrollBy({ left: scrollAmount, behavior: "smooth" });
+          }
+        });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initRowScrollButtons();
+      fetchNowPlaying();            // 최신 상영작 (랜덤으로 히어로 선택)
+      fetchLatest();                // 넷플릭스에서만 상영작 (upcoming 기반)
+      fetchTrending();              // 최신 트렌드 상영화 (popular 기반)
+      fetchTopRated();              // 최신 인기작 (top_rated 기반)
+
+      // 장르별 데이터 로딩 (TMDB 장르 ID)
+      // 액션: 28, 코미디: 35, 공포: 27, 로맨스: 10749, 다큐멘터리: 99
+      fetchGenreRow(28, actionRow, "액션영화");
+      fetchGenreRow(35, comedyRow, "코메디영화");
+      fetchGenreRow(27, horrorRow, "공포영화");
+      fetchGenreRow(10749, romanceRow, "로맨스영화");
+      fetchGenreRow(99, documentaryRow, "다큐멘터리영화");
+    });
+  </script>
 </body>
 </html>
