@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OTTMOVI 로그인</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-main: #141414;
+      --bg-card: #181818;
+      --accent: #e50914;
+      --text-main: #ffffff;
+      --text-sub: #b3b3b3;
+      --danger: #f87171;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Noto Sans KR", system-ui;
+      background: radial-gradient(circle at top, #2d2d2d, #000);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .auth-wrapper { width: 100%; max-width: 420px; }
+
+    .logo {
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .logo span {
+      font-weight: 400;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: var(--text-sub);
+      display: block;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: rgba(24,24,24,.96);
+      border-radius: 16px;
+      padding: 26px 22px 24px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.7);
+      backdrop-filter: blur(14px);
+    }
+
+    .card__title { font-size: 22px; font-weight: 700; margin-bottom: 18px; }
+
+    .field { margin-bottom: 10px; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: var(--text-sub);
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: #101010;
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background-color .15s;
+    }
+
+    .input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(229,9,20,.7);
+    }
+
+    .error-box {
+      display: none;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--danger);
+      line-height: 1.4;
+    }
+
+    .error-box::before {
+      content: "⚠ ";
+      margin-right: 3px;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      margin: 12px 0;
+      color: var(--text-sub);
+    }
+
+    .checkbox { display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+
+    .checkbox input { width:14px; height:14px; accent-color: var(--accent); }
+
+    .btn-primary {
+      width: 100%; margin-top: 4px; padding: 11px 14px; border-radius: 999px;
+      border: none; background: var(--accent); color: #fff; font-weight: 700;
+      cursor: pointer; box-shadow: 0 12px 25px rgba(229,9,20,.5);
+      transition: transform .12s, box-shadow .12s, background-color .12s;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); background:#ff0f25; }
+    .btn-primary:active { transform:none; }
+
+    .divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;font-size:11px;color:var(--text-sub);}    
+    .divider::before,.divider::after{content:"";flex:1;height:1px;background:#27272f;}
+
+    .social-btn{width:100%;padding:9px 12px;border-radius:999px;border:1px solid #333;background:#111827;color:#fff;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;}
+
+    .helper-text{margin-top:10px;font-size:12px;color:var(--text-sub);text-align:center;}
+
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="logo">OTTMOVI<span>STREAMING EXPERIENCE</span></div>
+
+    <div class="card">
+      <h1 class="card__title">로그인</h1>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="email">이메일</label>
+          <input type="email" id="email" class="input" name="email" placeholder="이메일 주소를 입력하세요" />
+          <div id="email-error" class="error-box">이메일을 입력해 주세요.</div>
+        </div>
+
+        <div class="field">
+          <label for="password">비밀번호</label>
+          <input type="password" id="password" class="input" name="password" placeholder="비밀번호를 입력하세요" />
+          <div id="password-error" class="error-box">비밀번호를 입력해 주세요.</div>
+        </div>
+
+        <div class="form-row">
+          <label class="checkbox"><input type="checkbox" id="remember" /><span>로그인 상태 유지</span></label>
+          <a href="#" class="link-text">비밀번호를 잊으셨나요?</a>
+        </div>
+
+        <button type="submit" class="btn-primary">OTTMOVI 시작하기</button>
+      </form>
+
+      <div class="divider">또는</div>
+
+      <button class="social-btn" type="button">📧 이메일 없이 코드로 로그인</button>
+      <button class="social-btn" type="button">▶ 게스트로 둘러보기</button>
+
+      <p class="helper-text">OTTMOVI가 처음이신가요? <a href="#">지금 바로 가입하기</a></p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const emailError = document.getElementById('email-error');
+    const passwordError = document.getElementById('password-error');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      let valid = true;
+      emailError.style.display = 'none';
+      passwordError.style.display = 'none';
+
+      if (!email.value.trim()) {
+        emailError.textContent = '⚠ 이메일을 입력해 주세요.';
+        emailError.style.display = 'block';
+        valid = false;
+      }
+
+      if (!password.value.trim()) {
+        passwordError.textContent = '⚠ 비밀번호를 입력해 주세요.';
+        passwordError.style.display = 'block';
+        valid = false;
+      } else if (password.value.trim().length < 6) {
+        passwordError.textContent = '⚠ 비밀번호는 6자리 이상이어야 합니다.';
+        passwordError.style.display = 'block';
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      // ★ 로그인 성공 → 메인으로 이동
+      window.location.href = 'index.html';
+      // 또는 뒤로가기로 로그인폼 못 돌아오게 하려면 ↓
+      // window.location.replace('index.html');
+    });
+  </script>
+</body>
+</html>
