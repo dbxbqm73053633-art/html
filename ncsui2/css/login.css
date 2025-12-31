@@ -1,0 +1,215 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  /* 밝고 프리미엄한 그라디언트 */
+  background: linear-gradient(135deg, #f4fff4 0%, #f9fbff 40%, #ffffff 100%);
+  color: #111827;
+}
+
+.app {
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 18px 14px;
+}
+
+.frame {
+  flex: 1;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* 상단 */
+.top { padding: 36px 26px 18px; }
+.title-wrap { text-align: center; }
+
+.brand-badge {
+  display: inline-block;
+  padding: 6px 14px 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8be7bb, #b5ffcf);
+  color: #064e3b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin-bottom: 12px;
+}
+
+.title-main {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #052e16;
+  margin-bottom: 6px;
+}
+
+.title-caption { margin-top: 4px; font-size: 13px; color: #6b7280; }
+
+main.content {
+  flex: 1;
+  padding: 10px 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 인풋 */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0 22px;
+}
+
+.field-label { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+
+.field {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 14px;
+  padding: 13px 15px;
+  font-size: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  outline: none;
+  width: 100%;
+  color: #111827;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field::placeholder { color: #9ca3af; }
+
+.field:focus {
+  border-color: #8be7bb;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(32, 140, 120, 0.15);
+}
+
+/* 옵션 */
+.options-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 6px 0 26px;
+  font-size: 13px;
+  color: #1f2937;
+}
+
+.option { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+
+.option-switch {
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.option-knob {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transform: translateX(0);
+  transition: transform 0.2s ease;
+}
+
+.option-switch.on { background: linear-gradient(135deg, #8be7bb, #5eead4); }
+.option-switch.on .option-knob { transform: translateX(14px); }
+
+/* 버튼 */
+.login-btn {
+  width: 100%;
+  height: 54px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #8be7bb, #5eead4);
+  color: #042f2e;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 22px;
+  box-shadow: 0 18px 32px rgba(45, 212, 191, 0.25);
+  letter-spacing: 0.08em;
+}
+
+.login-btn:active { transform: translateY(1px); }
+
+/* 링크 */
+.link-row {
+  text-align: center;
+  font-size: 12px;
+  color: #4b5563;
+  margin-bottom: 26px;
+}
+
+.link-row span { cursor: pointer; }
+
+/* 소셜 */
+.social-section { padding: 0 24px 16px; }
+
+.divider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  color: #9ca3af;
+  font-size: 11px;
+  justify-content: center;
+}
+
+.divider { flex: 1; height: 1px; background: #e5e7eb; }
+.divider-label { white-space: nowrap; }
+
+.social-row { display: flex; justify-content: center; gap: 22px; }
+
+.social-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.social-kakao { background: #ffe812; color: #020617; font-size: 13px; }
+.social-naver { background: #03c75a; color: #ffffff; font-size: 20px; }
+.social-facebook { background: #1877f2; color: #ffffff; font-size: 20px; }
+
+/* 홈 인디케이터 */
+.home-indicator {
+  margin: 10px auto 4px;
+  width: 40%;
+  height: 4px;
+  border-radius: 999px;
+  background: #020617;
+  opacity: 0.2;
+}
+
+@media (max-height: 720px) {
+  .title-main { font-size: 24px; }
+  .top { padding-top: 26px; }
+}

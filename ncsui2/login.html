@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>제주 환상 자전거길 로그인</title>
+  <link rel="stylesheet" href="./css/login.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="frame">
+      <header class="top">
+        <div class="title-wrap">
+          <span class="brand-badge">JEJU CYCLING</span>
+          <h1 class="title-main">제주 환상 자전거길</h1>
+          <p class="title-caption">섬을 한 바퀴 도는 특별한 라이딩 여정</p>
+        </div>
+      </header>
+
+      <main class="content">
+        <div class="input-group">
+          <div>
+            <div class="field-label">아이디 또는 이메일</div>
+            <input
+              type="text"
+              class="field"
+              placeholder="아이디 또는 이메일을 입력해 주세요"
+            />
+          </div>
+
+          <div>
+            <div class="field-label">비밀번호</div>
+            <input
+              type="password"
+              class="field"
+              placeholder="비밀번호를 입력해 주세요"
+            />
+          </div>
+        </div>
+
+        <div class="options-row">
+          <div class="option" data-type="auto">
+            <div class="option-switch on"><div class="option-knob"></div></div>
+            <span>자동 로그인</span>
+          </div>
+
+          <div class="option" data-type="save-id">
+            <div class="option-switch"><div class="option-knob"></div></div>
+            <span>아이디 저장</span>
+          </div>
+        </div>
+
+        <button class="login-btn" type="button">로그인</button>
+
+        <div class="link-row">
+          <span>아이디 찾기</span>&nbsp;|&nbsp;<span>비밀번호 찾기</span>&nbsp;|&nbsp;<span>둘러보기</span>
+        </div>
+      </main>
+
+      <section class="social-section">
+        <div class="divider-wrap">
+          <div class="divider"></div>
+          <span class="divider-label">또는 간편 로그인</span>
+          <div class="divider"></div>
+        </div>
+
+        <div class="social-row">
+          <div class="social-btn social-kakao">TALK</div>
+          <div class="social-btn social-naver">N</div>
+          <div class="social-btn social-facebook">f</div>
+        </div>
+      </section>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <script src="./js/login.js"></script>
+</body>
+</html>

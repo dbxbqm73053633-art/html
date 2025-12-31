@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>제주 환상 자전거길 - 메인</title>
+  <link rel="stylesheet" href="./css/main.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- HERO -->
+    <header class="hero">
+      <img class="hero-bg" src="./images/메인1.png" alt="제주 환상 자전거길 배경" />
+
+      <div class="hero-overlay"></div>
+
+      <div class="hero-top">
+        <div class="hero-greet">
+          <div class="hero-title">길영우님 안녕하세요</div>
+          <div class="hero-sub">즐거운 자전거 여행이 되세요</div>
+        </div>
+
+        <button class="icon-btn" type="button" aria-label="알림">
+          <!-- bell -->
+          <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
+            <path d="M12 22a2.2 2.2 0 0 0 2.2-2.2h-4.4A2.2 2.2 0 0 0 12 22Zm7-6.6V11a7 7 0 1 0-14 0v4.4L3.6 17a1 1 0 0 0 .7 1.8h15.4A1 1 0 0 0 20.4 17L19 15.4Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Glass cards -->
+      <section class="hero-cards">
+        <article class="glass card-weather">
+          <div class="weather-left">
+            <div class="kicker">Mostly Sunny</div>
+            <div class="temp"><span id="temp">20</span><span class="deg">°</span></div>
+          </div>
+
+          <div class="weather-right">
+            <div class="sun">
+              <div class="sun-core"></div>
+              <div class="cloud"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="glass card-stats">
+          <div class="stat-row">
+            <div class="stat-label">완주코스</div>
+            <div class="stat-value"><span id="courseNow">1</span>/<span id="courseAll">10</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="stat-row">
+            <div class="stat-label">이동거리</div>
+            <div class="stat-value"><span id="distance">15</span><span class="unit">km</span></div>
+          </div>
+        </article>
+      </section>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <!-- Guide -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">제주도 자전거 여행정보 가이드</h2>
+          <button class="text-btn" type="button">전체보기</button>
+        </div>
+
+        <div class="guide-grid">
+          <a class="img-card" href="javascript:void(0)" aria-label="감귤 밭">
+            <img src="./images/메인2.png" alt="감귤 밭" />
+            <div class="img-grad"></div>
+            <div class="img-tag">감귤길</div>
+          </a>
+
+          <a class="img-card" href="javascript:void(0)" aria-label="야자수 하늘">
+            <img src="./images/메인3.png" alt="야자수 하늘" />
+            <div class="img-grad"></div>
+            <div class="img-tag">바람길</div>
+          </a>
+
+          <a class="img-card" href="javascript:void(0)" aria-label="바다 코스">
+            <img src="./images/메인3.5.png" alt="바다 코스" />
+            <div class="img-grad"></div>
+            <div class="img-tag">해안길</div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Stories -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">추천 코스 이야기</h2>
+          <button class="text-btn" type="button">더보기</button>
+        </div>
+
+        <div class="story-list">
+          <article class="story-card">
+            <img src="./images/메인4.png" alt="첫번째 코스 이야기" />
+            <div class="story-overlay"></div>
+            <div class="story-text">
+              <div class="pill">패키지</div>
+              <h3>제주도 자전거 여행 패키지<br/>첫번째 코스 이야기</h3>
+            </div>
+            <button class="story-cta" type="button">바로 보기</button>
+          </article>
+
+          <article class="story-card">
+            <img src="./images/메인5.png" alt="두번째 코스 이야기" />
+            <div class="story-overlay"></div>
+            <div class="story-text">
+              <div class="pill">추천</div>
+              <h3>바다를 따라 달리는<br/>해안 라이딩 코스</h3>
+            </div>
+            <button class="story-cta" type="button">바로 보기</button>
+          </article>
+
+          <article class="story-card">
+            <img src="./images/메인6.png" alt="세번째 코스 이야기" />
+            <div class="story-overlay"></div>
+            <div class="story-text">
+              <div class="pill">오늘의</div>
+              <h3>노을빛과 함께하는<br/>선셋 라이딩</h3>
+            </div>
+            <button class="story-cta" type="button">바로 보기</button>
+          </article>
+        </div>
+      </section>
+
+      <div class="spacer"></div>
+    </main>
+
+    <!-- Bottom Tab -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab active" data-tab="home" type="button" aria-label="홈">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab" data-tab="course" type="button" aria-label="코스">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+        </svg>
+        <span>코스</span>
+      </button>
+
+      <button class="tab" data-tab="camping" type="button" aria-label="캠핑">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 2 21h20L12 3Zm0 4.1L18.6 19H5.4L12 7.1Zm-3.2 9.4h6.4L12 11l-3.2 5.5Z"/>
+        </svg>
+        <span>캠핑</span>
+      </button>
+
+      <button class="tab" data-tab="my" type="button" aria-label="마이">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 3-9 7h18c0-4-4-7-9-7Z"/>
+        </svg>
+        <span>마이</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/main.js"></script>
+</body>
+</html>

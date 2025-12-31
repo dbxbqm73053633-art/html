@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeju Bike Onboarding</title>
+
+  <!-- 스타일 시트 연결 -->
+  <link rel="stylesheet" href="./css/onboarding.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="frame">
+      <div class="slide-container">
+        <!-- Slide 1 -->
+        <section class="slide active" aria-label="색다르게 경험하는 제주도 여행">
+          <div class="image-box">
+            <!-- 실제 이미지 경로로 수정해서 사용 -->
+            <img src="./images/Frame 1.png" alt="해안도로를 자전거로 달리는 제주도 풍경" />
+          </div>
+          <div class="content">
+            <h2>색다르게 경험하는 제주도 여행</h2>
+            <p>
+              자전거를 타고 제주 곳곳을 천천히 둘러보세요.
+              나에게 맞는 코스를 추천받고, 검증된 10개의 메인 코스를 안전하게 즐길 수 있습니다.
+            </p>
+          </div>
+        </section>
+
+        <!-- Slide 2 -->
+        <section class="slide" aria-label="함께 즐겨보는 자전거 여행">
+          <div class="image-box">
+            <img src="./images/Frame 2.png" alt="함께 자전거를 타는 사람들" />
+          </div>
+          <div class="content">
+            <h2>함께 즐겨보는 자전거 여행</h2>
+            <p>
+              지역마다 숨은 포인트와 미션을 따라가다 보면,
+              친구·가족과 함께 더 생생한 라이딩 추억을 만들 수 있습니다.
+            </p>
+          </div>
+        </section>
+
+        <!-- Slide 3 -->
+        <section class="slide" aria-label="다양한 사람들의 여행 이야기">
+          <div class="image-box">
+            <img src="./images/Frame 3.png" alt="돌하르방 앞에서 이야기를 나누는 사람들" />
+          </div>
+          <div class="content">
+            <h2>다양한 사람들의 여행 이야기</h2>
+            <p>
+              커뮤니티에서 다른 라이더들의 코스 후기와 여행 팁을 만나고,
+              나만의 제주 라이딩 이야기도 함께 나눠보세요.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <footer class="bottom-nav">
+        <div class="progress" aria-label="온보딩 진행도">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <button class="primary-btn" type="button">다음</button>
+        <button class="skip-btn" type="button"><span>건너뛰기</span></button>
+      </footer>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- 자바스크립트 연결 -->
+  <script src="./js/onboarding.js"></script>
+</body>
+</html>

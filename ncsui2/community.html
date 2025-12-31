@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>제주 환상 자전거길 - 커뮤니티</title>
+  <link rel="stylesheet" href="./css/community.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- AppBar -->
+    <header class="appbar">
+      <div class="appbar-inner">
+        <div class="appbar-title">커뮤니티</div>
+
+        <button class="avatar-btn" type="button" aria-label="프로필">
+          <!-- 프로필 아바타: JS가 자동 주입 -->
+          <img data-avatar="0" alt="내 프로필" />
+        </button>
+      </div>
+    </header>
+
+    <!-- Share CTA -->
+    <section class="share-cta">
+      <div class="share-copy">
+        <div class="share-title">지금의 순간을 공유해 보세요</div>
+        <div class="share-sub">여정의 사진과 기록을 올려 함께 나눠요.</div>
+      </div>
+      <button class="btn-primary" type="button" id="btnCreate">만들기</button>
+    </section>
+
+    <!-- Stories -->
+    <section class="stories">
+      <div class="stories-row" id="storiesRow">
+        <button class="story" type="button" aria-label="스토리 1" data-story="1">
+          <img class="story-img" src="./images/커뮤1.png" alt="스토리 1" />
+          <span class="story-avatar"><img data-avatar="1" alt="프로필" /></span>
+          <span class="story-grad"></span>
+          <span class="story-name" data-story-name="1">-</span>
+        </button>
+
+        <button class="story" type="button" aria-label="스토리 2" data-story="2">
+          <img class="story-img" src="./images/커뮤2.png" alt="스토리 2" />
+          <span class="story-avatar"><img data-avatar="2" alt="프로필" /></span>
+          <span class="story-grad"></span>
+          <span class="story-name" data-story-name="2">-</span>
+        </button>
+
+        <button class="story" type="button" aria-label="스토리 3" data-story="3">
+          <img class="story-img" src="./images/커뮤3.png" alt="스토리 3" />
+          <span class="story-avatar"><img data-avatar="3" alt="프로필" /></span>
+          <span class="story-grad"></span>
+          <span class="story-name" data-story-name="3">-</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Feed -->
+    <main class="feed">
+      <h2 class="section-title">지금의 순간을 공유해 보세요</h2>
+
+      <!-- Post 1 -->
+      <article class="post" data-post="1">
+        <div class="post-head">
+          <div class="user">
+            <img class="user-avatar" data-avatar="4" alt="작성자" />
+            <div class="user-meta">
+              <div class="user-topline">
+                <span class="user-name" data-field="name">-</span>
+                <span class="pill" data-field="level">Lv -</span>
+              </div>
+              <div class="user-time" data-field="time">-</div>
+            </div>
+          </div>
+          <button class="icon-ghost" type="button" aria-label="더보기"><span class="dots"></span></button>
+        </div>
+
+        <div class="post-media">
+  <img data-field="media" src="" alt="커뮤니티 이미지" />
+</div>
+
+        <div class="post-actions">
+          <button class="act like" type="button" data-act="like" aria-label="좋아요">
+            ❤ <span class="count" data-count="like">70</span>
+          </button>
+          <button class="act" type="button" data-act="comment" aria-label="댓글">
+            💬 <span class="count" data-count="comment">90</span>
+          </button>
+          <div class="act view" aria-label="조회수">
+            👁 <span class="count" data-count="view">40</span>
+          </div>
+          <button class="btn-accent" type="button">View Active</button>
+        </div>
+      </article>
+
+      <!-- Post 2 -->
+      <article class="post" data-post="2">
+        <div class="post-head">
+          <div class="user">
+            <img class="user-avatar" data-avatar="5" alt="작성자" />
+            <div class="user-meta">
+              <div class="user-topline">
+                <span class="user-name" data-field="name">-</span>
+                <span class="pill" data-field="level">Lv -</span>
+              </div>
+              <div class="user-time" data-field="time">-</div>
+            </div>
+          </div>
+          <button class="icon-ghost" type="button" aria-label="더보기"><span class="dots"></span></button>
+        </div>
+
+        <div class="post-media">
+  <img data-field="media" src="./images/커뮤5.png" alt="커뮤니티 이미지" />
+</div>
+
+        <div class="post-actions">
+          <button class="act like" type="button" data-act="like" aria-label="좋아요">
+            ❤ <span class="count" data-count="like">50</span>
+          </button>
+          <button class="act" type="button" data-act="comment" aria-label="댓글">
+            💬 <span class="count" data-count="comment">40</span>
+          </button>
+          <div class="act view" aria-label="조회수">
+            👁 <span class="count" data-count="view">30</span>
+          </div>
+          <button class="btn-accent" type="button">View Active</button>
+        </div>
+      </article>
+
+      <!-- Post 3 -->
+      <article class="post" data-post="3">
+        <div class="post-head">
+          <div class="user">
+            <img class="user-avatar" data-avatar="1" alt="작성자" />
+            <div class="user-meta">
+              <div class="user-topline">
+                <span class="user-name" data-field="name">-</span>
+                <span class="pill" data-field="level">Lv -</span>
+              </div>
+              <div class="user-time" data-field="time">-</div>
+            </div>
+          </div>
+          <button class="icon-ghost" type="button" aria-label="더보기"><span class="dots"></span></button>
+        </div>
+
+        <div class="post-media">
+  <img data-field="media" src="./images/커뮤6.png" alt="커뮤니티 이미지" />
+</div>
+
+        <div class="post-actions">
+          <button class="act like" type="button" data-act="like" aria-label="좋아요">
+            ❤ <span class="count" data-count="like">20</span>
+          </button>
+          <button class="act" type="button" data-act="comment" aria-label="댓글">
+            💬 <span class="count" data-count="comment">70</span>
+          </button>
+          <div class="act view" aria-label="조회수">
+            👁 <span class="count" data-count="view">60</span>
+          </div>
+          <button class="btn-accent" type="button">View Active</button>
+        </div>
+      </article>
+
+      <!-- Post 4 -->
+      <article class="post" data-post="4">
+        <div class="post-head">
+          <div class="user">
+            <img class="user-avatar" data-avatar="2" alt="작성자" />
+            <div class="user-meta">
+              <div class="user-topline">
+                <span class="user-name" data-field="name">-</span>
+                <span class="pill" data-field="level">Lv -</span>
+              </div>
+              <div class="user-time" data-field="time">-</div>
+            </div>
+          </div>
+          <button class="icon-ghost" type="button" aria-label="더보기"><span class="dots"></span></button>
+        </div>
+
+        <div class="post-media">
+  <img data-field="media" src="./images/커뮤7.png" alt="커뮤니티 이미지" />
+</div>
+
+        <div class="post-actions">
+          <button class="act like" type="button" data-act="like" aria-label="좋아요">
+            ❤ <span class="count" data-count="like">50</span>
+          </button>
+          <button class="act" type="button" data-act="comment" aria-label="댓글">
+            💬 <span class="count" data-count="comment">65</span>
+          </button>
+          <div class="act view" aria-label="조회수">
+            👁 <span class="count" data-count="view">49</span>
+          </div>
+          <button class="btn-accent" type="button">View Active</button>
+        </div>
+      </article>
+
+      <div class="spacer"></div>
+    </main>
+
+    <!-- Bottom Tab -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" data-tab="home" type="button" aria-label="홈">
+        <span class="tab-ico">🏠</span><span>홈</span>
+      </button>
+      <button class="tab active" data-tab="community" type="button" aria-label="커뮤니티">
+        <span class="tab-ico">📰</span><span>커뮤니티</span>
+      </button>
+      <button class="tab" data-tab="course" type="button" aria-label="코스">
+        <span class="tab-ico">🚲</span><span>코스</span>
+      </button>
+      <button class="tab" data-tab="rank" type="button" aria-label="랭킹">
+        <span class="tab-ico">👑</span><span>랭킹</span>
+      </button>
+      <button class="tab" data-tab="my" type="button" aria-label="마이">
+        <span class="tab-ico">👤</span><span>마이</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/community.js"></script>
+</body>
+</html>
