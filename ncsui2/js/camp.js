@@ -313,8 +313,8 @@ if (campingTab) {
 }
 
 if (myTab) {
-  myTab.addEventListener("click", () => {
-    alert("마이 페이지는 추후 추가 예정입니다.");
+  myTab.addEventListener('click', () => {
+    window.location.href = 'my.html';
   });
 }
 

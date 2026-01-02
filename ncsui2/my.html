@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>제주 환상 자전거길 - 마이</title>
+  <link rel="stylesheet" href="./css/my.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 상단 마이 헤더 -->
+    <header class="my-hero">
+      <div class="my-hero-top">
+        <div class="profile-main">
+          <div class="avatar">
+            <span>WB</span>
+          </div>
+          <div class="profile-text">
+            <p class="hero-eyebrow">JEJU RIDE PROFILE</p>
+            <h1 class="hero-title">워런 라이더</h1>
+            <div class="profile-meta-row">
+              <span class="level-pill">LV. 7 라이딩 마스터</span>
+              <span class="meta-chip">올해 목표 1,200km</span>
+            </div>
+          </div>
+        </div>
+        <button class="edit-btn" type="button">
+          ✏️ 프로필 편집
+        </button>
+      </div>
+
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">누적 거리</span>
+          <span class="stat-value" id="statTotalDistance">0km</span>
+          <span class="stat-sub" id="statTotalRides">0회 라이딩</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">완주 코스</span>
+          <span class="stat-value" id="statCompletedCourses">0코스</span>
+          <span class="stat-sub" id="statThisMonth">이번 달 0코스</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">캠핑 밤</span>
+          <span class="stat-value" id="statCampingNights">0박</span>
+          <span class="stat-sub" id="statFavoriteArea">즐겨 찾는 지역 -</span>
+        </div>
+      </section>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="content">
+      <!-- 이번 주 목표 -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">이번 주 라이딩 목표</h2>
+          <span class="section-sub" id="weeklyProgressLabel">0% 달성</span>
+        </div>
+
+        <article class="card">
+          <div class="card-row">
+            <div>
+              <p class="card-title">주간 거리 목표</p>
+              <p class="card-desc">
+                이번 주 설정한 목표 거리를 채워 보세요.
+              </p>
+            </div>
+            <span class="badge-soft" id="weeklyTargetLabel">주간 0km</span>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-track">
+              <div class="progress-bar" id="weeklyProgressBar"></div>
+            </div>
+            <div class="progress-meta">
+              <span id="weeklyDistanceText">0 / 0km</span>
+              <span>일주 코스 기준</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- 나의 라이딩 / 캠핑 요약 -->
+      <section class="section">
+        <h2 class="section-title">나의 라이딩 & 캠핑 요약</h2>
+
+        <div class="summary-cards">
+          <article class="mini-card">
+            <p class="mini-label">가장 많이 달린 지역</p>
+            <p class="mini-main" id="favRideArea">-</p>
+            <p class="mini-sub" id="favRideAreaDetail">라이딩 기록 없음</p>
+          </article>
+
+          <article class="mini-card">
+            <p class="mini-label">최근 완주 코스</p>
+            <p class="mini-main" id="recentCourse">-</p>
+            <p class="mini-sub" id="recentCourseDetail">아직 완주 기록이 없습니다.</p>
+          </article>
+
+          <article class="mini-card">
+            <p class="mini-label">선호 캠핑 타입</p>
+            <p class="mini-main" id="favCampType">-</p>
+            <p class="mini-sub" id="favCampTypeDetail">캠핑 기록 없음</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- 즐겨찾기 요약 -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">즐겨찾기 요약</h2>
+          <span class="section-sub" id="favoriteSummaryLabel">0개 저장됨</span>
+        </div>
+
+        <div class="fav-pills" id="favoritePills">
+          <!-- JS로 채움 -->
+        </div>
+
+        <div class="link-row">
+          <button class="link-btn" type="button" id="goCourseFromMy">
+            🔍 코스 즐겨찾기 보러가기
+          </button>
+          <button class="link-btn" type="button" id="goCampingFromMy">
+            ⛺ 캠핑 즐겨찾기 보러가기
+          </button>
+        </div>
+      </section>
+
+      <div class="spacer"></div>
+    </main>
+
+    <!-- 하단 탭바 -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" data-tab="home" type="button" aria-label="홈">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab" data-tab="course" type="button" aria-label="코스">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+        </svg>
+        <span>코스</span>
+      </button>
+
+      <button class="tab" data-tab="camping" type="button" aria-label="캠핑">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 2 21h20L12 3Zm0 4.1L18.6 19H5.4L12 7.1Zm-3.2 9.4h6.4L12 11l-3.2 5.5Z"/>
+        </svg>
+        <span>캠핑</span>
+      </button>
+
+      <button class="tab active" data-tab="my" type="button" aria-label="마이">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 3-9 7h18c0-4-4-7-9-7Z"/>
+        </svg>
+        <span>마이</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/my.js"></script>
+</body>
+</html>

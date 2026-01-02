@@ -304,11 +304,9 @@ if (campingTab) {
   });
 }
 
-// 마이 버튼 클릭 → 나중에 my.html 만들면 거기로 이동
 if (myTab) {
   myTab.addEventListener('click', () => {
-    // window.location.href = 'my.html';
-    alert('마이 페이지는 나중에 만들 수 있어.');
+    window.location.href = 'my.html';
   });
 }
 
