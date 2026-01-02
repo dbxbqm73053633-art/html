@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>제주 환상 자전거길 - 코스 (네이버 지도)</title>
+  <title>제주 환상 자전거길 코스 - 네이버 지도 연동</title>
 
-  <!-- ✅ 네이버 지도 JS API (발급받은 Client ID 그대로 사용) -->
+  <!-- ✅ 네이버 지도 JS API (도메인은 https://dbxbqm73053633-art.github.io 로 등록) -->
   <script
     type="text/javascript"
     src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9b97656fc9c3545b5bc488be86d6e900&submodules=geocoder">
@@ -13,34 +13,22 @@
 
   <style>
     :root{
-      --bg: #f6f7fb;
+      --bg: #f5f5f9;
       --text: #0f172a;
       --muted: #6b7280;
-      --card: rgba(255,255,255,.94);
-      --stroke: rgba(15,23,42,.06);
-      --shadow: 0 18px 44px rgba(15,23,42,.12);
-      --shadow-soft: 0 12px 28px rgba(15,23,42,.10);
-
+      --card: #ffffff;
+      --stroke: rgba(15,23,42,.08);
       --accent: #d6b25e;
-      --accent2: #f2d27a;
-      --accent-green: #16a34a;
-
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 18px;
-      --radius-sm: 14px;
-
+      --accent-soft: #fef3c7;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    *{ box-sizing:border-box; margin:0; padding:0; }
-    html,body{ height:100%; }
-
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;}
     body{
       background: var(--bg);
+      font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
     }
 
     .app{
@@ -48,27 +36,27 @@
       margin: 0 auto;
       min-height: 100vh;
       background: var(--bg);
-      padding-bottom: calc(84px + var(--safe-bottom));
+      padding-bottom: calc(80px + var(--safe-bottom));
     }
 
-    /* ───────── 상단 코스 헤더 ───────── */
-    .course-hero{
-      padding: 18px 16px 16px;
-      background: radial-gradient(circle at 0% 0%, #eef2ff 0%, #ffffff 30%, #fef3c7 100%);
-      border-bottom-left-radius: var(--radius-xl);
-      border-bottom-right-radius: var(--radius-xl);
-      box-shadow: 0 18px 40px rgba(148,163,184,.35);
+    /* 상단 헤더 */
+    .header{
+      padding: 18px 16px 14px;
+      background: radial-gradient(circle at top left, #eef2ff 0%, #ffffff 40%, #fef3c7 100%);
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+      box-shadow: 0 18px 40px rgba(148,163,184,.38);
     }
 
-    .course-hero-top{
+    .header-top{
       display:flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 16px;
+      align-items:flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
     }
 
-    .hero-eyebrow{
+    .eyebrow{
       font-size: 11px;
       letter-spacing: .18em;
       text-transform: uppercase;
@@ -76,549 +64,330 @@
       font-weight: 800;
     }
 
-    .hero-title{
+    .title{
       margin-top: 4px;
       font-size: 20px;
       font-weight: 900;
-      letter-spacing: -0.02em;
-      color: #0f172a;
+      letter-spacing:-0.02em;
     }
 
-    .hero-sub{
+    .subtitle{
       margin-top: 4px;
       font-size: 12px;
       color: var(--muted);
-      font-weight: 600;
+      font-weight: 500;
     }
 
-    .hero-badge{
-      padding: 10px 12px;
-      border-radius: 16px;
-      background: rgba(15,23,42,.96);
+    .badge-box{
+      padding: 8px 10px;
+      border-radius: 14px;
+      background:#0f172a;
       color:#f9fafb;
-      display:flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      min-width: 98px;
+      min-width:96px;
+      text-align:right;
     }
 
     .badge-label{
       font-size: 11px;
-      opacity: .85;
-      font-weight: 700;
+      opacity:.8;
     }
+
     .badge-value{
       font-size: 16px;
-      font-weight: 900;
-    }
-
-    /* ───────── 요약 카드 ───────── */
-    .course-summary{
-      margin-top: 6px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(148,163,184,.28);
-      box-shadow: var(--shadow-soft);
-      padding: 12px 14px 10px;
-    }
-
-    .summary-item{
-      margin-bottom: 8px;
-    }
-    .summary-label{
-      font-size: 11px;
-      color: #6b7280;
-      font-weight: 700;
-    }
-    .summary-main{
-      display:block;
-      margin-top: 2px;
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-    }
-    .summary-sub{
-      margin-top: 2px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .summary-metrics{
-      margin-top: 8px;
-      display:flex;
-      gap: 12px;
-    }
-    .metric{
-      flex:1;
-      padding: 8px 10px;
-      border-radius: 14px;
-      background: rgba(249,250,251,.9);
-      border: 1px solid rgba(209,213,219,.8);
-    }
-    .metric-label{
-      font-size: 11px;
-      color: #6b7280;
-    }
-    .metric-value{
-      margin-top: 2px;
-      font-size: 13px;
       font-weight: 800;
     }
 
-    /* ───────── 공통 섹션 ───────── */
-    .content{
-      padding: 18px 16px 0;
+    .summary{
+      margin-top:8px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background:rgba(255,255,255,.96);
+      border:1px solid rgba(148,163,184,.3);
     }
 
-    .section{
-      margin-bottom: 18px;
+    .summary-main{
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+    .summary-sub{
+      font-size: 12px;
+      color:var(--muted);
+      margin-bottom: 8px;
     }
 
-    .section-title{
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
+    .summary-metrics{
+      display:flex;
+      gap: 10px;
+      font-size: 11px;
     }
 
+    .summary-metrics div{
+      flex:1;
+      background:#f9fafb;
+      border-radius: 12px;
+      padding: 6px 8px;
+      border:1px solid rgba(209,213,219,.9);
+    }
+
+    .summary-label{color:#6b7280;}
+    .summary-value{font-weight:700;margin-top:2px;font-size:12px;}
+
+    /* 공통 섹션 */
+    .content{padding:16px;}
+    .section{margin-bottom:16px;}
     .section-head{
       display:flex;
       justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 10px;
+      align-items:center;
+      margin-bottom:8px;
     }
+    .section-title{font-size:14px;font-weight:800;}
+    .section-count{font-size:11px;color:var(--muted);}
 
-    .section-count{
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    /* ───────── 검색 · 필터 ───────── */
-    .search-row{
-      margin-bottom: 10px;
-    }
+    /* 검색/필터 */
     .search-box{
       display:flex;
       align-items:center;
-      gap: 8px;
-      padding: 10px 12px;
+      gap:8px;
+      padding: 8px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.98);
-      border: 1px solid rgba(148,163,184,.4);
-      box-shadow: 0 10px 24px rgba(15,23,42,.10);
-    }
-    .search-icon{
-      font-size: 15px;
+      background:#ffffff;
+      border:1px solid rgba(148,163,184,.5);
+      box-shadow:0 8px 20px rgba(15,23,42,.12);
+      margin-bottom:8px;
     }
     .search-box input{
       border:none;
       outline:none;
-      background: transparent;
-      font-size: 13px;
-      width: 100%;
-      color: var(--text);
+      flex:1;
+      font-size:13px;
+      background:transparent;
     }
-    .search-box input::placeholder{
-      color: #9ca3af;
-    }
+    .search-box input::placeholder{color:#9ca3af;}
 
     .filter-row{
       display:flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-wrap:wrap;
+      gap:6px;
     }
 
     .chip{
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,.6);
-      padding: 6px 10px;
-      background: rgba(255,255,255,.95);
-      font-size: 11px;
-      font-weight: 800;
-      color: #4b5563;
+      font-size:11px;
+      border-radius:999px;
+      padding:6px 9px;
+      border:1px solid rgba(148,163,184,.7);
+      background:#ffffff;
+      color:#4b5563;
       cursor:pointer;
     }
     .chip-active{
-      border-color: rgba(22,163,74,.8);
-      background: linear-gradient(135deg, rgba(187,247,208,1), rgba(74,222,128,.95));
-      color: #064e3b;
+      border-color:#16a34a;
+      background:#dcfce7;
+      color:#065f46;
+      font-weight:700;
     }
 
-    /* ───────── 추천 코스 카드 ───────── */
-    .featured-card{
-      margin-top: 10px;
-      background: var(--card);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow);
-      padding: 14px 14px 12px;
+    /* 지도 */
+    .map-card{
+      background:var(--card);
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      box-shadow:0 16px 36px rgba(15,23,42,.18);
+      overflow:hidden;
     }
 
-    .featured-topline{
+    #naverMap{
+      width:100%;
+      height:260px;
+    }
+
+    .map-footer{
       display:flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
-
-    .pill{
-      display:inline-flex;
+      justify-content:space-between;
       align-items:center;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
+      padding:6px 10px 8px;
+      background:rgba(249,250,251,.96);
+      border-top:1px solid rgba(209,213,219,.9);
+      font-size:10px;
+      color:#6b7280;
     }
 
-    .pill-type{
-      background: rgba(59,130,246,.10);
-      color: #1d4ed8;
-      border: 1px solid rgba(59,130,246,.25);
-    }
-    .pill-diff{
-      background: rgba(22,163,74,.06);
-      color: #15803d;
-      border: 1px solid rgba(22,163,74,.25);
-    }
-
-    .featured-name{
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      margin-bottom: 4px;
-    }
-    .featured-desc{
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .featured-meta{
+    .legend{
       display:flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .meta-block{
-      flex:1;
-      padding: 8px 10px;
-      border-radius: 14px;
-      background: rgba(249,250,251,.98);
-      border: 1px solid rgba(209,213,219,.9);
-    }
-    .meta-label{
-      font-size: 11px;
-      color: #6b7280;
-    }
-    .meta-value{
-      display:block;
-      margin-top: 2px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .featured-cta{
-      margin-top: 10px;
-      width: 100%;
-      border:none;
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-size: 13px;
-      font-weight: 900;
-      cursor:pointer;
-      color: #111827;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      box-shadow: 0 14px 26px rgba(214,178,94,.28);
-    }
-
-    /* ───────── 네이버 지도 섹션 ───────── */
-    .map-wrapper{
-      margin-top: 8px;
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      background: #e5e7eb;
-      border: 1px solid var(--stroke);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .map-canvas{
-      width: 100%;
-      height: 260px;
-    }
-
-    .map-legend{
-      display:flex;
-      justify-content: space-between;
+      gap:6px;
       align-items:center;
-      gap: 8px;
-      padding: 6px 10px 8px;
-      font-size: 10px;
-      color:#4b5563;
-      background: rgba(255,255,255,.9);
-      border-top: 1px solid rgba(148,163,184,.3);
-    }
-
-    .legend-group{
-      display:flex;
-      gap: 8px;
     }
 
     .legend-item{
       display:flex;
       align-items:center;
-      gap: 4px;
+      gap:3px;
     }
 
     .legend-dot{
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      display:inline-block;
+      width:7px;height:7px;border-radius:999px;display:inline-block;
+    }
+    .lg-easy{background:#4ade80;}
+    .lg-normal{background:#facc15;}
+    .lg-hard{background:#fb7185;}
+
+    .map-error{
+      color:#b91c1c;
+      font-size:11px;
+      padding:4px 8px 8px;
     }
 
-    .legend-easy{
-      background: rgba(187,247,208,1);
-    }
-    .legend-normal{
-      background: rgba(254,240,138,1);
-    }
-    .legend-hard{
-      background: rgba(254,202,202,1);
-    }
-
-    .map-helper{
-      font-size: 10px;
-      color: #9ca3af;
-    }
-
-    /* ───────── 코스 리스트 카드 ───────── */
-    .course-list{
-      display:flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
-    }
+    /* 코스 리스트 */
+    .course-list{display:flex;flex-direction:column;gap:10px;}
 
     .course-card{
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--stroke);
-      box-shadow: 0 14px 30px rgba(15,23,42,.12);
-      padding: 12px;
       display:flex;
-      gap: 10px;
-      cursor: pointer;
+      gap:10px;
+      padding:10px;
+      border-radius:14px;
+      background:#ffffff;
+      border:1px solid rgba(148,163,184,.35);
+      box-shadow:0 12px 28px rgba(15,23,42,.14);
+      cursor:pointer;
     }
 
-    .course-main{
-      flex:1;
-      display:flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .course-main{flex:1;}
+    .course-name{font-size:14px;font-weight:800;margin-bottom:2px;}
+    .course-area{font-size:11px;color:var(--muted);}
 
-    .course-name{
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-    }
-
-    .course-area{
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .course-tags{
-      margin-top: 4px;
-      display:flex;
-      flex-wrap:wrap;
-      gap: 4px;
-    }
+    .course-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
     .tag{
-      font-size: 10px;
-      padding: 3px 6px;
-      border-radius: 999px;
-      background: rgba(243,244,246,1);
+      font-size:10px;
+      padding:3px 6px;
+      border-radius:999px;
+      background:#f3f4f6;
       color:#4b5563;
     }
+    .tag-diff-easy{background:#dcfce7;color:#166534;}
+    .tag-diff-normal{background:#fef9c3;color:#854d0e;}
+    .tag-diff-hard{background:#fee2e2;color:#b91c1c;}
 
-    .diff-easy{
-      background: rgba(187,247,208,1);
-      color:#166534;
-    }
-    .diff-normal{
-      background: rgba(254,240,138,1);
-      color:#854d0e;
-    }
-    .diff-hard{
-      background: rgba(254,202,202,1);
-      color:#b91c1c;
-    }
-
-    .course-meta-row{
-      margin-top: 6px;
+    .course-meta{
       display:flex;
-      gap: 10px;
-      font-size: 11px;
+      gap:8px;
+      font-size:11px;
+      margin-top:6px;
       color:#374151;
-    }
-    .course-meta-row span{
-      display:flex;
-      align-items:center;
-      gap: 3px;
     }
 
     .course-side{
       display:flex;
-      flex-direction: column;
-      align-items: flex-end;
-      justify-content: space-between;
-      min-width: 72px;
+      flex-direction:column;
+      align-items:flex-end;
+      justify-content:space-between;
+      min-width:70px;
     }
 
     .level-pill{
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      background: rgba(15,23,42,.06);
-      color:#111827;
+      font-size:10px;
+      padding:4px 7px;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#1d4ed8;
+      font-weight:700;
     }
+
+    .badge-small{font-size:10px;color:#16a34a;font-weight:700;}
 
     .favorite-btn{
       border:none;
-      background: transparent;
+      background:transparent;
+      font-size:18px;
       cursor:pointer;
-      font-size: 18px;
     }
-    .favorite-btn.on{
-      color: #f97316;
-    }
+    .favorite-btn.on{color:#f97316;}
 
-    .badge-small{
-      font-size: 10px;
-      color: #16a34a;
-      font-weight: 800;
-    }
+    .empty{font-size:12px;color:var(--muted);padding:14px 4px;}
 
-    .empty{
-      padding: 18px 10px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    /* ───────── 하단 탭바 ───────── */
+    /* 하단 탭바 (간단 버전) */
     .tabbar{
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 0;
-      width: 100%;
-      max-width: 430px;
-      height: calc(72px + var(--safe-bottom));
-      padding: 10px 14px calc(10px + var(--safe-bottom));
-      background: rgba(255,255,255,.92);
-      border-top: 1px solid rgba(15,23,42,.08);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:0;
+      width:100%;
+      max-width:430px;
+      height:calc(70px + var(--safe-bottom));
+      padding:8px 12px calc(8px + var(--safe-bottom));
+      background:rgba(255,255,255,.96);
+      border-top:1px solid rgba(148,163,184,.2);
       display:flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 8px;
+      justify-content:space-between;
+      align-items:flex-end;
+      backdrop-filter: blur(12px);
     }
 
     .tab{
       flex:1;
       border:none;
-      background: transparent;
+      background:transparent;
       display:flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      color: #9ca3af;
-      font-weight: 800;
-      font-size: 11px;
-      padding: 8px 0;
-      border-radius: 14px;
+      flex-direction:column;
+      align-items:center;
+      gap:4px;
+      font-size:11px;
+      color:#9ca3af;
+      cursor:pointer;
+      padding:6px 0;
+      border-radius:999px;
+      font-weight:700;
     }
 
-    .tab-ico{
-      width: 22px;
-      height: 22px;
-      fill: currentColor;
-    }
-
-    .tab.active{
-      color: var(--accent);
-      background: linear-gradient(180deg, rgba(214,178,94,.14), rgba(214,178,94,.06));
-    }
-
-    .spacer{ height: 10px; }
+    .tab svg{width:20px;height:20px;fill:currentColor;}
+    .tab.active{color:var(--accent);background:var(--accent-soft);}
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- 상단 코스 헤더 -->
-    <header class="course-hero">
-      <div class="course-hero-top">
+    <!-- 상단 헤더 -->
+    <header class="header">
+      <div class="header-top">
         <div>
-          <p class="hero-eyebrow">JEJU CYCLING ROUTES</p>
-          <h1 class="hero-title">제주 환상 자전거길 코스</h1>
-          <p class="hero-sub">해안, 오름, 카페거리를 잇는 프리미엄 라이딩 셀렉션</p>
+          <p class="eyebrow">JEJU CYCLING ROUTES</p>
+          <h1 class="title">제주 환상 자전거길 코스</h1>
+          <p class="subtitle">해안·오름·카페 거리를 잇는 대표 라이딩 코스 모음</p>
         </div>
-        <div class="hero-badge">
-          <span class="badge-label">완주 현황</span>
-          <span class="badge-value">
-            <span id="completeCount">0</span>/<span id="totalCount">0</span>
-          </span>
+        <div class="badge-box">
+          <div class="badge-label">완주 현황</div>
+          <div class="badge-value"><span id="completeCount">0</span>/<span id="totalCount">0</span></div>
         </div>
       </div>
-
-      <section class="course-summary">
-        <div class="summary-item">
-          <span class="summary-label">오늘의 추천 코스</span>
-          <span class="summary-main" id="todayCourseName">애월 해안 라이딩</span>
-          <span class="summary-sub" id="todayCourseInfo">
-            22km · 약 1시간 40분 · 해안 플랫 코스
-          </span>
-        </div>
+      <div class="summary">
+        <div class="summary-main" id="todayCourseName">오늘의 추천: 애월 해안 라이딩</div>
+        <div class="summary-sub" id="todayCourseInfo">22km · 약 1시간 40분 · 해안 플랫 코스</div>
         <div class="summary-metrics">
-          <div class="metric">
-            <span class="metric-label">평균 거리</span>
-            <span class="metric-value" id="avgDistance">0km</span>
+          <div>
+            <div class="summary-label">평균 거리</div>
+            <div class="summary-value" id="avgDistance">0km</div>
           </div>
-          <div class="metric">
-            <span class="metric-label">평균 소요시간</span>
-            <span class="metric-value" id="avgTime">-</span>
+          <div>
+            <div class="summary-label">평균 소요시간</div>
+            <div class="summary-value" id="avgTime">-</div>
           </div>
-          <div class="metric">
-            <span class="metric-label">누적 거리</span>
-            <span class="metric-value" id="totalDistance">0km</span>
+          <div>
+            <div class="summary-label">누적 거리</div>
+            <div class="summary-value" id="totalDistance">0km</div>
           </div>
         </div>
-      </section>
+      </div>
     </header>
 
-    <!-- 메인 컨텐츠 -->
     <main class="content">
-      <!-- 검색 · 필터 -->
+      <!-- 검색/필터 -->
       <section class="section">
         <div class="section-head">
           <h2 class="section-title">코스 탐색</h2>
         </div>
-
-        <div class="search-row">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input
-              type="search"
-              id="courseSearch"
-              placeholder="코스명, 지역, 키워드로 검색해 보세요"
-            />
-          </div>
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="search" id="courseSearch" placeholder="코스명, 지역, 키워드 검색" />
         </div>
-
         <div class="filter-row">
           <button class="chip chip-active" data-filter="all">전체</button>
           <button class="chip" data-filter="easy">입문자</button>
@@ -629,53 +398,22 @@
         </div>
       </section>
 
-      <!-- 추천 코스 강조 카드 -->
-      <section class="section">
-        <h2 class="section-title">오늘의 추천 코스</h2>
-        <article class="featured-card" id="featuredCard">
-          <div class="featured-main">
-            <div class="featured-topline">
-              <span class="pill pill-type" id="featuredTag">해안 코스</span>
-              <span class="pill pill-diff" id="featuredDiff">난이도 · 중급</span>
-            </div>
-            <h3 class="featured-name" id="featuredName">애월 해안 라이딩 코스</h3>
-            <p class="featured-desc" id="featuredDesc">
-              한쪽은 푸른 바다, 한쪽은 카페 거리. 바람을 맞으며 달리는 해안 대표 코스입니다.
-            </p>
-          </div>
-          <div class="featured-meta">
-            <div class="meta-block">
-              <span class="meta-label">거리</span>
-              <span class="meta-value" id="featuredDistance">22km</span>
-            </div>
-            <div class="meta-block">
-              <span class="meta-label">예상 시간</span>
-              <span class="meta-value" id="featuredTime">1h 40m</span>
-            </div>
-            <div class="meta-block">
-              <span class="meta-label">상승 고도</span>
-              <span class="meta-value" id="featuredElevation">210m</span>
-            </div>
-          </div>
-          <button class="featured-cta" type="button">네이버 지도에서 코스 보기</button>
-        </article>
-      </section>
-
-      <!-- 네이버 지도 섹션 -->
+      <!-- 지도 -->
       <section class="section">
         <div class="section-head">
-          <h2 class="section-title">지도에서 코스 보기</h2>
+          <h2 class="section-title">네이버 지도에서 코스 보기</h2>
         </div>
-        <div class="map-wrapper">
-          <div id="naverMap" class="map-canvas" role="img" aria-label="제주 자전거 코스 지도"></div>
-          <div class="map-legend">
-            <div class="legend-group">
-              <span class="legend-item"><span class="legend-dot legend-easy"></span>입문</span>
-              <span class="legend-item"><span class="legend-dot legend-normal"></span>중급</span>
-              <span class="legend-item"><span class="legend-dot legend-hard"></span>상급</span>
+        <div class="map-card">
+          <div id="naverMap" aria-label="제주 자전거 코스 지도"></div>
+          <div class="map-footer">
+            <div class="legend">
+              <span class="legend-item"><span class="legend-dot lg-easy"></span>입문</span>
+              <span class="legend-item"><span class="legend-dot lg-normal"></span>중급</span>
+              <span class="legend-item"><span class="legend-dot lg-hard"></span>상급</span>
             </div>
-            <span class="map-helper">코스를 선택하면 지도와 라인이 이동합니다.</span>
+            <span>코스를 클릭하면 지도와 라인이 이동합니다.</span>
           </div>
+          <p id="mapError" class="map-error"></p>
         </div>
       </section>
 
@@ -683,53 +421,32 @@
       <section class="section">
         <div class="section-head">
           <h2 class="section-title">전체 코스</h2>
-          <span class="section-count">
-            <span id="listCount">0</span>개 코스
-          </span>
+          <span class="section-count"><span id="listCount">0</span>개 코스</span>
         </div>
-
-        <div id="courseList" class="course-list">
-          <!-- JS로 코스 카드 렌더링 -->
-        </div>
+        <div id="courseList" class="course-list"></div>
       </section>
-
-      <div class="spacer"></div>
     </main>
 
-    <!-- 하단 탭바 (main.html 스타일) -->
+    <!-- 하단 탭바: main.html 스타일로 연결 -->
     <nav class="tabbar" aria-label="하단 탭">
-      <button class="tab" data-tab="home" type="button" aria-label="홈">
-        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
-          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
-        </svg>
+      <button class="tab" data-tab="home" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/></svg>
         <span>홈</span>
       </button>
-
-      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티">
-        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
-          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
-        </svg>
+      <button class="tab" data-tab="community" type="button">
+        <svg viewBox="0 0 24 24"><path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/></svg>
         <span>커뮤니티</span>
       </button>
-
-      <button class="tab active" data-tab="course" type="button" aria-label="코스">
-        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
-          <path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
-        </svg>
+      <button class="tab active" data-tab="course" type="button">
+        <svg viewBox="0 0 24 24"><path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg>
         <span>코스</span>
       </button>
-
-      <button class="tab" data-tab="camping" type="button" aria-label="캠핑">
-        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
-          <path d="M12 3 2 21h20L12 3Zm0 4.1L18.6 19H5.4L12 7.1Zm-3.2 9.4h6.4L12 11l-3.2 5.5Z"/>
-        </svg>
+      <button class="tab" data-tab="camping" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Zm0 4.1L18.6 19H5.4L12 7.1Zm-3.2 9.4h6.4L12 11l-3.2 5.5Z"/></svg>
         <span>캠핑</span>
       </button>
-
-      <button class="tab" data-tab="my" type="button" aria-label="마이">
-        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
-          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 3-9 7h18c0-4-4-7-9-7Z"/>
-        </svg>
+      <button class="tab" data-tab="my" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 3-9 7h18c0-4-4-7-9-7Z"/></svg>
         <span>마이</span>
       </button>
     </nav>
@@ -739,14 +456,10 @@
     const $  = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
 
-    // 네이버 지도 관련 전역
     let map = null;
     let activePolyline = null;
     let activeCourseMarker = null;
 
-    const mapWrapperEl = () => document.querySelector('.map-wrapper');
-
-    // 코스 데이터 (start/end 좌표 포함)
     const courses = [
       {
         id: 1,
@@ -756,12 +469,12 @@
         time: "1h 40m",
         elevation: 210,
         levelLabel: "중급 라이더",
-        diff: "normal",    // easy | normal | hard
-        tags: ["해안", "카페거리", "노을맛집"],
+        diff: "normal", // easy|normal|hard
         type: "sea",
+        tags: ["해안", "카페거리", "노을맛집"],
         completed: true,
-        start: { lat: 33.4619, lng: 126.3105 },   // 애월 근방
-        end:   { lat: 33.4636, lng: 126.3930 }    // 한담 해변 방향
+        start: { lat: 33.4619, lng: 126.3105 },
+        end:   { lat: 33.4636, lng: 126.3930 }
       },
       {
         id: 2,
@@ -772,10 +485,10 @@
         elevation: 260,
         levelLabel: "입문·중급",
         diff: "easy",
-        tags: ["해안", "플랫", "감성카페"],
         type: "sea",
+        tags: ["해안", "플랫", "감성카페"],
         completed: false,
-        start: { lat: 33.5227, lng: 126.8608 },   // 세화 근방
+        start: { lat: 33.5227, lng: 126.8608 },
         end:   { lat: 33.5235, lng: 126.8995 }
       },
       {
@@ -787,11 +500,11 @@
         elevation: 780,
         levelLabel: "상급 라이더",
         diff: "hard",
-        tags: ["오름", "업힐", "체력강화"],
         type: "oreum",
+        tags: ["오름", "업힐", "체력강화"],
         completed: false,
-        start: { lat: 33.3395, lng: 126.4630 },   // 1100도로 입구 근방
-        end:   { lat: 33.3586, lng: 126.4553 }    // 1100고지 전망대 근방
+        start: { lat: 33.3395, lng: 126.4630 },
+        end:   { lat: 33.3586, lng: 126.4553 }
       },
       {
         id: 4,
@@ -802,11 +515,11 @@
         elevation: 130,
         levelLabel: "입문자",
         diff: "easy",
-        tags: ["해안", "가족", "플랫"],
         type: "sea",
+        tags: ["해안", "가족", "플랫"],
         completed: true,
-        start: { lat: 33.3939, lng: 126.2395 },   // 협재 해수욕장 근방
-        end:   { lat: 33.4144, lng: 126.2610 }    // 한림 방향
+        start: { lat: 33.3939, lng: 126.2395 },
+        end:   { lat: 33.4144, lng: 126.2610 }
       },
       {
         id: 5,
@@ -817,180 +530,165 @@
         elevation: 340,
         levelLabel: "중급 라이더",
         diff: "normal",
-        tags: ["해안", "오름", "일출"],
         type: "sea",
+        tags: ["해안", "오름", "일출"],
         completed: false,
-        start: { lat: 33.3220, lng: 126.8387 },   // 표선 근방
-        end:   { lat: 33.4590, lng: 126.9410 }    // 성산일출봉 근방
+        start: { lat: 33.3220, lng: 126.8387 },
+        end:   { lat: 33.4590, lng: 126.9410 }
       }
     ];
 
-    // DOM 요소
-    const listEl          = $("#courseList");
-    const countEl         = $("#listCount");
-    const completeCountEl = $("#completeCount");
-    const totalCountEl    = $("#totalCount");
-    const avgDistanceEl   = $("#avgDistance");
-    const avgTimeEl       = $("#avgTime");
-    const totalDistEl     = $("#totalDistance");
+    const listEl          = document.getElementById('courseList');
+    const countEl         = document.getElementById('listCount');
+    const completeCountEl = document.getElementById('completeCount');
+    const totalCountEl    = document.getElementById('totalCount');
+    const avgDistanceEl   = document.getElementById('avgDistance');
+    const avgTimeEl       = document.getElementById('avgTime');
+    const totalDistEl     = document.getElementById('totalDistance');
+    const mapErrorEl      = document.getElementById('mapError');
 
-    const searchInput = $("#courseSearch");
-    const filterChips = $$(".chip");
+    const searchInput = document.getElementById('courseSearch');
+    const filterChips = $$('.chip');
 
-    let currentFilter = "all";
+    let currentFilter = 'all';
     let favorites = new Set();
 
-    function diffLabel(diff) {
-      if (diff === "easy")   return "입문";
-      if (diff === "normal") return "중급";
-      if (diff === "hard")   return "상급";
-      return "";
+    function diffLabel(diff){
+      if(diff === 'easy') return '입문';
+      if(diff === 'normal') return '중급';
+      if(diff === 'hard') return '상급';
+      return '';
     }
 
-    function strokeColorByDiff(diff) {
-      if (diff === "easy")   return "#22c55e"; // green
-      if (diff === "normal") return "#facc15"; // yellow
-      if (diff === "hard")   return "#f97373"; // red-ish
-      return "#0ea5e9";
+    function strokeColorByDiff(diff){
+      if(diff === 'easy') return '#4ade80';
+      if(diff === 'normal') return '#facc15';
+      if(diff === 'hard') return '#fb7185';
+      return '#0ea5e9';
     }
 
-    function updateSummary() {
+    function updateSummary(){
       const total = courses.length;
       const completed = courses.filter(c => c.completed).length;
-      const sumDist = courses.reduce((sum, c) => sum + c.distance, 0);
+      const sumDist = courses.reduce((acc,c) => acc + c.distance, 0);
       const avgDist = total ? Math.round((sumDist / total) * 10) / 10 : 0;
 
       totalCountEl.textContent    = total;
       completeCountEl.textContent = completed;
-      totalDistEl.textContent     = `${sumDist}km`;
-      avgDistanceEl.textContent   = `${avgDist}km`;
-      avgTimeEl.textContent       = "2h 10m"; // 간단히 고정값
+      totalDistEl.textContent     = sumDist + 'km';
+      avgDistanceEl.textContent   = avgDist + 'km';
+      avgTimeEl.textContent       = '2h 10m';
 
       const today = courses[0];
-      if (!today) return;
-
-      $("#todayCourseName").textContent  = today.name;
-      $("#todayCourseInfo").textContent  = `${today.distance}km · 약 ${today.time}`;
-
-      $("#featuredName").textContent     = today.name;
-      $("#featuredDesc").textContent     = "해안 카페와 바다를 동시에 즐길 수 있는 라이딩 루트입니다.";
-      $("#featuredTag").textContent      = today.type === "sea" ? "해안 코스" : "오름 코스";
-      $("#featuredDiff").textContent     = `난이도 · ${diffLabel(today.diff)}`;
-      $("#featuredDistance").textContent = `${today.distance}km`;
-      $("#featuredTime").textContent     = today.time;
-      $("#featuredElevation").textContent= `${today.elevation}m`;
+      if(today){
+        document.getElementById('todayCourseName').textContent = '오늘의 추천: ' + today.name;
+        document.getElementById('todayCourseInfo').textContent = `${today.distance}km · 약 ${today.time}`;
+      }
     }
 
-    function getFilteredCourses() {
-      const keyword = (searchInput.value || "").trim().toLowerCase();
+    function getFilteredCourses(){
+      const keyword = (searchInput.value || '').trim().toLowerCase();
 
-      return courses.filter((c) => {
-        if (currentFilter === "easy"   && c.diff !== "easy")   return false;
-        if (currentFilter === "normal" && c.diff !== "normal") return false;
-        if (currentFilter === "hard"   && c.diff !== "hard")   return false;
-        if (currentFilter === "sea"    && c.type !== "sea")    return false;
-        if (currentFilter === "oreum"  && c.type !== "oreum")  return false;
+      return courses.filter(c => {
+        if(currentFilter === 'easy'   && c.diff !== 'easy')   return false;
+        if(currentFilter === 'normal' && c.diff !== 'normal') return false;
+        if(currentFilter === 'hard'   && c.diff !== 'hard')   return false;
+        if(currentFilter === 'sea'    && c.type !== 'sea')    return false;
+        if(currentFilter === 'oreum'  && c.type !== 'oreum')  return false;
 
-        if (keyword) {
-          const haystack = [
-            c.name,
-            c.area,
-            ...(c.tags || [])
-          ].join(" ").toLowerCase();
-
-          if (!haystack.includes(keyword)) return false;
+        if(keyword){
+          const haystack = [c.name, c.area, ...(c.tags || [])].join(' ').toLowerCase();
+          if(!haystack.includes(keyword)) return false;
         }
 
         return true;
       });
     }
 
-    function focusCourse(course, options = { fromList: false }) {
-      if (!map || !course || !course.start) return;
+    function focusCourse(course, options={ fromList:false }){
+      if(!map || !course || !course.start) return;
 
-      const startLatLng = new naver.maps.LatLng(course.start.lat, course.start.lng);
-      const endLatLng   = course.end ? new naver.maps.LatLng(course.end.lat, course.end.lng) : null;
+      const start = new naver.maps.LatLng(course.start.lat, course.start.lng);
+      const end   = course.end ? new naver.maps.LatLng(course.end.lat, course.end.lng) : null;
 
-      // 기존 라인 제거
-      if (activePolyline) {
+      if(activePolyline){
         activePolyline.setMap(null);
         activePolyline = null;
       }
 
-      // 새 폴리라인
-      if (endLatLng) {
+      if(end){
         activePolyline = new naver.maps.Polyline({
           map,
-          path: [startLatLng, endLatLng],
+          path: [start, end],
           strokeWeight: 5,
           strokeColor: strokeColorByDiff(course.diff),
           strokeOpacity: 0.9,
-          strokeLineCap: "round",
-          strokeLineJoin: "round"
+          strokeLineCap: 'round',
+          strokeLineJoin: 'round'
         });
 
-        const bounds = new naver.maps.LatLngBounds(startLatLng, endLatLng);
+        const bounds = new naver.maps.LatLngBounds(start, end);
         map.fitBounds(bounds, { top: 20, right: 20, bottom: 20, left: 20 });
-      } else {
-        map.setCenter(startLatLng);
+      }else{
+        map.setCenter(start);
         map.setZoom(12);
       }
 
-      if (course._marker) {
+      if(course._marker){
         activeCourseMarker = course._marker;
       }
 
-      if (options.fromList && mapWrapperEl()) {
-        mapWrapperEl().scrollIntoView({ behavior: "smooth", block: "center" });
+      if(options.fromList){
+        document.querySelector('.map-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
 
-    function renderList() {
+    function renderList(){
       const data = getFilteredCourses();
-      listEl.innerHTML = "";
+      listEl.innerHTML = '';
       countEl.textContent = data.length;
 
-      if (data.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "조건에 맞는 코스가 없습니다.";
+      if(data.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = '조건에 맞는 코스가 없습니다.';
         listEl.appendChild(empty);
         return;
       }
 
-      data.forEach((c) => {
-        const card = document.createElement("article");
-        card.className = "course-card";
+      data.forEach(c => {
+        const card = document.createElement('article');
+        card.className = 'course-card';
 
-        const main = document.createElement("div");
-        main.className = "course-main";
+        const main = document.createElement('div');
+        main.className = 'course-main';
 
-        const name = document.createElement("div");
-        name.className = "course-name";
+        const name = document.createElement('div');
+        name.className = 'course-name';
         name.textContent = c.name;
 
-        const area = document.createElement("div");
-        area.className = "course-area";
+        const area = document.createElement('div');
+        area.className = 'course-area';
         area.textContent = c.area;
 
-        const tagsWrap = document.createElement("div");
-        tagsWrap.className = "course-tags";
+        const tagsWrap = document.createElement('div');
+        tagsWrap.className = 'course-tags';
 
-        const diffTag = document.createElement("span");
-        diffTag.className = `tag diff-${c.diff}`;
-        diffTag.textContent = `난이도 ${diffLabel(c.diff)}`;
+        const diffTag = document.createElement('span');
+        diffTag.className = 'tag tag-diff-' + c.diff;
+        diffTag.textContent = '난이도 ' + diffLabel(c.diff);
         tagsWrap.appendChild(diffTag);
 
-        (c.tags || []).forEach((t) => {
-          const tagEl = document.createElement("span");
-          tagEl.className = "tag";
+        (c.tags || []).forEach(t => {
+          const tagEl = document.createElement('span');
+          tagEl.className = 'tag';
           tagEl.textContent = t;
           tagsWrap.appendChild(tagEl);
         });
 
-        const metaRow = document.createElement("div");
-        metaRow.className = "course-meta-row";
-        metaRow.innerHTML = `
+        const meta = document.createElement('div');
+        meta.className = 'course-meta';
+        meta.innerHTML = `
           <span>📏 ${c.distance}km</span>
           <span>⏱ ${c.time}</span>
           <span>⛰ ${c.elevation}m</span>
@@ -999,93 +697,78 @@
         main.appendChild(name);
         main.appendChild(area);
         main.appendChild(tagsWrap);
-        main.appendChild(metaRow);
+        main.appendChild(meta);
 
-        const side = document.createElement("div");
-        side.className = "course-side";
+        const side = document.createElement('div');
+        side.className = 'course-side';
 
-        const level = document.createElement("div");
-        level.className = "level-pill";
+        const level = document.createElement('div');
+        level.className = 'level-pill';
         level.textContent = c.levelLabel;
 
-        const fav = document.createElement("button");
-        fav.className = "favorite-btn";
-        if (favorites.has(c.id)) fav.classList.add("on");
-        fav.innerHTML = favorites.has(c.id) ? "★" : "☆";
-        fav.addEventListener("click", (e) => {
+        const favBtn = document.createElement('button');
+        favBtn.className = 'favorite-btn';
+        if(favorites.has(c.id)) favBtn.classList.add('on');
+        favBtn.innerHTML = favorites.has(c.id) ? '★' : '☆';
+        favBtn.addEventListener('click', e => {
           e.stopPropagation();
-          if (favorites.has(c.id)) {
-            favorites.delete(c.id);
-          } else {
-            favorites.add(c.id);
-          }
+          if(favorites.has(c.id)) favorites.delete(c.id); else favorites.add(c.id);
           renderList();
         });
 
-        const badge = document.createElement("div");
-        badge.className = "badge-small";
-        badge.textContent = c.completed ? "완주" : "예정";
+        const badge = document.createElement('div');
+        badge.className = 'badge-small';
+        badge.textContent = c.completed ? '완주' : '예정';
 
         side.appendChild(level);
-        side.appendChild(fav);
+        side.appendChild(favBtn);
         side.appendChild(badge);
 
         card.appendChild(main);
         card.appendChild(side);
 
-        card.addEventListener("click", () => {
-          focusCourse(c, { fromList: true });
+        card.addEventListener('click', () => {
+          focusCourse(c, { fromList:true });
         });
 
         listEl.appendChild(card);
       });
     }
 
-    filterChips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        filterChips.forEach((c) => c.classList.remove("chip-active"));
-        chip.classList.add("chip-active");
-        currentFilter = chip.getAttribute("data-filter") || "all";
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterChips.forEach(c => c.classList.remove('chip-active'));
+        chip.classList.add('chip-active');
+        currentFilter = chip.getAttribute('data-filter') || 'all';
         renderList();
       });
     });
 
-    searchInput.addEventListener("input", () => {
+    searchInput.addEventListener('input', () => {
       renderList();
     });
 
-    const featuredCard = $("#featuredCard");
-    const featuredBtn  = featuredCard.querySelector(".featured-cta");
-    featuredBtn.addEventListener("click", () => {
-      const todayCourse = courses[0];
-      if (!todayCourse) return;
-      focusCourse(todayCourse, { fromList: true });
-      const query = encodeURIComponent(todayCourse.name + " 제주 자전거 코스");
-      window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
-    });
-
-    function initMap() {
-      if (!window.naver || !naver.maps) {
-        console.warn("Naver Maps 스크립트 로드 실패");
+    function initMap(){
+      if(!window.naver || !naver.maps){
+        if(mapErrorEl){
+          mapErrorEl.textContent = '네이버 지도 스크립트를 불러오지 못했습니다. JavaScript SDK 도메인 설정(https://dbxbqm73053633-art.github.io)을 확인해 주세요.';
+        }
         return;
       }
 
-      const jejuCenter = new naver.maps.LatLng(33.38, 126.55);
-
+      const center = new naver.maps.LatLng(33.38, 126.55);
       map = new naver.maps.Map('naverMap', {
-        center: jejuCenter,
+        center,
         zoom: 9,
         minZoom: 8,
         maxZoom: 14,
         zoomControl: true,
-        zoomControlOptions: {
-          position: naver.maps.Position.TOP_RIGHT
-        },
+        zoomControlOptions: { position: naver.maps.Position.TOP_RIGHT },
         mapTypeControl: false
       });
 
-      courses.forEach((course) => {
-        if (!course.start) return;
+      courses.forEach(course => {
+        if(!course.start) return;
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(course.start.lat, course.start.lng),
           map,
@@ -1094,49 +777,36 @@
         course._marker = marker;
 
         naver.maps.Event.addListener(marker, 'click', () => {
-          focusCourse(course, { fromList: false });
+          focusCourse(course, { fromList:false });
         });
       });
 
-      if (courses[0]) {
+      if(courses[0]){
         focusCourse(courses[0]);
       }
     }
 
+    // 탭바 이동 (파일 이름은 기존 구조에 맞게 수정)
     const homeTab      = document.querySelector('[data-tab="home"]');
     const communityTab = document.querySelector('[data-tab="community"]');
     const courseTab    = document.querySelector('[data-tab="course"]');
     const campingTab   = document.querySelector('[data-tab="camping"]');
     const myTab        = document.querySelector('[data-tab="my"]');
 
-    if (homeTab) {
-      homeTab.addEventListener('click', () => {
-        window.location.href = 'main.html';
-      });
+    if(homeTab){
+      homeTab.addEventListener('click', () => { window.location.href = 'main.html'; });
     }
-
-    if (communityTab) {
-      communityTab.addEventListener('click', () => {
-        window.location.href = 'community.html';
-      });
+    if(communityTab){
+      communityTab.addEventListener('click', () => { window.location.href = 'community.html'; });
     }
-
-    if (courseTab) {
-      courseTab.addEventListener('click', () => {
-        window.location.href = 'cos.html';
-      });
+    if(courseTab){
+      courseTab.addEventListener('click', () => { window.location.href = 'cos.html'; });
     }
-
-    if (campingTab) {
-      campingTab.addEventListener('click', () => {
-        window.location.href = 'camp.html';
-      });
+    if(campingTab){
+      campingTab.addEventListener('click', () => { window.location.href = 'camp.html'; });
     }
-
-    if (myTab) {
-      myTab.addEventListener('click', () => {
-        window.location.href = 'my.html';
-      });
+    if(myTab){
+      myTab.addEventListener('click', () => { window.location.href = 'my.html'; });
     }
 
     // 초기 실행
