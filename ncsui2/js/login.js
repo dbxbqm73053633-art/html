@@ -15,3 +15,28 @@ document.querySelector(".login-btn").addEventListener("click", () => {
   window.location.href = "main.html";
   
 });
+const idInput = document.querySelectorAll(".field")[0];   // 아이디/이메일
+const pwInput = document.querySelectorAll(".field")[1];   // 비밀번호
+const loginBtn = document.querySelector(".login-btn");
+
+// 입력될 때마다 체크
+function validate() {
+  const id = idInput.value.trim();
+  const pw = pwInput.value.trim();
+
+  if (id !== "" && pw !== "") {
+    loginBtn.disabled = false;
+    loginBtn.style.opacity = "1";
+    loginBtn.style.cursor = "pointer";
+  } else {
+    loginBtn.disabled = true;
+    loginBtn.style.opacity = "0.5";
+    loginBtn.style.cursor = "not-allowed";
+  }
+}
+
+idInput.addEventListener("input", validate);
+pwInput.addEventListener("input", validate);
+
+// 처음 로드시에도 실행
+validate();

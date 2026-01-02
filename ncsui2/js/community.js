@@ -76,10 +76,10 @@ const storyNames = [
 ];
 
 const posts = [
-  { name:"김도윤", level: 18, time:"7min",  media:"./커뮤4.png", like: 132, comment: 14, view: 860 },
-  { name:"박서연", level: 41, time:"32min", media:"./커뮤5.png", like: 84,  comment: 9,  view: 512 },
-  { name:"이준호", level: 27, time:"1h",   media:"./커뮤6.png", like: 219, comment: 22, view: 1204 },
-  { name:"최유나", level: 9,  time:"어제",  media:"./커뮤7.png", like: 56,  comment: 3,  view: 340 },
+  { name:"김도윤", level: 18, time:"7min",  media:"./images/커뮤4.png", like: 132, comment: 14, view: 860 },
+  { name:"박서연", level: 41, time:"32min", media:"./images/커뮤5.png", like: 84,  comment: 9,  view: 512 },
+  { name:"이준호", level: 27, time:"1h",   media:"./images/커뮤6.png", like: 219, comment: 22, view: 1204 },
+  { name:"최유나", level: 9,  time:"어제",  media:"./images/커뮤7.png", like: 56,  comment: 3,  view: 340 },
 ];
 
 // 스토리 이름 적용
@@ -122,4 +122,7 @@ document.querySelectorAll('.story').forEach((s, idx) => {
   s.addEventListener('click', () => {
     alert(`스토리 ${idx + 1} 보기 (연결 예정)`);
   });
+});
+document.querySelector('[data-tab="home"]').addEventListener("click", () => {
+  window.location.href = "main.html";   // 홈 파일명에 맞게 수정
 });

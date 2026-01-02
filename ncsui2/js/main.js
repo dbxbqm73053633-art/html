@@ -21,3 +21,24 @@ document.querySelectorAll(".story-cta").forEach((btn) => {
     alert("코스 상세 화면으로 연결 예정!");
   });
 });
+// 3초 로딩 후 이동 함수
+function showLoadingAndGo(targetUrl) {
+  const overlay = document.getElementById("loading-overlay");
+  if (!overlay) return;
+
+  overlay.classList.remove("hidden");
+
+  setTimeout(() => {
+    window.location.href = targetUrl;
+  }, 3000); // 3초 후 이동
+}
+
+// 페이지가 로드되면 자동으로 3초 후 이동시키고 싶을 때 사용 예시
+// (원하는 파일명으로 target.html만 바꿔서 쓰면 됨)
+document.addEventListener("DOMContentLoaded", () => {
+  // 주석 풀면 자동으로 로딩 → 이동 동작
+  // showLoadingAndGo("target.html");
+})
+document.querySelector('[data-tab="community"]').addEventListener("click", () => {
+  window.location.href = "community.html";   // 파일명에 맞게 수정
+});
