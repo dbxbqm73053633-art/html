@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>카카오맵 기본 예제</title>
+  <style>
+    /* 화면 전체에 꽉 차는 지도 */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- 지도가 표시될 영역 -->
+  <div id="map"></div>
+
+  <!-- 카카오맵 JS 라이브러리 로드 (본인 JS 키로 교체) -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900"></script>
+
+  <script>
+    // 1. 지도를 표시할 div와 옵션 설정
+    const mapContainer = document.getElementById('map'); // 지도를 표시할 div
+    const mapOption = {
+      // 위도, 경도 (예: 서울 시청 근처)
+      center: new kakao.maps.LatLng(37.5665, 126.9780),
+      level: 3 // 숫자가 작을수록 더 확대됨(1~14 정도)
+    };
+
+    // 2. 지도 생성
+    const map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 3. 마커 생성 (지도 중심에)
+    const markerPosition = new kakao.maps.LatLng(37.5665, 126.9780);
+    const marker = new kakao.maps.Marker({
+      position: markerPosition
+    });
+
+    // 4. 마커를 지도에 표시
+    marker.setMap(map);
+
+    // 5. 간단한 인포윈도우(말풍선) 추가
+    const iwContent = '<div style="padding:5px 10px;">여기가 중심입니다</div>';
+    const infowindow = new kakao.maps.InfoWindow({
+      content: iwContent
+    });
+    infowindow.open(map, marker);
+  </script>
+</body>
+</html>
