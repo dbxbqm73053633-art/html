@@ -3,60 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>배열data</title>
+    <title>객체data</title>
 </head>
 <body>
-    <!-- 배열 -->
+    <!-- 하나의 객체에 여러개를 저장할때 -->
+     <!-- 1인 -> 홍길동 이름,성별,주소,전화번호.. -->
+
      <script>
-        // 바나나,포도,딸기,수박
-        let fruit = "바나나"
-        let fruit2 = "포도"
-        let fruit3 = "딸기"
-        let fruit4 = "수박"
+        // 객체를 선언하는 방법
+        // {}
+        // 객체에 접근해서 data를 출력하는 방법
+        // 객체변수명. indexkey값
+        // 객체는 indexkey값을 개발자가 만든다
+        // 서버에 있는 api data하고 통신할때는 json 파일 형식으로 주고 받는다
 
-        document.write("과일의 종류는" + fruit + "," + fruit2 + "," + fruit3 + "," + fruit4 + "입니다<br>")
-        document.write(`과일의 종류는" ${fruit},${fruit2},${fruit3},${fruit4} 입니다<br>`)
+        // 배열로 선언
+        let score = [100,90,80,70]
+        document.write(`영어점수=${score[0]}<br> 국어점수=${score[1]}<br> 수학점수=${score[2]}<br> 컴퓨터점수=${score[3]}<br>`)
 
-        // 배열로 처리
-        // 여러개의 data를 저장 배열로 선언 하여 저장
-        // 배열로 선언시 []로 선언
-        let product=['바나나','포도','딸기','수박','키위']
-        // 배열에 기억되어 있는 값을 접근해서 출력할때
-        // 배열명[key] 배열의 특정값을 출력할때
-        document.write(`첫번째 data는 ${product[0]}<br>`)
-        document.write(`두번째 data는 ${product[1]}<br>`)
-        document.write(`세번째 data는 ${product[2]}<br>`)
-        document.write(`네번째 data는 ${product[3]}<br>`)
+        // 객체로 선언
+        let jumsu = {
+            eng:100,
+            kor:90,
+            mat:80,
+            com:70,
+        }
+        document.write("<hr>")
+        
+        // 객체로 data접근 출력
+        document.write(`영어점수=${jumsu.eng}<br> 국어점수=${jumsu.kor}<br> 수학점수는=${jumsu.mat}<br> 컴퓨터점수는=${jumsu.com}<br>`)
+        
+        document.write("<hr>")
 
-        // 배열에 기억된 값 모두 출력
-        document.write(`과일종류는 ${product} 입니다<br>`)
+        // 책 목록을 출력하는 프로그램(객체) - >소년이 온다
+        let book = {
+            제목:"소년이 온다",
+            저자:"한강",
+            가격:13500,
+            출간일:"2014년 5월 19일",
+            평점:9.8,
+            preview:"본 콘텐츠는 (사)한국출판인회의에서 배포하는 ‘KoPub 글꼴’을 사용하고 있습니다 본 전자책은 구동되는 단말기나 소프트웨어, 서체 등에 따라 다르게 보일 수 있습니다.이 책 내용의 전부 또는 일부를 재사용하려면 반드시 저작권자와 창비 양측의 동의를 받아야 합니다."
+        }
+        document.write(`제목:${book.제목}<br> 가격:${book.가격}<br> 저자:${book.저자}<br> 출간일:${book.출간일}<br> 평점:${book.평점}<br> 미리보기:${book.preview}<br>`)
+     
+document.write("<hr>")
+        // 문제1]
+        // 제품이름은 마오,유형은 당절임, 성분은 망고,설탕,치자, 원산지 필리핀 배열에 기억시켜서 출력
+        let mm = ["마오","당절","망고","설탕","치자","필리핀"]
+        document.write(`제품의 이름은 ${mm[0]}, 유형은 ${mm[1]}임, 성분은 ${mm[2]},${mm[3]},${mm[4]},  원산지는 ${mm[5]} 입니다<br>`)
 
-        document.write(`오늘의 추천 과일은 ${product[3]} 입니다<br>`)
-        document.write(`올해의 제철 과일은 ${product} 입니다<br>`)
 
-        // 응응예
-        // 월,화,수,목,금,토,일
-        let week = ['월','화','수','목','금','토','일']
-        document.write(`요일은 ${week}  있습니다<br>`)
-        // 오늘은 금요일 입니다
-        document.write(`오늘은 ${week[4]}요일 입니다<br>`)
+        // 문제2]
+        // 원산지 필리핀 객체변수로 기억시켜서 출력
+        let cc = {
+            ma:"마오",
+            mg:"당절",
+            mo:"망고",
+            su:"설탕",
+            ki:"치자",
+            na:"필리핀",    
+        }
+        document.write(`제품의 이름은 ${cc.ma}, 유형은 ${cc.mg}임, 성분은 ${cc.mo},${cc.su},${cc.ki},  원산지는 ${cc.na} 입니다<br>`)
+        </script>
 
 
-        // 배열선언 방식(객체로 선언)
-        let gail = new Array('사과','배','토마토','참외')
-        document.write(`올해의 제철과일은 ${gail} 입니다<br>`)
-        // 배열에 있는 key값 출력
-        document.write(`오늘의 추천과일은 ${gail[2]} 입니다<br>`)
 
-        // 동물,data를 여러개 기억 시켜서 얼룩말,타조,강아지,참새,고양이,개미,알파카,닭
-        // 출력은
-        // 1. 동물 데이터 모두 출력
-        // 2, 동물 데이터 중에서 조류만 출력
-
-        let any = ['얼룩말','타조','강아지','참새','고양이','개미','알파카','닭']
-        document.write(`지금 보고 있는 동물은 ${any} 입니다<br>`)
-        document.write(`지금 보고 있는 조류는 ${any[1]}, ${any[3]}, ${any[7]}입니다<br>`)
-
-     </script>
+        
 </body>
 </html>
