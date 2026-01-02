@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>제주 환상 자전거길 - 캠핑</title>
+  <link rel="stylesheet" href="./css/camp.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 상단 캠핑 헤더 -->
+    <header class="camp-hero">
+      <div class="camp-hero-top">
+        <div>
+          <p class="hero-eyebrow">JEJU BIKE & CAMP</p>
+          <h1 class="hero-title">라이딩 후 하루, 캠핑</h1>
+          <p class="hero-sub">해변 · 숲속 · 글램핑까지, 자전거와 함께 쉬어가는 밤</p>
+        </div>
+        <div class="hero-badge">
+          <span class="badge-label">오늘 이용 가능</span>
+          <span class="badge-value"><span id="availableCount">0</span>곳</span>
+        </div>
+      </div>
+
+      <section class="camp-summary">
+        <div class="summary-main">
+          <div>
+            <span class="summary-label">라이더 전용 제휴 캠핑장</span>
+            <span class="summary-title">제주 일주 중 머물기 좋은 스팟</span>
+          </div>
+          <div class="summary-pills">
+            <span class="pill small">샤워실 보장</span>
+            <span class="pill small">자전거 보관</span>
+            <span class="pill small">조용한 밤</span>
+          </div>
+        </div>
+        <div class="summary-metrics">
+          <div class="metric">
+            <span class="metric-label">평균 평점</span>
+            <span class="metric-value" id="avgRating">0.0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">즐겨찾기</span>
+            <span class="metric-value" id="favCount">0곳</span>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="content">
+      <!-- 검색 · 필터 -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">캠핑 스팟 탐색</h2>
+        </div>
+
+        <div class="search-row">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              type="search"
+              id="campSearch"
+              placeholder="캠핑장 이름, 지역, 키워드 검색"
+            />
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <button class="chip chip-active" data-filter="all">전체</button>
+          <button class="chip" data-filter="sea">해변</button>
+          <button class="chip" data-filter="forest">숲속</button>
+          <button class="chip" data-filter="auto">오토캠핑</button>
+          <button class="chip" data-filter="glamping">글램핑</button>
+        </div>
+      </section>
+
+      <!-- 추천 캠핑 스팟 -->
+      <section class="section">
+        <h2 class="section-title">오늘의 추천 캠핑</h2>
+        <article class="featured-card" id="featuredCampCard">
+          <div class="featured-main">
+            <div class="featured-topline">
+              <span class="pill pill-type" id="featuredType">해변 캠핑</span>
+              <span class="pill pill-diff" id="featuredTag">라이더 전용</span>
+            </div>
+            <h3 class="featured-name" id="featuredName">협재 비치 라이더 캠프</h3>
+            <p class="featured-desc" id="featuredDesc">
+              낮에는 해안 라이딩, 밤에는 파도 소리를 들으며 쉬어갈 수 있는 해변 캠핑 스팟입니다.
+            </p>
+          </div>
+          <div class="featured-meta">
+            <div class="meta-block">
+              <span class="meta-label">위치</span>
+              <span class="meta-value" id="featuredArea">협재 · 한림</span>
+            </div>
+            <div class="meta-block">
+              <span class="meta-label">자전거 보관</span>
+              <span class="meta-value" id="featuredBike">실내 거치</span>
+            </div>
+            <div class="meta-block">
+              <span class="meta-label">평점</span>
+              <span class="meta-value" id="featuredRating">4.8</span>
+            </div>
+          </div>
+          <button class="featured-cta" type="button">캠핑 상세 보기</button>
+        </article>
+      </section>
+
+      <!-- 캠핑 리스트 -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">전체 캠핑 스팟</h2>
+          <span class="section-count"><span id="campListCount">0</span>곳</span>
+        </div>
+
+        <div id="campList" class="camp-list">
+          <!-- JS로 렌더링 -->
+        </div>
+      </section>
+
+      <div class="spacer"></div>
+    </main>
+
+    <!-- 하단 탭바 (main.html 형식과 동일) -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" data-tab="home" type="button" aria-label="홈">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab" data-tab="course" type="button" aria-label="코스">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+        </svg>
+        <span>코스</span>
+      </button>
+
+      <button class="tab active" data-tab="camping" type="button" aria-label="캠핑">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 2 21h20L12 3Zm0 4.1L18.6 19H5.4L12 7.1Zm-3.2 9.4h6.4L12 11l-3.2 5.5Z"/>
+        </svg>
+        <span>캠핑</span>
+      </button>
+
+      <button class="tab" data-tab="my" type="button" aria-label="마이">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 3-9 7h18c0-4-4-7-9-7Z"/>
+        </svg>
+        <span>마이</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/camp.js"></script>
+</body>
+</html>

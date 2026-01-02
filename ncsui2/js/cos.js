@@ -269,22 +269,49 @@ featuredBtn.addEventListener("click", () => {
 
 // ───────── 탭바 내비게이션 (홈/커뮤니티 이동) ─────────
 // main.html 과 community.html 파일명 기준으로 연결 
-document.querySelector('[data-tab="home"]').addEventListener("click", () => {
-  window.location.href = "main.html";
-});
+// 탭 버튼들 가져오기
+const homeTab      = document.querySelector('[data-tab="home"]');
+const communityTab = document.querySelector('[data-tab="community"]');
+const courseTab    = document.querySelector('[data-tab="course"]');
+const campingTab   = document.querySelector('[data-tab="camping"]');
+const myTab        = document.querySelector('[data-tab="my"]');
 
-document.querySelector('[data-tab="community"]').addEventListener("click", () => {
-  window.location.href = "community.html";
-});
+// 홈 버튼 클릭 → main.html 로 이동
+if (homeTab) {
+  homeTab.addEventListener('click', () => {
+    window.location.href = 'main.html';
+  });
+}
 
-// 코스 탭은 현재 페이지라 이동 없음
-document.querySelector('[data-tab="camping"]').addEventListener("click", () => {
-  alert("캠핑 화면은 추후 추가 예정입니다.");
-});
+// 커뮤니티 버튼 클릭 → community.html 로 이동
+if (communityTab) {
+  communityTab.addEventListener('click', () => {
+    window.location.href = 'community.html';
+  });
+}
 
-document.querySelector('[data-tab="my"]').addEventListener("click", () => {
-  alert("마이 페이지는 추후 추가 예정입니다.");
-});
+// 코스 버튼 클릭 → course.html 로 이동
+if (courseTab) {
+  courseTab.addEventListener('click', () => {
+    window.location.href = 'cos.html';
+  });
+}
+
+// 캠핑 버튼 클릭 → camping.html 로 이동
+if (campingTab) {
+  campingTab.addEventListener('click', () => {
+    window.location.href = 'camp.html';
+  });
+}
+
+// 마이 버튼 클릭 → 나중에 my.html 만들면 거기로 이동
+if (myTab) {
+  myTab.addEventListener('click', () => {
+    // window.location.href = 'my.html';
+    alert('마이 페이지는 나중에 만들 수 있어.');
+  });
+}
+
 
 // 초기 실행
 updateSummary();

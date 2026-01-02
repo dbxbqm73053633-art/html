@@ -14,13 +14,6 @@ $("#courseNow").textContent = "1";
 $("#courseAll").textContent = "10";
 $("#distance").textContent = "15";
 
-// 스토리 CTA 데모
-document.querySelectorAll(".story-cta").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    // 예: window.location.href = "course_detail.html";
-    alert("코스 상세 화면으로 연결 예정!");
-  });
-});
 // 3초 로딩 후 이동 함수
 function showLoadingAndGo(targetUrl) {
   const overlay = document.getElementById("loading-overlay");
@@ -42,3 +35,44 @@ document.addEventListener("DOMContentLoaded", () => {
 document.querySelector('[data-tab="community"]').addEventListener("click", () => {
   window.location.href = "community.html";   // 파일명에 맞게 수정
 });
+const homeTab      = document.querySelector('[data-tab="home"]');
+const communityTab = document.querySelector('[data-tab="community"]');
+const courseTab    = document.querySelector('[data-tab="course"]');
+const campingTab   = document.querySelector('[data-tab="camping"]');
+const myTab        = document.querySelector('[data-tab="my"]');
+
+// 홈 버튼 클릭 → main.html 로 이동
+if (homeTab) {
+  homeTab.addEventListener('click', () => {
+    window.location.href = 'main.html';
+  });
+}
+
+// 커뮤니티 버튼 클릭 → community.html 로 이동
+if (communityTab) {
+  communityTab.addEventListener('click', () => {
+    window.location.href = 'community.html';
+  });
+}
+
+// 코스 버튼 클릭 → course.html 로 이동
+if (courseTab) {
+  courseTab.addEventListener('click', () => {
+    window.location.href = 'cos.html';
+  });
+}
+
+// 캠핑 버튼 클릭 → camping.html 로 이동
+if (campingTab) {
+  campingTab.addEventListener('click', () => {
+    window.location.href = 'camp.html';
+  });
+}
+
+// 마이 버튼 클릭 → 나중에 my.html 만들면 거기로 이동
+if (myTab) {
+  myTab.addEventListener('click', () => {
+    // window.location.href = 'my.html';
+    alert('마이 페이지는 나중에 만들 수 있어.');
+  });
+}
