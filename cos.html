@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>제주 환상 자전거길 - 코스 (네이버 지도)</title>
 
-  <!-- Naver Maps JS API -->
-  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9b97656fc9c3545b5bc488be86d6e900&submodules=geocoder"></script>
+  <!-- ✅ 네이버 지도 JS API (발급받은 Client ID 그대로 사용) -->
+  <script
+    type="text/javascript"
+    src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=9b97656fc9c3545b5bc488be86d6e900&submodules=geocoder">
+  </script>
 
   <style>
     :root{
@@ -344,13 +347,19 @@
 
     .map-legend{
       display:flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items:center;
       gap: 8px;
       padding: 6px 10px 8px;
       font-size: 10px;
       color:#4b5563;
       background: rgba(255,255,255,.9);
       border-top: 1px solid rgba(148,163,184,.3);
+    }
+
+    .legend-group{
+      display:flex;
+      gap: 8px;
     }
 
     .legend-item{
@@ -497,7 +506,7 @@
       color: var(--muted);
     }
 
-    /* ───────── 탭바 (main.html 스타일) ───────── */
+    /* ───────── 하단 탭바 ───────── */
     .tabbar{
       position: fixed;
       left: 50%;
@@ -656,14 +665,16 @@
       <section class="section">
         <div class="section-head">
           <h2 class="section-title">지도에서 코스 보기</h2>
-          <span class="section-count map-helper">코스를 선택하면 지도와 라인이 자동으로 이동합니다.</span>
         </div>
         <div class="map-wrapper">
           <div id="naverMap" class="map-canvas" role="img" aria-label="제주 자전거 코스 지도"></div>
           <div class="map-legend">
-            <span class="legend-item"><span class="legend-dot legend-easy"></span>입문</span>
-            <span class="legend-item"><span class="legend-dot legend-normal"></span>중급</span>
-            <span class="legend-item"><span class="legend-dot legend-hard"></span>상급</span>
+            <div class="legend-group">
+              <span class="legend-item"><span class="legend-dot legend-easy"></span>입문</span>
+              <span class="legend-item"><span class="legend-dot legend-normal"></span>중급</span>
+              <span class="legend-item"><span class="legend-dot legend-hard"></span>상급</span>
+            </div>
+            <span class="map-helper">코스를 선택하면 지도와 라인이 이동합니다.</span>
           </div>
         </div>
       </section>
@@ -685,7 +696,7 @@
       <div class="spacer"></div>
     </main>
 
-    <!-- 하단 탭바 (main.html 형식) -->
+    <!-- 하단 탭바 (main.html 스타일) -->
     <nav class="tabbar" aria-label="하단 탭">
       <button class="tab" data-tab="home" type="button" aria-label="홈">
         <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
@@ -725,18 +736,17 @@
   </div>
 
   <script>
-    // 간단 셀렉터
     const $  = (sel) => document.querySelector(sel);
     const $$ = (sel) => document.querySelectorAll(sel);
 
-    // 네이버 지도 전역 변수
+    // 네이버 지도 관련 전역
     let map = null;
     let activePolyline = null;
     let activeCourseMarker = null;
 
     const mapWrapperEl = () => document.querySelector('.map-wrapper');
 
-    // 코스 데이터 (좌표 포함)
+    // 코스 데이터 (start/end 좌표 포함)
     const courses = [
       {
         id: 1,
@@ -830,7 +840,6 @@
     let currentFilter = "all";
     let favorites = new Set();
 
-    // 난이도 라벨
     function diffLabel(diff) {
       if (diff === "easy")   return "입문";
       if (diff === "normal") return "중급";
@@ -845,7 +854,6 @@
       return "#0ea5e9";
     }
 
-    // 요약 정보 업데이트
     function updateSummary() {
       const total = courses.length;
       const completed = courses.filter(c => c.completed).length;
@@ -858,10 +866,12 @@
       avgDistanceEl.textContent   = `${avgDist}km`;
       avgTimeEl.textContent       = "2h 10m"; // 간단히 고정값
 
-      // 오늘의 추천은 첫 번째 코스
       const today = courses[0];
+      if (!today) return;
+
       $("#todayCourseName").textContent  = today.name;
       $("#todayCourseInfo").textContent  = `${today.distance}km · 약 ${today.time}`;
+
       $("#featuredName").textContent     = today.name;
       $("#featuredDesc").textContent     = "해안 카페와 바다를 동시에 즐길 수 있는 라이딩 루트입니다.";
       $("#featuredTag").textContent      = today.type === "sea" ? "해안 코스" : "오름 코스";
@@ -871,19 +881,16 @@
       $("#featuredElevation").textContent= `${today.elevation}m`;
     }
 
-    // 필터 결과 가져오기
     function getFilteredCourses() {
       const keyword = (searchInput.value || "").trim().toLowerCase();
 
       return courses.filter((c) => {
-        // 난이도/타입 필터
         if (currentFilter === "easy"   && c.diff !== "easy")   return false;
         if (currentFilter === "normal" && c.diff !== "normal") return false;
         if (currentFilter === "hard"   && c.diff !== "hard")   return false;
         if (currentFilter === "sea"    && c.type !== "sea")    return false;
         if (currentFilter === "oreum"  && c.type !== "oreum")  return false;
 
-        // 검색어 필터
         if (keyword) {
           const haystack = [
             c.name,
@@ -898,7 +905,6 @@
       });
     }
 
-    // 지도에 코스 폴리라인/마커 표시
     function focusCourse(course, options = { fromList: false }) {
       if (!map || !course || !course.start) return;
 
@@ -911,7 +917,7 @@
         activePolyline = null;
       }
 
-      // 폴리라인 생성 (start ~ end 직선)
+      // 새 폴리라인
       if (endLatLng) {
         activePolyline = new naver.maps.Polyline({
           map,
@@ -930,21 +936,15 @@
         map.setZoom(12);
       }
 
-      // 마커 하이라이트 (심플하게 센터만 이동)
       if (course._marker) {
-        if (activeCourseMarker && activeCourseMarker !== course._marker) {
-          // 필요시 스타일 초기화 가능
-        }
         activeCourseMarker = course._marker;
       }
 
-      // 리스트에서 클릭한 경우 지도 섹션으로 스크롤
       if (options.fromList && mapWrapperEl()) {
         mapWrapperEl().scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
 
-    // 리스트 렌더링
     function renderList() {
       const data = getFilteredCourses();
       listEl.innerHTML = "";
@@ -1033,7 +1033,6 @@
         card.appendChild(main);
         card.appendChild(side);
 
-        // 카드 클릭 → 지도에 해당 코스 포커싱
         card.addEventListener("click", () => {
           focusCourse(c, { fromList: true });
         });
@@ -1042,7 +1041,6 @@
       });
     }
 
-    // 필터 버튼 클릭
     filterChips.forEach((chip) => {
       chip.addEventListener("click", () => {
         filterChips.forEach((c) => c.classList.remove("chip-active"));
@@ -1052,23 +1050,20 @@
       });
     });
 
-    // 검색 입력
     searchInput.addEventListener("input", () => {
       renderList();
     });
 
-    // 추천 코스 CTA
     const featuredCard = $("#featuredCard");
     const featuredBtn  = featuredCard.querySelector(".featured-cta");
     featuredBtn.addEventListener("click", () => {
       const todayCourse = courses[0];
+      if (!todayCourse) return;
       focusCourse(todayCourse, { fromList: true });
-      // 네이버 지도 앱/웹으로 바로 검색 이동 (간단 버전)
       const query = encodeURIComponent(todayCourse.name + " 제주 자전거 코스");
       window.open(`https://map.naver.com/v5/search/${query}`, "_blank");
     });
 
-    // ───────── 네이버 지도 초기화 ─────────
     function initMap() {
       if (!window.naver || !naver.maps) {
         console.warn("Naver Maps 스크립트 로드 실패");
@@ -1089,7 +1084,6 @@
         mapTypeControl: false
       });
 
-      // 각 코스 시작 지점 마커 생성
       courses.forEach((course) => {
         if (!course.start) return;
         const marker = new naver.maps.Marker({
@@ -1104,13 +1098,11 @@
         });
       });
 
-      // 기본으로 오늘의 코스 표시
       if (courses[0]) {
         focusCourse(courses[0]);
       }
     }
 
-    // ───────── 탭바 내비게이션 (홈/커뮤니티 이동) ─────────
     const homeTab      = document.querySelector('[data-tab="home"]');
     const communityTab = document.querySelector('[data-tab="community"]');
     const courseTab    = document.querySelector('[data-tab="course"]');
