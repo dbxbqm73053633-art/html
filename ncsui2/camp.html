@@ -3,126 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>제주 환상 자전거길 - 캠핑</title>
+  <title>제주 환상 자전거길 - 캠핑 지도</title>
+
+  <!-- 메인 공통 스타일 재사용 -->
+  <link rel="stylesheet" href="./css/main.css" />
+  <!-- 캠핑 지도 전용 스타일 -->
   <link rel="stylesheet" href="./css/camp.css" />
+
+  <!-- Kakao Maps JavaScript SDK (services 라이브러리 포함) -->
+  <script
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services&autoload=false">
+  </script>
 </head>
 <body>
-  <div class="app">
-    <!-- 상단 캠핑 헤더 -->
-    <header class="camp-hero">
-      <div class="camp-hero-top">
-        <div>
-          <p class="hero-eyebrow">JEJU BIKE & CAMP</p>
-          <h1 class="hero-title">라이딩 후 하루, 캠핑</h1>
-          <p class="hero-sub">해변 · 숲속 · 글램핑까지, 자전거와 함께 쉬어가는 밤</p>
-        </div>
-        <div class="hero-badge">
-          <span class="badge-label">오늘 이용 가능</span>
-          <span class="badge-value"><span id="availableCount">0</span>곳</span>
+  <div class="app app-map">
+    <!-- 상단 헤더 -->
+    <header class="map-header">
+      <div class="map-header-top">
+        <div class="map-header-label">JEJU BIKE & CAMP</div>
+        <div class="map-header-badge">
+          <span class="badge-dot"></span>
+          <span class="badge-text">실시간 위치 조회</span>
         </div>
       </div>
 
-      <section class="camp-summary">
-        <div class="summary-main">
-          <div>
-            <span class="summary-label">라이더 전용 제휴 캠핑장</span>
-            <span class="summary-title">제주 일주 중 머물기 좋은 스팟</span>
+      <div class="map-header-main">
+        <div>
+          <h1 class="map-header-title">제주 캠핑 지도</h1>
+          <p class="map-header-sub">
+            환상 자전거길 주변<br/>
+            라이더가 많이 찾는 캠핑장 5곳
+          </p>
+        </div>
+        <div class="map-header-meta">
+          <div class="meta-chip">
+            <span class="meta-label">캠핑장 수</span>
+            <span class="meta-value">5곳</span>
           </div>
-          <div class="summary-pills">
-            <span class="pill small">샤워실 보장</span>
-            <span class="pill small">자전거 보관</span>
-            <span class="pill small">조용한 밤</span>
+          <div class="meta-chip">
+            <span class="meta-label">지역</span>
+            <span class="meta-value">애월 · 한림 · 안덕 · 표선</span>
           </div>
         </div>
-        <div class="summary-metrics">
-          <div class="metric">
-            <span class="metric-label">평균 평점</span>
-            <span class="metric-value" id="avgRating">0.0</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">즐겨찾기</span>
-            <span class="metric-value" id="favCount">0곳</span>
-          </div>
-        </div>
-      </section>
+      </div>
     </header>
 
     <!-- 메인 컨텐츠 -->
-    <main class="content">
-      <!-- 검색 · 필터 -->
-      <section class="section">
-        <div class="section-head">
-          <h2 class="section-title">캠핑 스팟 탐색</h2>
-        </div>
-
-        <div class="search-row">
-          <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input
-              type="search"
-              id="campSearch"
-              placeholder="캠핑장 이름, 지역, 키워드 검색"
-            />
-          </div>
-        </div>
-
-        <div class="filter-row">
-          <button class="chip chip-active" data-filter="all">전체</button>
-          <button class="chip" data-filter="sea">해변</button>
-          <button class="chip" data-filter="forest">숲속</button>
-          <button class="chip" data-filter="auto">오토캠핑</button>
-          <button class="chip" data-filter="glamping">글램핑</button>
-        </div>
-      </section>
-
-      <!-- 추천 캠핑 스팟 -->
-      <section class="section">
-        <h2 class="section-title">오늘의 추천 캠핑</h2>
-        <article class="featured-card" id="featuredCampCard">
-          <div class="featured-main">
-            <div class="featured-topline">
-              <span class="pill pill-type" id="featuredType">해변 캠핑</span>
-              <span class="pill pill-diff" id="featuredTag">라이더 전용</span>
+    <main class="content map-content">
+      <section class="map-layout">
+        <!-- 지도 카드 -->
+        <section class="map-card">
+          <div class="map-card-head">
+            <div>
+              <h2 class="map-card-title">카카오맵 캠핑 위치</h2>
+              <p class="map-card-sub">마커를 클릭하면 상세 위치와 길찾기 링크가 나옵니다.</p>
             </div>
-            <h3 class="featured-name" id="featuredName">협재 비치 라이더 캠프</h3>
-            <p class="featured-desc" id="featuredDesc">
-              낮에는 해안 라이딩, 밤에는 파도 소리를 들으며 쉬어갈 수 있는 해변 캠핑 스팟입니다.
-            </p>
-          </div>
-          <div class="featured-meta">
-            <div class="meta-block">
-              <span class="meta-label">위치</span>
-              <span class="meta-value" id="featuredArea">협재 · 한림</span>
-            </div>
-            <div class="meta-block">
-              <span class="meta-label">자전거 보관</span>
-              <span class="meta-value" id="featuredBike">실내 거치</span>
-            </div>
-            <div class="meta-block">
-              <span class="meta-label">평점</span>
-              <span class="meta-value" id="featuredRating">4.8</span>
+            <div class="map-chip-row">
+              <span class="map-chip">해변 캠핑</span>
+              <span class="map-chip">카라반</span>
+              <span class="map-chip">글램핑</span>
             </div>
           </div>
-          <button class="featured-cta" type="button">캠핑 상세 보기</button>
-        </article>
+
+          <div id="map" aria-label="제주 캠핑장 카카오 지도"></div>
+        </section>
+
+        <!-- 캠핑 리스트 카드 -->
+        <section class="camp-panel" aria-label="캠핑장 목록">
+          <div class="camp-panel-head">
+            <h2>제주 인기 캠핑장 5선</h2>
+            <p class="camp-hint">캠핑장을 누르면 지도 중심이 이동하고 인포윈도우가 열립니다.</p>
+          </div>
+
+          <ul class="camp-list">
+            <!-- data-id는 JS에서 사용하는 키 -->
+            <li class="camp-item active" data-id="geumneung">
+              <div class="camp-item-main">
+                <div class="camp-item-title-row">
+                  <span class="camp-name">금능해수욕장 야영장</span>
+                  <span class="camp-badge camp-badge-type">해변뷰</span>
+                </div>
+                <p class="camp-addr">제주시 한림읍 금능길 119-10 근처</p>
+                <p class="camp-meta">한림 · 서쪽 해안 라이딩과 연계하기 좋은 스팟</p>
+              </div>
+            </li>
+
+            <li class="camp-item" data-id="platinum">
+              <div class="camp-item-main">
+                <div class="camp-item-title-row">
+                  <span class="camp-name">제주플래티늄카라반</span>
+                  <span class="camp-badge camp-badge-type">카라반</span>
+                </div>
+                <p class="camp-addr">제주시 애월읍 하귀미수포길 5-8 근처</p>
+                <p class="camp-meta">애월 카페 거리와 가까운 감성 카라반</p>
+              </div>
+            </li>
+
+            <li class="camp-item" data-id="stabil">
+              <div class="camp-item-main">
+                <div class="camp-item-title-row">
+                  <span class="camp-name">스타빌 캠핑장</span>
+                  <span class="camp-badge camp-badge-type">글램핑</span>
+                </div>
+                <p class="camp-addr">서귀포시 안덕면 광평로 34-154 근처</p>
+                <p class="camp-meta">한라산·서귀포 방면 라이딩 후 휴식</p>
+              </div>
+            </li>
+
+            <li class="camp-item" data-id="pyoseon">
+              <div class="camp-item-main">
+                <div class="camp-item-title-row">
+                  <span class="camp-name">표선해수욕장 야영장</span>
+                  <span class="camp-badge camp-badge-type">해변뷰</span>
+                </div>
+                <p class="camp-addr">서귀포시 표선면 표선해수욕장 일대</p>
+                <p class="camp-meta">동쪽 해안 라이딩과 연계하기 좋은 대형 야영장</p>
+              </div>
+            </li>
+
+            <li class="camp-item" data-id="dain">
+              <div class="camp-item-main">
+                <div class="camp-item-title-row">
+                  <span class="camp-name">다인리조트 카라반</span>
+                  <span class="camp-badge camp-badge-type">카라반</span>
+                </div>
+                <p class="camp-addr">제주시 애월읍 애월해안로 400-9 근처</p>
+                <p class="camp-meta">바다 뷰 애월 해안도로 구간과 바로 연결</p>
+              </div>
+            </li>
+          </ul>
+        </section>
       </section>
-
-      <!-- 캠핑 리스트 -->
-      <section class="section">
-        <div class="section-head">
-          <h2 class="section-title">전체 캠핑 스팟</h2>
-          <span class="section-count"><span id="campListCount">0</span>곳</span>
-        </div>
-
-        <div id="campList" class="camp-list">
-          <!-- JS로 렌더링 -->
-        </div>
-      </section>
-
-      <div class="spacer"></div>
     </main>
 
-    <!-- 하단 탭바 (main.html 형식과 동일) -->
+    <!-- 하단 탭바 (main.html 형식 그대로, 전부 클릭 시 이동) -->
     <nav class="tabbar" aria-label="하단 탭">
       <button class="tab" data-tab="home" type="button" aria-label="홈">
         <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
@@ -161,6 +175,7 @@
     </nav>
   </div>
 
+  <!-- 캠핑 지도 전용 JS -->
   <script src="./js/camp.js"></script>
 </body>
 </html>

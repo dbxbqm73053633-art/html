@@ -1,546 +1,312 @@
-:root{
-  --bg: #f6f7fb;
-  --text: #0f172a;
-  --muted: #6b7280;
-  --card: rgba(255,255,255,.94);
-  --stroke: rgba(15,23,42,.06);
-  --shadow: 0 18px 44px rgba(15,23,42,.12);
-  --shadow-soft: 0 12px 28px rgba(15,23,42,.10);
-
-  --accent: #d6b25e;
-  --accent2: #f2d27a;
-  --accent-green: #22c55e;
-
-  --radius-xl: 28px;
-  --radius-lg: 22px;
-  --radius-md: 18px;
-  --radius-sm: 14px;
-
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+/* 전체 레이아웃 (main.css의 .app 위에 살짝 오버레이 느낌만 추가) */
+.app-map {
+  background: radial-gradient(circle at top left, #dbeafe, #ffffff 45%, #fefce8 95%);
 }
 
-*{ box-sizing:border-box; margin:0; padding:0; }
-html,body{ height:100%; }
+/* 상단 헤더 */
 
-body{
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+.map-header {
+  padding: 18px 16px 10px;
 }
 
-.app{
-  max-width: 430px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: var(--bg);
-  padding-bottom: calc(84px + var(--safe-bottom));
-}
-
-/* ───────── 상단 캠핑 헤더 ───────── */
-.camp-hero{
-  padding: 18px 16px 16px;
-  background:
-    radial-gradient(circle at 0% 0%, #0f172a 0%, #020617 40%, #111827 100%);
-  color:#e5e7eb;
-  border-bottom-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
-  box-shadow: 0 18px 40px rgba(15,23,42,.7);
-  position:relative;
-}
-
-.camp-hero::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 10% 0%, rgba(56,189,248,.35), transparent 55%),
-    radial-gradient(circle at 100% 100%, rgba(251,191,36,.3), transparent 60%),
-    linear-gradient(180deg, rgba(15,23,42,.4), rgba(15,23,42,.95));
-  pointer-events:none;
-}
-
-.camp-hero-top{
-  position:relative;
-  display:flex;
+.map-header-top {
+  display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 16px;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
-.hero-eyebrow{
+.map-header-label {
   font-size: 11px;
-  letter-spacing: .18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #93c5fd;
-  font-weight: 800;
+  color: #64748b;
 }
 
-.hero-title{
-  margin-top: 4px;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: #f9fafb;
-}
-
-.hero-sub{
-  margin-top: 4px;
-  font-size: 12px;
-  color: #d1d5db;
-  font-weight: 500;
-}
-
-.hero-badge{
-  position:relative;
-  padding: 10px 12px;
-  border-radius: 16px;
-  background: rgba(15,23,42,.8);
-  color:#f9fafb;
-  display:flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  min-width: 104px;
-  border: 1px solid rgba(148,163,184,.6);
-}
-
-.badge-label{
-  font-size: 11px;
-  opacity: .9;
-  font-weight: 700;
-}
-.badge-value{
-  font-size: 16px;
-  font-weight: 900;
-}
-
-/* ───────── 요약 카드 ───────── */
-.camp-summary{
-  position:relative;
-  margin-top: 6px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(15,23,42,.96), rgba(15,23,42,.85));
-  border: 1px solid rgba(148,163,184,.6);
-  box-shadow: var(--shadow-soft);
-  padding: 12px 14px 10px;
-  color:#e5e7eb;
-}
-
-.summary-main{
-  display:flex;
-  justify-content: space-between;
-  align-items:flex-start;
-  gap: 12px;
-}
-
-.summary-label{
-  font-size: 11px;
-  color: #9ca3af;
-  font-weight: 700;
-}
-
-.summary-title{
-  display:block;
-  margin-top: 2px;
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.summary-pills{
-  display:flex;
-  flex-wrap:wrap;
-  gap: 4px;
-}
-
-.pill.small{
-  display:inline-flex;
-  align-items:center;
-  padding: 3px 7px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  background: rgba(15,23,42,.9);
-  border: 1px solid rgba(148,163,184,.7);
-  color:#e5e7eb;
-}
-
-.summary-metrics{
-  margin-top: 10px;
-  display:flex;
-  gap: 10px;
-}
-
-.metric{
-  flex:1;
-  padding: 8px 10px;
-  border-radius: 14px;
-  background: rgba(15,23,42,.9);
-  border: 1px solid rgba(55,65,81,.9);
-}
-
-.metric-label{
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-.metric-value{
-  margin-top: 2px;
-  font-size: 13px;
-  font-weight: 800;
-  color:#f9fafb;
-}
-
-/* ───────── 공통 섹션 ───────── */
-.content{
-  padding: 18px 16px 0;
-}
-
-.section{
-  margin-bottom: 18px;
-}
-
-.section-title{
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.section-head{
-  display:flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 10px;
-}
-
-.section-count{
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* ───────── 검색 · 필터 ───────── */
-.search-row{
-  margin-bottom: 10px;
-}
-
-.search-box{
-  display:flex;
-  align-items:center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.98);
-  border: 1px solid rgba(148,163,184,.4);
-  box-shadow: 0 10px 24px rgba(15,23,42,.10);
-}
-
-.search-icon{
-  font-size: 15px;
-}
-
-.search-box input{
-  border:none;
-  outline:none;
-  background: transparent;
-  font-size: 13px;
-  width: 100%;
-  color: var(--text);
-}
-
-.search-box input::placeholder{
-  color: #9ca3af;
-}
-
-.filter-row{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip{
-  border-radius: 999px;
-  border: 1px solid rgba(148,163,184,.6);
-  padding: 6px 10px;
-  background: rgba(255,255,255,.95);
-  font-size: 11px;
-  font-weight: 800;
-  color: #4b5563;
-  cursor:pointer;
-}
-
-.chip-active{
-  border-color: rgba(56,189,248,.9);
-  background: linear-gradient(135deg, rgba(59,130,246,.12), rgba(8,47,73,.96));
-  color: #f9fafb;
-}
-
-/* ───────── 추천 캠핑 카드 ───────── */
-.featured-card{
-  margin-top: 10px;
-  background: var(--card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--stroke);
-  box-shadow: var(--shadow);
-  padding: 14px 14px 12px;
-}
-
-.featured-topline{
-  display:flex;
+.map-header-badge {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
-}
-
-.pill{
-  display:inline-flex;
-  align-items:center;
   padding: 4px 8px;
   border-radius: 999px;
+  background: rgba(22, 163, 74, 0.1);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.2);
+}
+
+.badge-text {
   font-size: 11px;
-  font-weight: 800;
-}
-
-.pill-type{
-  background: rgba(59,130,246,.10);
-  color: #1d4ed8;
-  border: 1px solid rgba(59,130,246,.25);
-}
-
-.pill-diff{
-  background: rgba(22,163,74,.06);
   color: #15803d;
-  border: 1px solid rgba(22,163,74,.25);
 }
 
-.featured-name{
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+.map-header-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.map-header-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   margin-bottom: 4px;
 }
 
-.featured-desc{
+.map-header-sub {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.map-header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meta-chip {
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.meta-label {
+  display: block;
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.meta-value {
+  display: block;
   font-size: 12px;
-  color: var(--muted);
+  font-weight: 600;
 }
 
-.featured-meta{
-  display:flex;
-  gap: 10px;
-  margin-top: 10px;
+/* 메인 컨텐츠 */
+
+.map-content {
+  padding: 8px 14px 80px;
 }
 
-.meta-block{
-  flex:1;
-  padding: 8px 10px;
+.map-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* 지도 카드 */
+
+.map-card {
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 40%, #22c55e 100%);
+  padding: 12px 12px 10px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.4);
+  color: #e5e7eb;
+}
+
+.map-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.map-card-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.map-card-sub {
+  font-size: 11px;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+.map-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.map-chip {
+  font-size: 10px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.3);
+  background: rgba(15, 23, 42, 0.35);
+}
+
+/* 실제 지도 영역 */
+
+#map {
+  width: 100%;
+  height: 320px;
   border-radius: 14px;
-  background: rgba(249,250,251,.98);
-  border: 1px solid rgba(209,213,219,.9);
+  overflow: hidden;
+  background: #e5e7eb;
 }
 
-.meta-label{
+/* 캠핑 리스트 카드 */
+
+.camp-panel {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  padding: 12px 10px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
+}
+
+.camp-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.camp-panel-head h2 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.camp-hint {
   font-size: 11px;
   color: #6b7280;
 }
 
-.meta-value{
-  display:block;
-  margin-top: 2px;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.featured-cta{
-  margin-top: 10px;
-  width: 100%;
-  border:none;
-  border-radius: 14px;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-weight: 900;
-  cursor:pointer;
-  color: #111827;
-  background: linear-gradient(135deg, var(--accent2), var(--accent));
-  box-shadow: 0 14px 26px rgba(214,178,94,.28);
-}
-
-/* ───────── 캠핑 리스트 카드 ───────── */
-.camp-list{
-  display:flex;
+.camp-list {
+  list-style: none;
+  display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.camp-card{
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--stroke);
-  box-shadow: 0 14px 30px rgba(15,23,42,.12);
-  padding: 10px;
-  display:flex;
-  gap: 10px;
-}
-
-.camp-thumb{
-  width: 78px;
-  height: 78px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #0f172a, #1f2937);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#e5e7eb;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink:0;
-  overflow:hidden;
-}
-
-.camp-thumb span{
-  text-align:center;
-}
-
-.camp-main{
-  flex:1;
-  display:flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.camp-name{
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.camp-area{
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.camp-tags{
-  margin-top: 4px;
-  display:flex;
-  flex-wrap:wrap;
-  gap: 4px;
-}
-
-.tag{
-  font-size: 10px;
-  padding: 3px 6px;
-  border-radius: 999px;
-  background: rgba(243,244,246,1);
-  color:#4b5563;
-}
-
-.tag-type-sea{ background: rgba(59,130,246,.1); color:#1d4ed8; }
-.tag-type-forest{ background: rgba(16,185,129,.12); color:#047857; }
-.tag-type-auto{ background: rgba(251,146,60,.15); color:#c2410c; }
-.tag-type-glamping{ background: rgba(244,114,182,.16); color:#be185d; }
-
-.camp-meta-row{
-  margin-top: 6px;
-  display:flex;
-  gap: 10px;
-  font-size: 11px;
-  color:#374151;
-}
-
-.camp-meta-row span{
-  display:flex;
-  align-items:center;
-  gap: 3px;
-}
-
-.camp-side{
-  display:flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-width: 64px;
-}
-
-.rating-pill{
-  padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  background: rgba(254,243,199,1);
-  color:#92400e;
-}
-
-.favorite-btn{
-  border:none;
-  background: transparent;
-  cursor:pointer;
-  font-size: 18px;
-}
-
-.favorite-btn.on{
-  color: #f97316;
-}
-
-.badge-small{
-  font-size: 10px;
-  color: #16a34a;
-  font-weight: 800;
-}
-
-.empty{
-  padding: 18px 10px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* ───────── 탭바 (main.html 스타일) ───────── */
-.tabbar{
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
-  width: 100%;
-  max-width: 430px;
-  height: calc(72px + var(--safe-bottom));
-  padding: 10px 14px calc(10px + var(--safe-bottom));
-  background: rgba(255,255,255,.92);
-  border-top: 1px solid rgba(15,23,42,.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  display:flex;
-  justify-content: space-between;
-  align-items: flex-end;
   gap: 8px;
 }
 
-.tab{
-  flex:1;
-  border:none;
-  background: transparent;
-  display:flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  color: #9ca3af;
-  font-weight: 800;
-  font-size: 11px;
-  padding: 8px 0;
+/* 개별 캠핑 카드 */
+
+.camp-item {
+  padding: 10px 12px;
   border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(248, 250, 252, 0.98);
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease,
+    background-color 0.12s ease;
 }
 
-.tab-ico{
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
+.camp-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.18), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
 }
 
-.tab.active{
-  color: var(--accent);
-  background: linear-gradient(180deg, rgba(214,178,94,.14), rgba(214,178,94,.06));
+.camp-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.2);
+  border-color: rgba(37, 99, 235, 0.35);
 }
 
-.spacer{ height: 10px; }
+.camp-item:hover::before {
+  opacity: 1;
+}
+
+.camp-item.active {
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  border-color: #2563eb;
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.35);
+}
+
+.camp-item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.camp-item-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.camp-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.camp-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.camp-badge-type {
+  background: rgba(15, 23, 42, 0.06);
+  color: #111827;
+}
+
+.camp-item.active .camp-badge-type {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.camp-addr {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.camp-meta {
+  font-size: 11px;
+  color: #4b5563;
+}
+
+/* 인포윈도우 내부용 */
+
+.map-iw {
+  padding: 8px 10px;
+}
+
+.map-iw-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.map-iw-addr {
+  font-size: 11px;
+  color: #4b5563;
+  margin-bottom: 4px;
+}
+
+.map-iw-link a {
+  font-size: 11px;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+/* 작은 화면에서 지도 높이 살짝 줄이기 */
+
+@media (max-height: 640px) {
+  #map {
+    height: 260px;
+  }
+}
