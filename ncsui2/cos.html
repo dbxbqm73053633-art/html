@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>제주 환상 자전거길 - 코스</title>
+  <link rel="stylesheet" href="./css/cos.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- 상단 코스 헤더 -->
+    <header class="course-hero">
+      <div class="course-hero-top">
+        <div>
+          <p class="hero-eyebrow">JEJU CYCLING ROUTES</p>
+          <h1 class="hero-title">제주 환상 자전거길 코스</h1>
+          <p class="hero-sub">해안, 오름, 카페거리를 잇는 프리미엄 라이딩 셀렉션</p>
+        </div>
+        <div class="hero-badge">
+          <span class="badge-label">완주 현황</span>
+          <span class="badge-value">
+            <span id="completeCount">0</span>/<span id="totalCount">0</span>
+          </span>
+        </div>
+      </div>
+
+      <section class="course-summary">
+        <div class="summary-item">
+          <span class="summary-label">오늘의 추천 코스</span>
+          <span class="summary-main" id="todayCourseName">애월 해안 라이딩</span>
+          <span class="summary-sub" id="todayCourseInfo">
+            22km · 약 1시간 40분 · 해안 플랫 코스
+          </span>
+        </div>
+        <div class="summary-metrics">
+          <div class="metric">
+            <span class="metric-label">평균 거리</span>
+            <span class="metric-value" id="avgDistance">0km</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">평균 소요시간</span>
+            <span class="metric-value" id="avgTime">-</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">누적 거리</span>
+            <span class="metric-value" id="totalDistance">0km</span>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="content">
+      <!-- 검색 · 필터 -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">코스 탐색</h2>
+        </div>
+
+        <div class="search-row">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input
+              type="search"
+              id="courseSearch"
+              placeholder="코스명, 지역, 키워드로 검색해 보세요"
+            />
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <button class="chip chip-active" data-filter="all">전체</button>
+          <button class="chip" data-filter="easy">입문자</button>
+          <button class="chip" data-filter="normal">중급</button>
+          <button class="chip" data-filter="hard">상급</button>
+          <button class="chip" data-filter="sea">해안</button>
+          <button class="chip" data-filter="oreum">오름</button>
+        </div>
+      </section>
+
+      <!-- 추천 코스 강조 카드 -->
+      <section class="section">
+        <h2 class="section-title">오늘의 추천 코스</h2>
+        <article class="featured-card" id="featuredCard">
+          <div class="featured-main">
+            <div class="featured-topline">
+              <span class="pill pill-type" id="featuredTag">해안 코스</span>
+              <span class="pill pill-diff" id="featuredDiff">난이도 · 중급</span>
+            </div>
+            <h3 class="featured-name" id="featuredName">애월 해안 라이딩 코스</h3>
+            <p class="featured-desc" id="featuredDesc">
+              한쪽은 푸른 바다, 한쪽은 카페 거리. 바람을 맞으며 달리는 해안 대표 코스입니다.
+            </p>
+          </div>
+          <div class="featured-meta">
+            <div class="meta-block">
+              <span class="meta-label">거리</span>
+              <span class="meta-value" id="featuredDistance">22km</span>
+            </div>
+            <div class="meta-block">
+              <span class="meta-label">예상 시간</span>
+              <span class="meta-value" id="featuredTime">1h 40m</span>
+            </div>
+            <div class="meta-block">
+              <span class="meta-label">상승 고도</span>
+              <span class="meta-value" id="featuredElevation">210m</span>
+            </div>
+          </div>
+          <button class="featured-cta" type="button">코스 상세 보기</button>
+        </article>
+      </section>
+
+      <!-- 코스 리스트 -->
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">전체 코스</h2>
+          <span class="section-count">
+            <span id="listCount">0</span>개 코스
+          </span>
+        </div>
+
+        <div id="courseList" class="course-list">
+          <!-- JS로 코스 카드 렌더링 -->
+        </div>
+      </section>
+
+      <div class="spacer"></div>
+    </main>
+
+    <!-- 하단 탭바 (main.html 형식) -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" data-tab="home" type="button" aria-label="홈">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab active" data-tab="course" type="button" aria-label="코스">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+        </svg>
+        <span>코스</span>
+      </button>
+
+      <button class="tab" data-tab="camping" type="button" aria-label="캠핑">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 2 21h20L12 3Zm0 4.1L18.6 19H5.4L12 7.1Zm-3.2 9.4h6.4L12 11l-3.2 5.5Z"/>
+        </svg>
+        <span>캠핑</span>
+      </button>
+
+      <button class="tab" data-tab="my" type="button" aria-label="마이">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-9 3-9 7h18c0-4-4-7-9-7Z"/>
+        </svg>
+        <span>마이</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/cos.js"></script>
+</body>
+</html>

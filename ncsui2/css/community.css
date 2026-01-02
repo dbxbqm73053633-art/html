@@ -315,7 +315,11 @@ button{ font-family: inherit; }
   padding: 8px 0;
   border-radius: 14px;
 }
-.tab-ico{ font-size: 18px; line-height: 1; }
+.tab-ico{
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
 
 .tab.active{
   color: var(--accent);

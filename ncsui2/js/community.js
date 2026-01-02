@@ -6,6 +6,20 @@ tabs.forEach((t) => {
     t.classList.add("active");
   });
 });
+const homeTab = document.querySelector('[data-tab="home"]');
+if (homeTab) {
+  homeTab.addEventListener("click", () => {
+    window.location.href = "main.html";
+  });
+}
+
+// 코스 탭 클릭 시 course.html 로 이동
+const courseTab = document.querySelector('[data-tab="course"]');
+if (courseTab) {
+  courseTab.addEventListener("click", () => {
+    window.location.href = "cos.html"; // 코스 페이지 파일명
+  });
+}
 
 // 만들기 버튼(데모)
 document.getElementById("btnCreate").addEventListener("click", () => {
