@@ -1,43 +1,5 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-:root {
-  --accent: #2563eb;
-  --accent-soft: #dbeafe;
-  --accent-strong: #1d4ed8;
-  --bg: #f3f4f6;
-  --surface: #ffffff;
-  --text-main: #111827;
-  --text-sub: #4b5563;
-  --muted: #9ca3af;
-  --radius: 18px;
-}
-
-body {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  padding: 0;
-  background: var(--bg);
-  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--text-main);
-}
-
-.app {
-  width: 100%;
-  max-width: 480px;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #eff6ff 0%, #f9fafb 40%, #ecfdf5 100%);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* 헤더 */
+/* camp.css의 공통 레이아웃/탭바 스타일을 그대로 쓰고,
+   코스 페이지에서만 필요한 부분만 정의 */
 
 .course-hero {
   padding: 20px 18px 12px;
@@ -72,7 +34,7 @@ body {
 .hero-sub {
   font-size: 13px;
   line-height: 1.5;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .hero-badge {
@@ -96,8 +58,6 @@ body {
   font-size: 16px;
   font-weight: 700;
 }
-
-/* 헤더 요약 */
 
 .course-summary {
   margin-top: 16px;
@@ -177,7 +137,6 @@ body {
 /* 메인 컨텐츠 */
 
 .content {
-  flex: 1;
   padding: 12px 16px 76px;
   display: flex;
   flex-direction: column;
@@ -185,7 +144,7 @@ body {
 }
 
 .section {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   border-radius: 18px;
   padding: 14px 12px 12px;
@@ -194,23 +153,23 @@ body {
 
 .section-head {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 10px;
 }
 
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-main);
 }
 
 .section-sub {
   font-size: 12px;
-  color: var(--text-sub);
+  color: #4b5563;
 }
 
-/* 지도 */
+/* 지도 영역 */
 
 .map-container {
   width: 100%;
@@ -235,7 +194,7 @@ body {
 
 .selected-course-info p {
   font-size: 12px;
-  color: var(--text-sub);
+  color: #4b5563;
 }
 
 /* 필터 */
@@ -253,7 +212,7 @@ body {
   background: #f9fafb;
   font-size: 11px;
   padding: 6px 10px;
-  color: var(--text-sub);
+  color: #4b5563;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -311,7 +270,7 @@ body {
 
 .course-area {
   font-size: 11px;
-  color: var(--muted);
+  color: #9ca3af;
 }
 
 .course-tags {
@@ -338,7 +297,7 @@ body {
   color: #b91c1c;
 }
 .tag.level-hard {
-  background: #f97373; /* 상급 표시용(약간 강한 느낌) */
+  background: #fee2e2;
   color: #7f1d1d;
 }
 
@@ -353,7 +312,7 @@ body {
   display: flex;
   gap: 8px;
   font-size: 11px;
-  color: var(--text-sub);
+  color: #4b5563;
 }
 
 .course-meta span {
@@ -366,60 +325,12 @@ body {
   font-size: 16px;
 }
 
-/* 여백 */
+/* 탭바 높이만큼 여백 */
 .spacer {
   height: 72px;
 }
 
-/* 탭바 (camp.html 과 통일) */
-
-.tabbar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: env(safe-area-inset-bottom, 12px);
-  width: 100%;
-  max-width: 480px;
-  padding: 6px 12px;
-  background: rgba(15, 23, 42, 0.95);
-  display: flex;
-  justify-content: space-between;
-  gap: 4px;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.6);
-}
-
-.tab {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 6px 0 4px;
-  border-radius: 14px;
-}
-
-.tab .tab-ico {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
-.tab.active {
-  background: #f9fafb;
-  color: #111827;
-}
-
-/* 모바일 최적화 */
-
 @media (max-width: 360px) {
-  .course-hero {
-    padding: 18px 14px 10px;
-  }
   .content {
     padding-inline: 12px;
   }

@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>제주 환상 자전거길 - 코스</title>
 
-  <!-- 메인 스타일 -->
+  <!-- camp 탭바 / 공통 레이아웃 -->
+  <link rel="stylesheet" href="./css/camp.css" />
+  <!-- 코스 전용 스타일 -->
   <link rel="stylesheet" href="./css/cos.css" />
 
-  <!-- 카카오 지도 SDK (코스 길 표시용) -->
-  <!-- api키와 도메인은 질문에서 준 값으로 사용 -->
+  <!-- 카카오 지도 JS SDK -->
+  <!-- 제공한 키값 사용 -->
   <script 
     type="text/javascript"
-    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services">
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900">
   </script>
 </head>
 <body>
@@ -24,7 +26,7 @@
           <p class="hero-eyebrow">JEJU FANTASY BIKE</p>
           <h1 class="hero-title">제주 환상 자전거길 5코스</h1>
           <p class="hero-sub">
-            해안·오름·도시를 잇는 234km 중, 라이더들이 많이 찾는 대표 구간만 골라 담았어.
+            해안도로와 도심 위주, 실제 육상 경로를 기준으로 자전거 타기 좋은 대표 구간만 골라 담았어.
           </p>
         </div>
 
@@ -37,13 +39,13 @@
       <section class="course-summary">
         <div class="summary-main">
           <div>
-            <span class="summary-label">오늘 라이딩 계획 세우기</span>
-            <span class="summary-title">지도로 먼저 코스를 확인해봐</span>
+            <span class="summary-label">실제 도로 기준 코스</span>
+            <span class="summary-title">카카오맵 육상 경로로 미리 확인</span>
           </div>
           <div class="summary-pills">
-            <span class="pill small">해안 라이딩</span>
-            <span class="pill small">오름 뷰</span>
-            <span class="pill small">카페 스팟</span>
+            <span class="pill small">해안도로</span>
+            <span class="pill small">업다운 적당</span>
+            <span class="pill small">카페·편의시설 인근</span>
           </div>
         </div>
         <div class="summary-metrics">
@@ -61,26 +63,27 @@
 
     <!-- 메인 컨텐츠 -->
     <main class="content">
-      <!-- 지도 영역 -->
+      <!-- 지도 섹션 -->
       <section class="section">
         <div class="section-head">
-          <h2 class="section-title">코스 지도</h2>
+          <h2 class="section-title">코스지도</h2>
           <p class="section-sub">
-            아래에서 코스를 선택하면 카카오맵 위에 자세한 이동 경로가 그려져.
+            코스를 클릭하면 카카오맵 위에 실제 도로를 따라가는 육상 경로가 파란 라인으로 표시돼.
           </p>
         </div>
+
         <div id="map" class="map-container"></div>
 
         <div class="selected-course-info">
           <h3 id="selectedCourseName">코스를 선택해 주세요</h3>
-          <p id="selectedCourseMeta">지도 위에서 원하는 코스를 선택하면 상세 정보가 표시됩니다.</p>
+          <p id="selectedCourseMeta">아래 코스를 선택하면 상세 경로와 기본 정보를 보여줄게.</p>
         </div>
       </section>
 
       <!-- 필터 & 코스 리스트 -->
       <section class="section">
         <div class="section-head">
-          <h2 class="section-title">제주 대표 5코스</h2>
+          <h2 class="section-title">제주 대표 육상 5코스</h2>
         </div>
 
         <div class="filter-row">
@@ -91,14 +94,14 @@
         </div>
 
         <div id="courseList" class="course-list">
-          <!-- 자바스크립트로 렌더링 -->
+          <!-- JS로 렌더링 -->
         </div>
       </section>
 
       <div class="spacer"></div>
     </main>
 
-    <!-- 하단 탭바 (camp.html 프레임과 동일 구조) -->
+    <!-- 하단 탭바 (camp.html과 동일 구조, 코스 탭만 활성화) -->
     <nav class="tabbar" aria-label="하단 탭">
       <button class="tab" data-tab="home" type="button" aria-label="홈" onclick="goPage('main.html')">
         <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">

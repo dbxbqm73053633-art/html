@@ -1,11 +1,10 @@
 // 페이지 이동 (탭바용)
 function goPage(path) {
-  // 실제 파일 구조에 맞게 수정해서 사용
   window.location.href = path;
 }
 
-// 제주 환상 자전거길 5개 코스 (샘플 좌표)
-// 실제 길과 100% 일치하지 않아도, 카카오맵에서 대략적인 동선 확인용으로 사용 가능
+// 제주 환상 자전거길 육상 5코스
+// 좌표는 해안도로/도시 도로를 따라 잡아둔 예시
 const courses = [
   {
     id: "course1",
@@ -14,15 +13,16 @@ const courses = [
     distance: 32,
     level: "easy",
     levelLabel: "초급",
-    tags: ["도심 해안", "카페 스팟", "야간 라이딩"],
-    // 간단 지도용 path (대략 좌표)
+    tags: ["도심 해안도로", "카페 스팟", "야간 라이딩"],
     path: [
-      { lat: 33.5130, lng: 126.5263 }, // 탑동광장
-      { lat: 33.5097, lng: 126.5194 }, // 용담 해안
-      { lat: 33.5062, lng: 126.5140 }, // 용담해안도로
-      { lat: 33.4999, lng: 126.5070 }, // 이호테우
-      { lat: 33.4942, lng: 126.4913 }, // 도두봉 인근
-      { lat: 33.5130, lng: 126.5263 }  // 다시 탑동
+      { lat: 33.5153, lng: 126.5277 }, // 탑동광장 인근 도로
+      { lat: 33.5140, lng: 126.5215 }, // 탑동 해안도로
+      { lat: 33.5099, lng: 126.5160 }, // 용담 해안도로
+      { lat: 33.5035, lng: 126.5093 }, // 용담 도로
+      { lat: 33.4962, lng: 126.4934 }, // 도두봉 입구 도로
+      { lat: 33.5035, lng: 126.5093 },
+      { lat: 33.5099, lng: 126.5160 },
+      { lat: 33.5153, lng: 126.5277 }
     ]
   },
   {
@@ -32,13 +32,15 @@ const courses = [
     distance: 28,
     level: "easy",
     levelLabel: "초급",
-    tags: ["해안 절경", "카페 거리", "완만한 코스"],
+    tags: ["해안카페", "완만한 코스", "노을뷰"],
     path: [
-      { lat: 33.4563, lng: 126.3096 }, // 애월항
-      { lat: 33.4566, lng: 126.3131 }, // 곽지해수욕장
-      { lat: 33.4590, lng: 126.3188 }, // 한담해변 산책로
-      { lat: 33.4622, lng: 126.3230 }, // 해안 도로
-      { lat: 33.4707, lng: 126.3401 }  // 해안 북쪽 방향
+      { lat: 33.4610, lng: 126.3183 }, // 한담해변 도로
+      { lat: 33.4595, lng: 126.3135 }, // 애월 해안도로
+      { lat: 33.4564, lng: 126.3045 }, // 곽지해수욕장 진입도로
+      { lat: 33.4520, lng: 126.2990 }, // 애월항 인근 도로
+      { lat: 33.4564, lng: 126.3045 },
+      { lat: 33.4595, lng: 126.3135 },
+      { lat: 33.4610, lng: 126.3183 }
     ]
   },
   {
@@ -48,13 +50,15 @@ const courses = [
     distance: 24,
     level: "mid",
     levelLabel: "중급",
-    tags: ["화이트 비치", "비양도 전망", "바람 많은 구간"],
+    tags: ["화이트 비치", "해안도로", "바람 주의"],
     path: [
-      { lat: 33.3940, lng: 126.2392 }, // 협재해수욕장
-      { lat: 33.3974, lng: 126.2412 }, // 인근 해안도로
-      { lat: 33.4120, lng: 126.2520 }, // 한림항 방향
-      { lat: 33.4137, lng: 126.2615 }, // 한림공원 인근
-      { lat: 33.3940, lng: 126.2392 }  // 협재로 회귀
+      { lat: 33.3946, lng: 126.2395 }, // 협재 해변 도로
+      { lat: 33.3983, lng: 126.2425 }, // 협재 해안도로
+      { lat: 33.4100, lng: 126.2541 }, // 한림항 도로
+      { lat: 33.4145, lng: 126.2595 }, // 한림공원 진입로
+      { lat: 33.4100, lng: 126.2541 },
+      { lat: 33.3983, lng: 126.2425 },
+      { lat: 33.3946, lng: 126.2395 }
     ]
   },
   {
@@ -64,13 +68,14 @@ const courses = [
     distance: 36,
     level: "mid",
     levelLabel: "중급",
-    tags: ["서귀포 시내", "올레길 연계", "완만+업다운"],
+    tags: ["서귀포 시내", "올레길 연계", "업다운 적당"],
     path: [
-      { lat: 33.2462, lng: 126.5627 }, // 서귀포항
-      { lat: 33.2392, lng: 126.5581 }, // 새섬 인근
-      { lat: 33.2360, lng: 126.5305 }, // 외돌개
-      { lat: 33.2388, lng: 126.5191 }, // 법환동
-      { lat: 33.2462, lng: 126.5627 }  // 다시 서귀포항
+      { lat: 33.2453, lng: 126.5669 }, // 서귀포항 도로
+      { lat: 33.2430, lng: 126.5620 }, // 새섬 입구 도로
+      { lat: 33.2364, lng: 126.5570 }, // 정방폭포 인근 도로
+      { lat: 33.2338, lng: 126.5400 }, // 외돌개 해안도로
+      { lat: 33.2386, lng: 126.5295 }, // 법환동 해안도로
+      { lat: 33.2453, lng: 126.5669 }
     ]
   },
   {
@@ -80,13 +85,16 @@ const courses = [
     distance: 40,
     level: "hard",
     levelLabel: "상급",
-    tags: ["일출 뷰", "중장거리", "바람·업다운"],
+    tags: ["일출 뷰", "중장거리", "해안·국도 믹스"],
     path: [
-      { lat: 33.4590, lng: 126.9393 }, // 성산일출봉 입구
-      { lat: 33.3826, lng: 126.8806 }, // 표선해수욕장 방향
-      { lat: 33.3335, lng: 126.8394 }, // 남동 해안
-      { lat: 33.3826, lng: 126.8806 }, // 표선
-      { lat: 33.4590, lng: 126.9393 }  // 성산으로 회귀
+      { lat: 33.4589, lng: 126.9394 }, // 성산일출봉 입구 도로
+      { lat: 33.4480, lng: 126.9175 }, // 성산 해안도로
+      { lat: 33.4095, lng: 126.8920 }, // 남원–표선 해안도로
+      { lat: 33.3830, lng: 126.8803 }, // 표선해수욕장 진입도로
+      { lat: 33.3600, lng: 126.8500 }, // 남동 해안 국도
+      { lat: 33.3830, lng: 126.8803 },
+      { lat: 33.4095, lng: 126.8920 },
+      { lat: 33.4589, lng: 126.9394 }
     ]
   }
 ];
@@ -98,23 +106,24 @@ let currentMarkers = [];
 // 카카오맵 초기화
 function initMap() {
   const container = document.getElementById("map");
-
   if (!container) return;
 
-  // 기본 중심 (제주시 근처)
+  // 제주도 중앙 근처
+  const center = new kakao.maps.LatLng(33.38, 126.53);
+
   map = new kakao.maps.Map(container, {
-    center: new kakao.maps.LatLng(33.4996, 126.5312),
-    level: 10
+    center,
+    level: 9
   });
 
-  // 첫 코스 표시
+  // 첫 코스 기본 표시
   if (courses.length > 0) {
     showCourseOnMap(courses[0]);
     activateCourseCard(courses[0].id);
   }
 }
 
-// 지도에 코스 그리기
+// 선택 코스를 지도에 그리기 (육상 경로)
 function showCourseOnMap(course) {
   if (!map || !course || !course.path || course.path.length === 0) return;
 
@@ -126,50 +135,51 @@ function showCourseOnMap(course) {
   currentMarkers.forEach(m => m.setMap(null));
   currentMarkers = [];
 
-  // path → kakao LatLng 객체 배열
-  const path = course.path.map(p => new kakao.maps.LatLng(p.lat, p.lng));
+  const pathLatLng = course.path.map(
+    p => new kakao.maps.LatLng(p.lat, p.lng)
+  );
 
   // 폴리라인 생성
   currentPolyline = new kakao.maps.Polyline({
-    path,
+    map,
+    path: pathLatLng,
     strokeWeight: 6,
-    strokeColor: "#1D4ED8",
+    strokeColor: "#2563eb",
     strokeOpacity: 0.9,
     strokeStyle: "solid"
   });
-  currentPolyline.setMap(map);
 
-  // 시작 / 끝 마커
-  if (path.length > 0) {
-    const startMarker = new kakao.maps.Marker({
-      position: path[0],
-      title: `${course.name} 시작`
-    });
-    const endMarker = new kakao.maps.Marker({
-      position: path[path.length - 1],
-      title: `${course.name} 종료`
-    });
-    startMarker.setMap(map);
-    endMarker.setMap(map);
-    currentMarkers.push(startMarker, endMarker);
-  }
+  // 시작 / 종료 마커
+  const startMarker = new kakao.maps.Marker({
+    map,
+    position: pathLatLng[0],
+    title: `${course.name} 시작`
+  });
 
-  // bounds 맞추기
+  const endMarker = new kakao.maps.Marker({
+    map,
+    position: pathLatLng[pathLatLng.length - 1],
+    title: `${course.name} 종료`
+  });
+
+  currentMarkers.push(startMarker, endMarker);
+
+  // 전체 경로가 화면에 들어오도록 bounds 맞추기
   const bounds = new kakao.maps.LatLngBounds();
-  path.forEach(p => bounds.extend(p));
-  map.setBounds(bounds, 40, 40, 40, 40); // 상/우/하/좌 padding
+  pathLatLng.forEach(ll => bounds.extend(ll));
+  map.setBounds(bounds, 40, 40, 40, 40); // 여백
 
-  // 하단 텍스트 업데이트
+  // 선택 코스 정보 업데이트
   const nameEl = document.getElementById("selectedCourseName");
   const metaEl = document.getElementById("selectedCourseMeta");
 
   if (nameEl) nameEl.textContent = course.name;
   if (metaEl) {
-    metaEl.textContent = `${course.area} · 약 ${course.distance}km · ${course.levelLabel} 코스`;
+    metaEl.textContent = `${course.area} · 약 ${course.distance}km · ${course.levelLabel} 코스 (육상 도로 기준)`;
   }
 }
 
-// 코스 카드 렌더링
+// 코스 리스트 렌더링
 function renderCourseList(filter = "all") {
   const listEl = document.getElementById("courseList");
   if (!listEl) return;
@@ -196,16 +206,14 @@ function renderCourseList(filter = "all") {
       </div>
       <div class="course-tags">
         <span class="tag level-${course.level}">${course.levelLabel}</span>
-        ${course.tags
-          .map(tag => `<span class="tag">${tag}</span>`)
-          .join("")}
+        ${course.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
       </div>
       <div class="course-meta-row">
         <div class="course-meta">
           <span>거리 <strong>${course.distance}km</strong></span>
         </div>
         <div class="course-meta">
-          <span>지도 보기</span>
+          <span>카카오맵 경로 보기</span>
         </div>
       </div>
     `;
@@ -218,13 +226,9 @@ function renderCourseList(filter = "all") {
     listEl.appendChild(card);
   });
 
-  // 전체 코스 수 표기
   const countEl = document.getElementById("courseCount");
-  if (countEl) {
-    countEl.textContent = courses.length;
-  }
+  if (countEl) countEl.textContent = courses.length;
 
-  // 평균 거리 / 난이도 계산
   updateSummaryMetrics();
 }
 
@@ -240,30 +244,25 @@ function activateCourseCard(courseId) {
   });
 }
 
-// 평균 정보 갱신
+// 평균 거리 / 난이도 표시
 function updateSummaryMetrics() {
   const avgDist =
     courses.reduce((sum, c) => sum + c.distance, 0) / courses.length;
 
-  const levelScores = { easy: 1, mid: 2, hard: 3 };
-  const scoreMap = { 1: "초급 위주", 2: "중급 위주", 3: "상급 위주" };
+  const levelScore = { easy: 1, mid: 2, hard: 3 };
+  const scoreLabel = { 1: "초급 위주", 2: "중급 위주", 3: "상급 위주" };
   const avgScore =
-    courses.reduce((sum, c) => sum + (levelScores[c.level] || 2), 0) /
+    courses.reduce((sum, c) => sum + (levelScore[c.level] || 2), 0) /
     courses.length;
 
-  const avgDistanceEl = document.getElementById("avgDistance");
-  const avgLevelEl = document.getElementById("avgLevel");
+  const distEl = document.getElementById("avgDistance");
+  const levelEl = document.getElementById("avgLevel");
 
-  if (avgDistanceEl) {
-    avgDistanceEl.textContent = `${avgDist.toFixed(1)}km`;
-  }
-  if (avgLevelEl) {
-    const rounded = Math.round(avgScore);
-    avgLevelEl.textContent = scoreMap[rounded] || "-";
-  }
+  if (distEl) distEl.textContent = `${avgDist.toFixed(1)}km`;
+  if (levelEl) levelEl.textContent = scoreLabel[Math.round(avgScore)] || "-";
 }
 
-// 필터 버튼 세팅
+// 필터 칩 이벤트
 function setupFilterChips() {
   const chips = document.querySelectorAll(".chip");
   chips.forEach(chip => {
@@ -277,20 +276,19 @@ function setupFilterChips() {
   });
 }
 
-// DOM 로드 후 실행
+// 초기화
 window.addEventListener("load", () => {
-  // 카카오맵이 전역으로 로드되었는지 확인 후 초기화
-  if (window.kakao && window.kakao.maps) {
+  // 카카오맵 로드 확인
+  if (window.kakao && kakao.maps) {
     initMap();
   } else {
-    // 혹시라도 sdk 로드 타이밍이 느릴 때 대비
     const interval = setInterval(() => {
-      if (window.kakao && window.kakao.maps) {
+      if (window.kakao && kakao.maps) {
         clearInterval(interval);
         initMap();
       }
     }, 200);
-    setTimeout(() => clearInterval(interval), 5000); // 5초 이후에는 포기
+    setTimeout(() => clearInterval(interval), 5000);
   }
 
   renderCourseList("all");
