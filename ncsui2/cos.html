@@ -6,12 +6,11 @@
   <title>제주 환상 자전거길 - 코스</title>
 
   <!-- camp 탭바 / 공통 레이아웃 -->
-  <link rel="stylesheet" href="./css/camp.css" />
+  <link rel="stylesheet" href="./css/main.css" />
   <!-- 코스 전용 스타일 -->
   <link rel="stylesheet" href="./css/cos.css" />
 
   <!-- 카카오 지도 JS SDK -->
-  <!-- 제공한 키값 사용 -->
   <script 
     type="text/javascript"
     src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900">
@@ -24,9 +23,10 @@
       <div class="course-hero-top">
         <div>
           <p class="hero-eyebrow">JEJU FANTASY BIKE</p>
-          <h1 class="hero-title">제주 환상 자전거길 5코스</h1>
+          <h1 class="hero-title">제주 환상 자전거길 육상 5코스</h1>
           <p class="hero-sub">
-            해안도로와 도심 위주, 실제 육상 경로를 기준으로 자전거 타기 좋은 대표 구간만 골라 담았어.
+            해안도로와 도심 위주의 실제 도로(육상 경로)만 골라서 구성했어.
+            자전거로 달리기 좋은 대표 구간 5가지를 한 번에 확인해봐.
           </p>
         </div>
 
@@ -40,7 +40,7 @@
         <div class="summary-main">
           <div>
             <span class="summary-label">실제 도로 기준 코스</span>
-            <span class="summary-title">카카오맵 육상 경로로 미리 확인</span>
+            <span class="summary-title">카카오맵 위 육상 경로로 미리 확인</span>
           </div>
           <div class="summary-pills">
             <span class="pill small">해안도로</span>
@@ -66,9 +66,9 @@
       <!-- 지도 섹션 -->
       <section class="section">
         <div class="section-head">
-          <h2 class="section-title">코스지도</h2>
+          <h2 class="section-title">코스 지도</h2>
           <p class="section-sub">
-            코스를 클릭하면 카카오맵 위에 실제 도로를 따라가는 육상 경로가 파란 라인으로 표시돼.
+            코스를 클릭하면 카카오맵에 실제 도로를 따라가는 육상 경로가 파란 라인으로 표시돼.
           </p>
         </div>
 
@@ -101,7 +101,7 @@
       <div class="spacer"></div>
     </main>
 
-    <!-- 하단 탭바 (camp.html과 동일 구조, 코스 탭만 활성화) -->
+    <!-- 하단 탭바 (공통 구조, 5개 전부 이동) -->
     <nav class="tabbar" aria-label="하단 탭">
       <button class="tab" data-tab="home" type="button" aria-label="홈" onclick="goPage('main.html')">
         <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
@@ -112,12 +112,13 @@
 
       <button class="tab" data-tab="community" type="button" aria-label="커뮤니티" onclick="goPage('community.html')">
         <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
-          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4 3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
         </svg>
         <span>커뮤니티</span>
       </button>
 
-      <button class="tab active" data-tab="course" type="button" aria-label="코스">
+      <!-- 현재 페이지지만, 클릭 시 cos.html로 이동(새로고침 느낌) -->
+      <button class="tab active" data-tab="course" type="button" aria-label="코스" onclick="goPage('cos.html')">
         <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
           <path d="M7 17a3 3 0 1 1 2.8-4h4.5l-1.6-3H10V8h3.8l1.2 2.2h2.5a3 3 0 1 1-.1 2h-1.3l1.7 3.2H9.8A3 3 0 0 1 7 17Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
         </svg>

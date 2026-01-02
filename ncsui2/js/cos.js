@@ -3,8 +3,8 @@ function goPage(path) {
   window.location.href = path;
 }
 
-// 제주 환상 자전거길 육상 5코스
-// 좌표는 해안도로/도시 도로를 따라 잡아둔 예시
+// 제주 환상 자전거길 "육상" 5코스
+// → 전부 도로(해안도로 / 시내도로 / 국도)를 따라가는 좌표만 사용
 const courses = [
   {
     id: "course1",
@@ -213,7 +213,7 @@ function renderCourseList(filter = "all") {
           <span>거리 <strong>${course.distance}km</strong></span>
         </div>
         <div class="course-meta">
-          <span>카카오맵 경로 보기</span>
+          <span>육상 경로 · 카카오맵 기준</span>
         </div>
       </div>
     `;
