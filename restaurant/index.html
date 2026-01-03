@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>전국맛집 TOP1000 LIVE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 상단 헤더 -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark">TOP1000</div>
+        <div class="brand-text">
+          <h1>전국맛집 TOP1000 LIVE</h1>
+          <p>실시간 랭킹 · 내 주변 맛집 · 카카오맵 길안내</p>
+        </div>
+      </div>
+      <button class="ghost-btn">내 리뷰 관리</button>
+    </header>
+
+    <!-- 검색 영역 -->
+    <section class="search-section">
+      <div class="search-bar">
+        <input
+          type="text"
+          id="keywordInput"
+          placeholder="지역, 맛집 이름, 메뉴로 검색 (예: 홍대 파스타, 강남 곱창)"
+        />
+        <button id="searchBtn">검색</button>
+      </div>
+
+      <div class="chip-row">
+        <button class="chip chip--active" data-sort="score">실시간 인기순</button>
+        <button class="chip" data-sort="distance">현재 위치와 거리순</button>
+        <button class="chip" data-sort="rating">평점 높은순(랭킹)</button>
+        <button class="chip" data-sort="review">리뷰 많은순(랭킹)</button>
+      </div>
+    </section>
+
+    <!-- 메인 레이아웃 -->
+    <main class="layout">
+      <!-- 좌측: 전국 랭킹 -->
+      <section class="layout__left">
+        <h2 class="section-title">전국 랭킹 TOP1000 (데모 데이터)</h2>
+        <p class="section-caption">
+          실제 서비스에서는 서버에서 실시간 랭킹 집계를 받아서 이 리스트에 바인딩하면 돼.
+        </p>
+        <div id="ranking-list" class="card-list"></div>
+      </section>
+
+      <!-- 우측: 내 주변 + 지도 -->
+      <section class="layout__right">
+        <div class="panel-header">
+          <div>
+            <h2 class="section-title">내 주변 맛집</h2>
+            <p class="section-caption" id="aroundMeLabel">
+              현재 위치를 확인하는 중입니다…
+            </p>
+          </div>
+          <button class="mini-btn" id="nearbyReloadBtn">다시 검색</button>
+        </div>
+
+        <div id="map" class="map-panel"></div>
+
+        <h3 class="section-subtitle">지도에 표시된 맛집 리스트</h3>
+        <div id="nearby-list" class="card-list card-list--compact"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Kakao Map JS SDK (지도 + places 라이브러리) -->
+  <script
+    type="text/javascript"
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services"
+  ></script>
+  <!-- 앱 로직 -->
+  <script src="./js/index.js"></script>
+</body>
+</html>
