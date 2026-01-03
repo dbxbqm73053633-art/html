@@ -7,20 +7,17 @@
 }
 
 :root {
-  --bg: #050816;
-  --bg-soft: #0b1020;
-  --card: #111827;
-  --card-soft: #111827cc;
+  --bg: #020617;
+  --card: #0b1120;
   --accent: #f97316;
-  --accent-soft: rgba(249, 115, 22, 0.16);
-  --border-subtle: rgba(148, 163, 184, 0.3);
+  --accent-soft: rgba(249, 115, 22, 0.18);
+  --border-subtle: rgba(148, 163, 184, 0.35);
   --text-main: #f9fafb;
   --text-sub: #9ca3af;
   --text-muted: #6b7280;
   --radius-lg: 20px;
   --radius-md: 14px;
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
-  --shadow-subtle: 0 10px 24px rgba(15, 23, 42, 0.5);
+  --shadow-soft: 0 20px 40px rgba(15, 23, 42, 0.75);
 }
 
 html,
@@ -31,7 +28,7 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Noto Sans KR", sans-serif;
-  background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+  background: radial-gradient(circle at top, #0f172a 0, #020617 50%, #000 100%);
   color: var(--text-main);
   display: flex;
   justify-content: center;
@@ -39,20 +36,20 @@ body {
   padding: 16px;
 }
 
-/* 앱 전체 레이아웃 */
+/* 앱 전체 */
 
 .app-shell {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1180px;
   min-height: 90vh;
-  background: radial-gradient(circle at top, #020617 0, #020617 40%, #000 100%);
+  background: linear-gradient(135deg, #020617, #020617 40%, #020617 100%);
   border-radius: 24px;
   box-shadow: var(--shadow-soft);
   padding: 18px 18px 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  gap: 14px;
+  border: 1px solid rgba(55, 65, 81, 0.85);
 }
 
 /* 헤더 */
@@ -80,15 +77,14 @@ body {
   justify-content: center;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.08em;
   color: #fefce8;
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.6);
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.7);
 }
 
 .brand-text h1 {
   font-size: 20px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
 .brand-text p {
@@ -97,7 +93,7 @@ body {
   margin-top: 2px;
 }
 
-/* 버튼 공통 */
+/* 버튼 */
 
 button {
   border: none;
@@ -109,8 +105,8 @@ button {
 .ghost-btn {
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.45);
-  background: linear-gradient(135deg, #020617, #030712);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: radial-gradient(circle at 0 0, #020617 0, #020617 60%, #020617 100%);
   color: var(--text-sub);
   font-size: 12px;
   display: inline-flex;
@@ -119,9 +115,8 @@ button {
 }
 
 .ghost-btn::before {
-  content: "★";
-  font-size: 11px;
-  color: #fbbf24;
+  content: "📍";
+  font-size: 13px;
 }
 
 .ghost-btn:hover {
@@ -129,28 +124,13 @@ button {
   color: var(--text-main);
 }
 
-.mini-btn {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.4);
-  font-size: 11px;
-  color: var(--text-sub);
-}
-
-.mini-btn:hover {
-  border-color: var(--accent);
-  color: var(--text-main);
-}
-
-/* 검색 영역 */
+/* 검색 */
 
 .search-section {
-  background: linear-gradient(135deg, #020617, #020617, #111827);
+  background: linear-gradient(135deg, #020617, #020617 40%, #020617 100%);
   border-radius: 20px;
-  padding: 14px 14px 12px;
-  box-shadow: var(--shadow-subtle);
-  border: 1px solid rgba(55, 65, 81, 0.7);
+  padding: 14px 14px 10px;
+  border: 1px solid rgba(55, 65, 81, 0.9);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -165,7 +145,7 @@ button {
   flex: 1;
   padding: 10px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(75, 85, 99, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.9);
   background: #020617;
   color: var(--text-main);
   font-size: 13px;
@@ -182,10 +162,40 @@ button {
   font-weight: 600;
   background: radial-gradient(circle at 0 0, #f97316 0, #ea580c 40%, #9a3412 100%);
   color: #fefce8;
-  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.55);
+  box-shadow: 0 10px 26px rgba(249, 115, 22, 0.6);
 }
 
-/* 정렬 칩 */
+/* 필터 */
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.filter-item label {
+  padding-left: 2px;
+}
+
+.filter-item select {
+  min-width: 120px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(75, 85, 99, 0.9);
+  background: #020617;
+  color: var(--text-main);
+  font-size: 12px;
+}
+
+/* 칩(정렬) */
 
 .chip-row {
   display: flex;
@@ -196,7 +206,7 @@ button {
 .chip {
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(15, 23, 42, 0.96);
   border: 1px solid rgba(55, 65, 81, 0.9);
   font-size: 11px;
   color: var(--text-sub);
@@ -208,51 +218,25 @@ button {
   color: #fed7aa;
 }
 
-/* 메인 레이아웃 */
+/* 레이아웃 */
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 16px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 14px;
   flex: 1;
   min-height: 0;
 }
 
-/* 공통 섹션 타이틀 */
-
-.section-title {
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-
-.section-subtitle {
-  font-size: 13px;
-  margin-top: 10px;
-  margin-bottom: 6px;
-  color: var(--text-sub);
-}
-
-.section-caption {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* 랭킹 영역 / 우측 패널 */
-
-.layout__left,
-.layout__right {
-  background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+.map-wrapper,
+.list-wrapper {
+  background: rgba(15, 23, 42, 0.96);
   border-radius: var(--radius-lg);
-  padding: 12px;
   border: 1px solid var(--border-subtle);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-height: 0;
-}
-
-.layout__left {
-  backdrop-filter: blur(22px);
+  gap: 8px;
 }
 
 .panel-header {
@@ -261,34 +245,38 @@ button {
   justify-content: space-between;
 }
 
+.section-title {
+  font-size: 15px;
+}
+
+.section-caption {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
 /* 지도 */
 
 .map-panel {
   width: 100%;
-  height: 340px;
+  height: 380px;
   border-radius: 18px;
-  border: 1px solid rgba(30, 64, 175, 0.8);
+  border: 1px solid rgba(30, 64, 175, 0.9);
   background: #020617;
   overflow: hidden;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
 }
 
-/* 카드 리스트 */
+/* 리스트 */
 
 .card-list {
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 4px;
   overflow-y: auto;
   padding-right: 4px;
+  max-height: 380px;
 }
-
-.card-list--compact {
-  max-height: 260px;
-}
-
-/* 스크롤바 */
 
 .card-list::-webkit-scrollbar {
   width: 6px;
@@ -306,27 +294,20 @@ button {
 /* 카드 */
 
 .card {
-  background: var(--card-soft);
+  background: var(--card);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(55, 65, 81, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.95);
   padding: 10px 11px;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 10px;
   align-items: flex-start;
-}
-
-.card--ranking {
-  position: relative;
-}
-
-.card--nearby {
   cursor: pointer;
 }
 
-.card--nearby:hover {
+.card:hover {
   border-color: var(--accent);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.4));
+  background: radial-gradient(circle at 0 0, #020617 0, #020617 35%, #020617 100%);
 }
 
 .card__rank {
@@ -340,13 +321,6 @@ button {
   font-size: 12px;
   font-weight: 700;
   color: #fffbeb;
-}
-
-.card__rank--nearby {
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  font-size: 11px;
 }
 
 .card__body {
@@ -369,27 +343,13 @@ button {
   color: #e5e7eb;
 }
 
-.card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 2px;
-}
-
-.tag {
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: rgba(31, 41, 55, 0.9);
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-/* 평점/리뷰 */
-
-.rating {
-  color: #fbbf24;
-  font-weight: 600;
+.rating-line {
   font-size: 11px;
+  color: #fbbf24;
+}
+
+.rating-line span {
+  color: #e5e7eb;
 }
 
 .dot {
@@ -397,13 +357,11 @@ button {
   color: rgba(75, 85, 99, 0.9);
 }
 
-/* 버튼 그룹 (카드용) */
-
 .card-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 3px;
+  margin-top: 4px;
 }
 
 .card-actions button,
@@ -411,8 +369,8 @@ button {
   font-size: 10px;
   padding: 4px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(55, 65, 81, 0.8);
-  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  background: rgba(15, 23, 42, 0.97);
   color: var(--text-sub);
   text-decoration: none;
 }
@@ -430,8 +388,12 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .card-list--compact {
-    max-height: 260px;
+  .map-panel {
+    height: 300px;
+  }
+
+  .card-list {
+    max-height: none;
   }
 }
 
@@ -454,16 +416,15 @@ button {
     align-self: flex-end;
   }
 
-  .map-panel {
-    height: 260px;
-  }
-
   .search-bar {
     flex-direction: column;
   }
 
   .search-bar button {
     width: 100%;
-    justify-content: center;
+  }
+
+  .map-panel {
+    height: 260px;
   }
 }
