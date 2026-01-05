@@ -19,19 +19,19 @@ function initMap() {
 
   const options = {
     center,
-    level: 3 // 숫자 작을수록 확대 (헬스장 위치가 바로 보이게)
+    level: 3 // 바로 주변이 보이게
   };
 
   map = new kakao.maps.Map(container, options);
 
-  // 메인 헬스장 마커
+  // FITNESS HUB 마커
   marker = new kakao.maps.Marker({
     position: center
   });
   marker.setMap(map);
 
   const overlayContent =
-    '<div style="padding:4px 8px;border-radius:999px;background:#111827;color:#fff;font-size:11px;box-shadow:0 2px 6px rgba(15,23,42,.35);">MyFit 장기점</div>';
+    '<div style="padding:4px 8px;border-radius:999px;background:#0f172a;color:#fff;font-size:11px;box-shadow:0 2px 6px rgba(15,23,42,.5);">FITNESS HUB 장기점</div>';
 
   const overlay = new kakao.maps.CustomOverlay({
     content: overlayContent,
@@ -40,7 +40,7 @@ function initMap() {
   });
   overlay.setMap(map);
 
-  // 주변 랜드마크 (장기역, 뉴고려병원) 간단히 표시 (대략 좌표)
+  // 주변 랜드마크(대략 좌표)
   const landmarks = [
     {
       name: "장기역 1번 출구",
@@ -82,7 +82,6 @@ function initMap() {
   });
 }
 
-// 지도 중심 재설정
 function recenterMap() {
   if (!map) return;
   const center = new kakao.maps.LatLng(JANGGI_LAT, JANGGI_LNG);
@@ -93,16 +92,15 @@ function recenterMap() {
 /* ===== 외부 지도 링크 ===== */
 
 function openKakaoDirection() {
-  const name = encodeURIComponent("MyFit 장기점");
+  const name = encodeURIComponent("FITNESS HUB 장기점");
   const lat = JANGGI_LAT;
   const lng = JANGGI_LNG;
-  // 길찾기 링크
   const url = `https://map.kakao.com/link/to/${name},${lat},${lng}`;
   window.open(url, "_blank");
 }
 
 function openNaverMap() {
-  const query = encodeURIComponent("MyFit 장기점");
+  const query = encodeURIComponent("FITNESS HUB 장기점");
   const url = `https://map.naver.com/v5/search/${query}`;
   window.open(url, "_blank");
 }
@@ -152,8 +150,8 @@ const routeTabContents = {
   subway: `
     <p><strong>지하철 이용 시</strong></p>
     <p>· 김포골드라인 <strong>장기역 1번 출구</strong> 하차</p>
-    <p>· 1번 출구로 나와 횡단보도 2개 건너신 후, 한강중앙공원 방면 직진</p>
-    <p>· 1층에 카페가 있는 <strong>한강뷰타워 건물 5층 MyFit 장기점</strong></p>
+    <p>· 1번 출구로 나와 횡단보도 2개 건너신 후, 한강중앙공원 방향 직진</p>
+    <p>· 1층 로비에 FITNESS HUB 간판이 보이는 <strong>한강뷰타워 5층</strong></p>
     <p>· 도보 시간: <strong>약 3분</strong></p>
   `,
   bus: `
@@ -166,10 +164,10 @@ const routeTabContents = {
   `,
   car: `
     <p><strong>자가용 이용 시</strong></p>
-    <p>· 내비게이션 검색어: <strong>“MyFit 장기점”</strong> 또는 “한강뷰타워”</p>
+    <p>· 내비게이션 검색어: <strong>“FITNESS HUB 장기점”</strong> 또는 “한강뷰타워”</p>
     <p>· 김포대로 → 김포한강로 → 장기역 사거리에서 유턴 후 우회전</p>
     <p>· 건물 뒷편 지하 주차장 램프 진입 후, 엘리베이터로 5층 이동</p>
-    <p>· 퇴근 시간(18~20시)에는 장기역 사거리 정체가 심하니, 대중교통 이용을 권장합니다.</p>
+    <p>· 야간/새벽에도 24시간 출입 가능하며, 피크 시간(18~21시)에는 주차 여유가 줄어듭니다.</p>
   `
 };
 
