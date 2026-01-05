@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Hub 회원가입</title>
+  <link rel="stylesheet" href="./css/signup.css" />
+</head>
+<body>
+  <div class="signup-page">
+    <div class="signup-card">
+      <!-- 로고 -->
+      <div class="logo-wrap">
+        <img src="./images/로고.png" alt="Fitness Hub Logo" class="logo-img" />
+      </div>
+
+      <!-- 타이틀 -->
+      <header class="signup-header">
+        <h1>Sign Up</h1>
+        <p>회원 정보를 입력하고 Fitness Hub와 함께 운동을 시작해 보세요.</p>
+      </header>
+
+      <!-- 회원가입 폼 -->
+      <form class="signup-form" id="signupForm">
+        <!-- 이름 -->
+        <div class="form-field">
+          <label for="name">이름</label>
+          <input
+            type="text"
+            id="name"
+            placeholder="이름을 입력해 주세요"
+            autocomplete="name"
+          />
+          <span class="field-underline"></span>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="form-field">
+          <label for="email">이메일</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="로그인에 사용할 이메일 주소"
+            autocomplete="email"
+          />
+          <span class="field-underline"></span>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-field">
+          <label for="password">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="영문, 숫자, 특수문자 조합 8자 이상"
+            autocomplete="new-password"
+          />
+          <span class="field-underline"></span>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="form-field">
+          <label for="passwordConfirm">비밀번호 확인</label>
+          <input
+            type="password"
+            id="passwordConfirm"
+            placeholder="비밀번호를 다시 입력해 주세요"
+            autocomplete="new-password"
+          />
+          <span class="field-underline"></span>
+        </div>
+
+        <!-- 이용약관 동의 -->
+        <div class="option-row">
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="terms" />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">
+              이용약관 및 개인정보 처리방침에 동의합니다.
+            </span>
+          </label>
+        </div>
+
+        <p class="error-msg" id="errorMsg"></p>
+
+        <button type="submit" class="btn-primary" id="signupBtn" disabled>
+          회원가입
+        </button>
+      </form>
+
+      <!-- 이미 계정이 있다면 -->
+      <div class="sub-links">
+        <span>이미 계정이 있으신가요?</span>
+        <button type="button" class="link-btn" id="goLoginBtn">로그인 하러가기</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/signup.js"></script>
+</body>
+</html>

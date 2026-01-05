@@ -1,0 +1,426 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: #111827;
+  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+.app-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #ffffff;
+  padding-bottom: 76px; /* 탭바 높이 */
+}
+
+/* 상단바 */
+.top-bar {
+  height: 52px;
+  padding: 0 16px;
+  padding-top: env(safe-area-inset-top);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.top-bar h1 {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.icon-btn {
+  border: none;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #111827;
+}
+
+.arrow-icon-left,
+.arrow-icon-right {
+  width: 22px;
+  height: 22px;
+}
+
+/* 메인 영역 */
+.main-area {
+  padding: 16px 16px 28px;
+}
+
+/* 인사 섹션 */
+.greeting-section {
+  margin-bottom: 18px;
+}
+
+.hello {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.hello span {
+  font-weight: 700;
+  color: #111827;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 필터 섹션 */
+.filter-section {
+  margin-bottom: 10px;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filter-chip {
+  border-radius: 999px;
+  padding: 6px 11px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 12px;
+  color: #4b5563;
+  cursor: pointer;
+  transition:
+    background 0.15s ease-out,
+    color 0.15s ease-out,
+    border-color 0.15s ease-out;
+}
+
+.filter-chip.active {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.refresh-btn {
+  border-radius: 999px;
+  border: 1px solid #0ea5e9;
+  background: #eff6ff;
+  color: #0369a1;
+  font-size: 11px;
+  padding: 6px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.date-label {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* 범례 */
+.legend-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.legend-dot.level-low {
+  background: #22c55e;
+}
+
+.legend-dot.level-medium {
+  background: #facc15;
+}
+
+.legend-dot.level-high {
+  background: #ef4444;
+}
+
+/* 섹션 헤더 */
+.section-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.section-header p {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* 시설 리스트 */
+.facility-section {
+  margin-bottom: 20px;
+}
+
+.facility-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.facility-card {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px 12px;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 카드 헤더 */
+.facility-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.facility-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.facility-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.facility-meta {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.badge-open,
+.badge-closed {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.badge-open {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-closed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* 카드 바디 */
+.facility-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: 6px;
+  column-gap: 10px;
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.facility-body strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* 혼잡도 */
+.congestion-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.congestion-pill.low {
+  background: #ecfdf5;
+  color: #15803d;
+}
+
+.congestion-pill.medium {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.congestion-pill.high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.congestion-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.congestion-dot.low {
+  background: #22c55e;
+}
+
+.congestion-dot.medium {
+  background: #facc15;
+}
+
+.congestion-dot.high {
+  background: #ef4444;
+}
+
+/* 이용률 바 */
+.usage-bar-wrap {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.usage-bar-inner {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0ea5e9, #22c55e);
+}
+
+/* 이용 TIP 섹션 (위치 안정 + 텍스트 내려오기) */
+.tip-section {
+  margin-top: 4px;
+}
+
+.tip-card {
+  border-radius: 16px;
+  border: 1px solid #dbeafe;
+  background: linear-gradient(135deg, #e0f2fe, #f9fafb);
+  padding: 12px 12px 12px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.tip-header {
+  margin-bottom: 6px;
+}
+
+.tip-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #0ea5e9;
+  color: #ffffff;
+  margin-bottom: 5px; /* 글씨가 너무 위로 안 붙게 */
+}
+
+.tip-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tip-list {
+  margin-top: 4px;
+  margin-left: 14px;
+  font-size: 11px;
+  color: #4b5563;
+}
+
+.tip-foot {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* 탭바 */
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  background: #020617;
+  border-top: 1px solid #111827;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 20;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.tab-ico {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.tab.active {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+/* 넓은 화면에서 카드 느낌 */
+@media (min-width: 768px) {
+  .app-wrapper {
+    border-radius: 24px;
+    margin-top: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .main-area {
+    padding-inline: 40px;
+  }
+}

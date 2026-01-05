@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>오시는 길 | MyFit 장기점</title>
+  <link rel="stylesheet" href="./css/location.css" />
+  <!-- 카카오 지도 SDK -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services"></script>
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- 상단 바 -->
+    <header class="top-bar">
+      <button class="icon-btn" type="button" onclick="goPage('main.html')" aria-label="메인으로 이동">
+        <svg class="arrow-icon-left" viewBox="0 0 24 24">
+          <path
+            d="M15 4l-8 8 8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+
+      <h1>오시는 길</h1>
+
+      <button class="icon-btn" type="button" onclick="goPage('myfit.html')" aria-label="마이핏으로 이동">
+        <svg class="arrow-icon-right" viewBox="0 0 24 24">
+          <path
+            d="M9 4l8 8-8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <main class="main-area">
+      <!-- 1. 시각적 안내: 카카오맵 -->
+      <section class="map-section">
+        <div class="map-card">
+          <div class="map-header">
+            <div>
+              <p class="branch-label">MyFit Performance Center</p>
+              <h2 class="title">장기점 오시는 길</h2>
+              <p class="map-sub">
+                장기역 인근 가상의 위치로 설정된 샘플 페이지입니다.
+              </p>
+            </div>
+            <div class="landmark-badges">
+              <span class="badge">장기역 1번 출구</span>
+              <span class="badge">뉴고려병원</span>
+            </div>
+          </div>
+
+          <!-- 카카오 지도 -->
+          <div id="kakaoMap" class="map-container" role="img" aria-label="MyFit 장기점 지도"></div>
+
+          <div class="map-footer">
+            <button class="map-btn primary" type="button" id="btnKakaoDirection">
+              카카오맵으로 길찾기
+            </button>
+            <button class="map-btn" type="button" id="btnNaverMap">
+              네이버지도에서 보기
+            </button>
+            <button class="map-btn ghost" type="button" id="btnRecenter">
+              지도 중심 재설정
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 상세 텍스트 정보 (주소/연락처/영업시간) -->
+      <section class="info-section">
+        <div class="info-grid">
+          <!-- 주소 -->
+          <article class="info-card">
+            <h3>주소</h3>
+            <dl class="info-list">
+              <div class="info-row">
+                <dt>도로명</dt>
+                <dd id="addrRoad">경기도 김포시 김포한강4로 125, 한강뷰타워 5층</dd>
+              </div>
+              <div class="info-row">
+                <dt>지번</dt>
+                <dd id="addrJibeon">경기도 김포시 장기동 2053-3, 한강뷰타워 5층</dd>
+              </div>
+              <div class="info-row">
+                <dt>건물명</dt>
+                <dd>MyFit Performance Center 장기점 (5F)</dd>
+              </div>
+            </dl>
+            <button class="copy-btn" type="button" id="btnCopyAddress">
+              주소 복사
+            </button>
+            <p class="info-hint">카카오/네이버 지도 검색어: <strong>“MyFit 장기점”</strong></p>
+          </article>
+
+          <!-- 연락처/영업시간 -->
+          <article class="info-card">
+            <h3>연락처 & 영업시간</h3>
+            <dl class="info-list">
+              <div class="info-row">
+                <dt>대표번호</dt>
+                <dd>
+                  <a href="tel:031-234-5678" class="link-phone">031-234-5678</a>
+                </dd>
+              </div>
+              <div class="info-row">
+                <dt>카카오톡</dt>
+                <dd>@MyFit장기점</dd>
+              </div>
+              <div class="info-row">
+                <dt>평일</dt>
+                <dd>06:00 ~ 23:00</dd>
+              </div>
+              <div class="info-row">
+                <dt>주말/공휴일</dt>
+                <dd>08:00 ~ 20:00</dd>
+              </div>
+              <div class="info-row">
+                <dt>정기휴무</dt>
+                <dd>매월 둘째 월요일</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <!-- 3. 교통수단별 경로 안내 -->
+      <section class="route-section">
+        <div class="section-header">
+          <h3>교통수단별 안내</h3>
+          <p>지하철 · 버스 · 자가용 중 편한 경로를 선택해서 방문하실 수 있습니다.</p>
+        </div>
+
+        <div class="route-tabs">
+          <button class="route-tab active" data-type="subway">지하철</button>
+          <button class="route-tab" data-type="bus">버스</button>
+          <button class="route-tab" data-type="car">자가용</button>
+        </div>
+
+        <div class="route-card" id="routeContent">
+          <!-- JS에서 채움 -->
+        </div>
+      </section>
+
+      <!-- 4. 주차 & 편의 정보 -->
+      <section class="parking-section">
+        <div class="section-header">
+          <h3>주차 및 편의 정보</h3>
+          <p>방문 전에 주차·편의 정보를 확인하시면 훨씬 편합니다.</p>
+        </div>
+
+        <div class="parking-grid">
+          <article class="parking-card">
+            <h4>건물 내 주차장</h4>
+            <ul class="dot-list">
+              <li>지하 1~2층 주차장 이용 가능</li>
+              <li>회원 방문 시 <strong>2시간 무료</strong> (데스크에서 차량번호 등록)</li>
+              <li>추가 시간: 10분당 500원</li>
+              <li>입구는 건물 뒷편 램프 진입</li>
+            </ul>
+          </article>
+
+          <article class="parking-card">
+            <h4>만차 시 인근 주차장</h4>
+            <ul class="dot-list">
+              <li>장기동 공영주차장 (도보 5분)</li>
+              <li>요금: 30분 1,000원, 1일 최대 15,000원</li>
+              <li>카카오맵에서 “장기동 공영주차장” 검색</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- 5. 외관 사진 & 요약 테이블 -->
+      <section class="extra-section">
+        <div class="photo-card">
+          <div class="photo-box">
+            <!-- 실제 사진 파일 만들면 src 교체 -->
+            <img src="./images/location_building_sample.jpg" alt="MyFit 장기점 건물 외관 샘플 이미지" />
+          </div>
+          <p class="photo-caption">장기역 1번 출구 방향에서 바라본 MyFit 장기점(샘플 이미지)</p>
+        </div>
+
+        <div class="summary-table-card">
+          <h3>요약 정보</h3>
+          <table class="summary-table">
+            <tbody>
+              <tr>
+                <th>주소</th>
+                <td>경기도 김포시 김포한강4로 125, 한강뷰타워 5층<br /><span class="muted">(장기동 2053-3)</span></td>
+              </tr>
+              <tr>
+                <th>지하철</th>
+                <td>김포골드라인 <strong>장기역 1번 출구</strong> 직진 200m, 도보 약 3분</td>
+              </tr>
+              <tr>
+                <th>버스</th>
+                <td>장기역·뉴고려병원 정류장 하차 후 도보 3~5분 (간선 8600, 지선 22·30·60 등)</td>
+              </tr>
+              <tr>
+                <th>주차</th>
+                <td>건물 지하 주차장 2시간 무료, 이후 10분당 500원</td>
+              </tr>
+              <tr>
+                <th>문의</th>
+                <td><a href="tel:031-234-5678" class="link-phone">031-234-5678</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 (앱 공통) -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" type="button" onclick="goPage('main.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z" />
+        </svg>
+        <span>홈</span>
+      </button>
+      <button class="tab" type="button" onclick="goPage('reserve.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z" />
+        </svg>
+        <span>예약</span>
+      </button>
+      <button class="tab" type="button" onclick="goPage('community.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0 2c3.31 0 6 2.02 6 4.5V20H1v-2.5C1 15.02 3.69 13 7 13Zm10-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0 2c3.31 0 6 2.02 6 4.5V20h-6v-2.5c0-1-.25-1.94-.7-2.78A5.52 5.52 0 0 0 17 13Z" />
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+      <button class="tab" type="button" onclick="goPage('myfit.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M12 3a4 4 0 0 1 4 4v1a4 4 0 1 1-8 0V7a4 4 0 0 1 4-4Zm0 10a6 6 0 0 1 6 6v2H6v-2a6 6 0 0 1 6-6Z" />
+        </svg>
+        <span>마이핏</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/location.js"></script>
+</body>
+</html>

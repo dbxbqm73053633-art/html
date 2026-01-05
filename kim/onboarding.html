@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Hub 온보딩</title>
+  <link rel="stylesheet" href="./css/onboarding.css" />
+</head>
+<body>
+  <div class="onboard-wrapper">
+    <!-- 온보딩 슬라이드 영역 -->
+    <main class="onboard-main">
+      <!-- 1페이지 -->
+      <section class="onboard-slide active">
+        <div class="slide-img">
+          <img src="./images/워크스루1번사진.png" alt="운동 이미지 1" />
+          <div class="img-gradient"></div>
+        </div>
+
+        <div class="slide-content">
+          <h1>당신의 목표를 현실로!</h1>
+          <p>
+            막연했던 운동 목표를 구체적인 계획과<br />
+            체계적인 기록으로 달성해 보세요.
+          </p>
+        </div>
+      </section>
+
+      <!-- 2페이지 -->
+      <section class="onboard-slide">
+        <div class="slide-img">
+          <img src="./images/워크스루2번사진.png" alt="운동 이미지 2" />
+          <div class="img-gradient"></div>
+        </div>
+
+        <div class="slide-content">
+          <h1>눈으로 확인하는 성장!</h1>
+          <p>
+            그날의 운동 기록은 물론,<br />
+            몸의 변화와 통계 분석으로 성장하는 모습을 확인하세요.
+          </p>
+        </div>
+      </section>
+
+      <!-- 3페이지 -->
+      <section class="onboard-slide">
+        <div class="slide-img">
+          <img src="./images/워크스루3번사진.png" alt="운동 이미지 3" />
+          <div class="img-gradient"></div>
+        </div>
+
+        <div class="slide-content">
+          <h1>앱에서 모든 정보를 한눈에!</h1>
+          <p>
+            헬스장 공지, 운영 시간, 이벤트 정보까지!<br />
+            놓치는 정보 없이 앱 알림으로 바로 확인하세요.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 인디케이터 / 버튼 / 스킵 -->
+    <footer class="onboard-footer">
+      <div class="indicator">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+
+      <button class="primary-btn" id="nextBtn">다음</button>
+
+      <button class="skip-btn" id="skipBtn">건너뛰기</button>
+    </footer>
+  </div>
+
+  <!-- JS는 body 끝에서 불러와야 버튼이 정상 동작함 -->
+  <script src="./js/onboarding.js"></script>
+</body>
+</html>

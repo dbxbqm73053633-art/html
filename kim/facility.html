@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>시설 이용 | FitHub</title>
+  <link rel="stylesheet" href="./css/facility.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단 바 -->
+    <header class="top-bar">
+      <!-- 이전(헬스케어) -->
+      <button
+        class="icon-btn"
+        type="button"
+        aria-label="헬스케어로 이동"
+        onclick="goPage('healthcare.html')"
+      >
+        <svg class="arrow-icon-left" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M15.5 19a1 1 0 0 1-.7-.3L9.2 13.1a2 2 0 0 1 0-2.8l5.6-5.6a1 1 0 0 1 1.4 1.4L10.6 12l5.6 5.6A1 1 0 0 1 15.5 19Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+
+      <h1>시설 이용</h1>
+
+      <!-- 다음(운동 가이드, 추후 연결용) -->
+      <button
+        class="icon-btn"
+        type="button"
+        aria-label="운동 가이드로 이동"
+        onclick="goPage('guide.html')"
+      >
+        <svg class="arrow-icon-right" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M8.5 19a1 1 0 0 1-.7-1.7L13.4 12 7.8 6.4a1 1 0 0 1 1.4-1.4l5.6 5.6a2 2 0 0 1 0 2.8l-5.6 5.6a1 1 0 0 1-.7.3Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+      <!-- 인사/설명 -->
+      <section class="greeting-section">
+        <p class="hello">
+          <span id="facilityUserName">회원님,</span>
+        </p>
+        <h2 class="title">지금 이용하기 좋은 공간을 한눈에.</h2>
+        <p class="subtitle">
+          혼잡도와 운영시간을 기준으로 시설 상태를 정리해 두었어요.
+        </p>
+      </section>
+
+      <!-- 필터 / 기준 시각 -->
+      <section class="filter-section">
+        <div class="filter-row">
+          <div class="filter-chips">
+            <button class="filter-chip active" type="button" data-filter="all">
+              전체
+            </button>
+            <button class="filter-chip" type="button" data-filter="workout">
+              운동존
+            </button>
+            <button class="filter-chip" type="button" data-filter="relax">
+              휴식·부대시설
+            </button>
+            <button class="filter-chip" type="button" data-filter="infra">
+              공용시설
+            </button>
+          </div>
+          <button id="refreshFacilityBtn" class="refresh-btn" type="button">
+            실시간 업데이트
+          </button>
+        </div>
+        <p class="date-label" id="facilityDateLabel">기준 시각 계산 중...</p>
+      </section>
+
+      <!-- 범례 -->
+      <section class="legend-section">
+        <div class="legend-item">
+          <span class="legend-dot level-low"></span>
+          <span>여유</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot level-medium"></span>
+          <span>보통</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot level-high"></span>
+          <span>혼잡</span>
+        </div>
+      </section>
+
+      <!-- 시설 리스트 -->
+      <section class="facility-section">
+        <div class="section-header">
+          <h3>주요 시설 현황</h3>
+          <p>현재 혼잡도와 예상 이용 인원을 기준으로 정렬되어 있어요.</p>
+        </div>
+        <ul id="facilityList" class="facility-list">
+          <!-- JS 렌더링 -->
+        </ul>
+      </section>
+
+      <!-- 이용 TIP (레이아웃 고정, 아래쪽 여유 있게) -->
+      <section class="tip-section">
+        <div class="tip-card">
+          <div class="tip-header">
+            <span class="tip-label">이용 TIP</span>
+            <p class="tip-title">피크 타임을 피해서, 여유 있게 운동하기</p>
+          </div>
+          <ul class="tip-list">
+            <li>06:00 ~ 08:00 : 러닝/샤워 구역 이용이 많아요.</li>
+            <li>18:30 ~ 21:00 : 프리웨이트·머신 존 혼잡도가 가장 높아요.</li>
+            <li>점심 12:00 ~ 13:30 : 라운지·사우나는 비교적 여유 있어요.</li>
+          </ul>
+          <p class="tip-foot">
+            강도 높은 운동은 비교적 여유로운 시간대에 계획해 보는 걸 추천해요.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 (공통) -->
+    <nav class="tabbar">
+      <button class="tab" type="button" onclick="goPage('main.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" type="button" onclick="goPage('reserve.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M6 4h12a1 1 0 0 1 1 1v14l-4-3-4 3-4-3-4 3V5a1 1 0 0 1 1-1Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>예약</span>
+      </button>
+
+      <button class="tab" type="button" onclick="goPage('community.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-5l-4.5 3.4A1 1 0 0 1 7 18.6V16H6a2 2 0 0 1-2-2V5Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab active" type="button" onclick="goPage('myfit.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 3a5 5 0 0 1 5 5v1a5 5 0 1 1-10 0V8a5 5 0 0 1 5-5Zm0 11a7 7 0 0 1 7 7 1 1 0 0 1-1 1H6a1 1 0 0 1-1-1 7 7 0 0 1 7-7Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>마이핏</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/facility.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>운동 가이드 영상 | FitHub</title>
+  <link rel="stylesheet" href="./css/guide.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단 바 -->
+    <header class="top-bar">
+      <!-- 이전: 시설이용 -->
+      <button
+        class="icon-btn"
+        type="button"
+        aria-label="시설 이용으로 이동"
+        onclick="goPage('facility.html')"
+      >
+        <svg class="arrow-icon-left" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M15.5 19a1 1 0 0 1-.7-.3L9.2 13.1a2 2 0 0 1 0-2.8l5.6-5.6a1 1 0 0 1 1.4 1.4L10.6 12l5.6 5.6A1 1 0 0 1 15.5 19Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+
+      <h1>운동 가이드</h1>
+
+      <!-- 다음: 신체 변화 데이터(추후 bodydata.html 연결용) -->
+      <button
+        class="icon-btn"
+        type="button"
+        aria-label="신체 변화 데이터로 이동"
+        onclick="goPage('bodydata.html')"
+      >
+        <svg class="arrow-icon-right" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M8.5 19a1 1 0 0 1-.7-1.7L13.4 12 7.8 6.4a1 1 0 0 1 1.4-1.4l5.6 5.6a2 2 0 0 1 0 2.8l-5.6 5.6a1 1 0 0 1-.7.3Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+      <!-- 인사/설명 -->
+      <section class="greeting-section">
+        <p class="hello">
+          <span id="guideUserName">회원님,</span>
+        </p>
+        <h2 class="title">오늘 루틴에 딱 맞는 가이드를 골라보세요.</h2>
+        <p class="subtitle">
+          부위별·난이도별로 정리된 유튜브 영상으로, 자세와 호흡까지 따라 하기 쉽게 안내해 드려요.
+        </p>
+      </section>
+
+      <!-- 필터 영역 -->
+      <section class="filter-section">
+        <div class="filter-row">
+          <div class="filter-chips">
+            <button class="filter-chip active" type="button" data-filter="all">
+              전체
+            </button>
+            <button class="filter-chip" type="button" data-filter="full">
+              전신
+            </button>
+            <button class="filter-chip" type="button" data-filter="upper">
+              상체
+            </button>
+            <button class="filter-chip" type="button" data-filter="lower">
+              하체
+            </button>
+            <button class="filter-chip" type="button" data-filter="core">
+              코어
+            </button>
+            <button class="filter-chip" type="button" data-filter="cardio">
+              유산소
+            </button>
+            <button class="filter-chip" type="button" data-filter="stretch">
+              스트레칭
+            </button>
+          </div>
+        </div>
+        <p class="date-label" id="guideDateLabel">오늘 기준 추천 영상을 불러왔어요.</p>
+      </section>
+
+      <!-- 메인 플레이어 -->
+      <section class="player-section">
+        <div class="player-frame">
+          <iframe
+            id="mainPlayer"
+            src=""
+            title="운동 가이드 영상"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div class="player-info">
+          <p class="player-chip" id="playerTag">-</p>
+          <h3 class="player-title" id="playerTitle">영상 제목</h3>
+          <p class="player-meta" id="playerMeta">부위 · 난이도 · 소요 시간</p>
+        </div>
+      </section>
+
+      <!-- 영상 리스트 -->
+      <section class="video-section">
+        <div class="section-header">
+          <h3>추천 운동 영상</h3>
+          <p>오늘 컨디션과 목표에 맞는 영상을 선택해 보세요.</p>
+        </div>
+        <ul id="videoList" class="video-list">
+          <!-- JS로 카드 렌더링 -->
+        </ul>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 (공통) -->
+    <nav class="tabbar">
+      <button class="tab" type="button" onclick="goPage('main.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" type="button" onclick="goPage('reserve.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M6 4h12a1 1 0 0 1 1 1v14l-4-3-4 3-4-3-4 3V5a1 1 0 0 1 1-1Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>예약</span>
+      </button>
+
+      <button class="tab" type="button" onclick="goPage('community.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-5l-4.5 3.4A1 1 0 0 1 7 18.6V16H6a2 2 0 0 1-2-2V5Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab active" type="button" onclick="goPage('myfit.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 3a5 5 0 0 1 5 5v1a5 5 0 1 1-10 0V8a5 5 0 0 1 5-5Zm0 11a7 7 0 0 1 7 7 1 1 0 0 1-1 1H6a1 1 0 0 1-1-1 7 7 0 0 1 7-7Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>마이핏</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/guide.js"></script>
+</body>
+</html>

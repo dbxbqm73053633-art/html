@@ -1,0 +1,188 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background: #000;
+  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  color: #fff;
+}
+
+/* 전체 래퍼: PC에서는 가운데 정렬, 모바일에서는 풀 */
+.onboard-wrapper {
+  width: 100%;
+  max-width: 768px;
+  height: 100vh;
+  margin: 0 auto;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 메인 슬라이드 영역 */
+.onboard-main {
+  flex: 1;
+  position: relative;
+}
+
+.onboard-slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+}
+
+.onboard-slide.active {
+  display: flex;
+}
+
+/* 이미지 영역 */
+.slide-img {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.slide-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 하단 그라데이션 (이미지→텍스트 자연 연결) */
+.img-gradient {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.05) 100%);
+}
+
+/* 텍스트 영역 - 조금 더 아래로 */
+.slide-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 120px; /* ↓ 숫자 줄수록 더 아래로 내려감 */
+  padding: 0 24px;
+}
+
+.slide-content h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.slide-content p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+/* 하단 푸터 영역 */
+.onboard-footer {
+  padding: 12px 24px 24px;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 페이지 인디케이터 */
+.indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #4b5563;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  width: 20px;
+  background: #facc15;
+}
+
+/* 메인 버튼 */
+.primary-btn {
+  width: 100%;
+  height: 50px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primary-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 12px rgba(14, 165, 233, 0.4);
+}
+
+/* 하단 스킵 버튼 */
+.skip-btn {
+  margin-top: 4px;
+  align-self: center;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+/* 모바일 기준 최적화 */
+@media (max-width: 480px) {
+  .slide-content {
+    bottom: 115px;
+    padding: 0 20px;
+  }
+
+  .slide-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .slide-content p {
+    font-size: 0.82rem;
+  }
+}
+
+/* 넓은 화면에서 좀 더 여유 */
+@media (min-width: 769px) {
+  .slide-content {
+    bottom: 130px;
+    padding: 0 80px;
+  }
+
+  .slide-content h1 {
+    font-size: 2rem;
+  }
+
+  .slide-content p {
+    font-size: 1rem;
+  }
+
+  .onboard-footer {
+    padding-inline: 80px;
+  }
+}

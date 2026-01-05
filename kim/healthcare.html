@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>헬스케어</title>
+  <link rel="stylesheet" href="./css/healthcare.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- 상단 헤더: 좌=운동계획, 우=시설이용 -->
+    <header class="top-bar">
+      <button class="icon-btn" type="button" onclick="goPage('plan.html')" aria-label="운동계획으로 이동">
+        <svg class="arrow-icon-left" viewBox="0 0 24 24">
+          <path
+            d="M15 4l-8 8 8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+
+      <h1>헬스케어</h1>
+
+      <button class="icon-btn" type="button" onclick="goPage('facility.html')" aria-label="시설이용으로 이동">
+        <svg class="arrow-icon-right" viewBox="0 0 24 24">
+          <path
+            d="M9 4l8 8-8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+
+      <!-- 인사 & 설명 -->
+      <section class="greeting-section">
+        <p class="hello">
+          <span id="hcUserName">회원님</span>의
+        </p>
+        <h2 class="title">오늘 컨디션과 회복 상태를 체크했어요.</h2>
+        <p class="subtitle">몸상태를 잘 관리할수록 운동 효율이 더 좋아집니다.</p>
+      </section>
+
+      <!-- 오늘의 컨디션 카드 -->
+      <section class="condition-section">
+        <div class="condition-header">
+          <div>
+            <h3>오늘의 컨디션</h3>
+            <p class="condition-sub">아침 · 최근 수면 · 피로도를 종합해서 보여드려요.</p>
+          </div>
+          <button type="button" class="refresh-btn" id="refreshConditionBtn">
+            상태 새로고침
+          </button>
+        </div>
+
+        <article class="condition-card">
+          <div class="condition-main">
+            <div class="condition-score-wrap">
+              <span class="condition-score-label">회복 지수</span>
+              <div class="condition-score-row">
+                <span class="condition-score" id="hcRecoveryScore">82</span>
+                <span class="condition-score-badge" id="hcMoodLabel">좋음 😊</span>
+              </div>
+            </div>
+            <div class="condition-circle-wrap">
+              <div class="condition-circle">
+                <span class="circle-label">오늘 추천</span>
+                <span class="circle-main" id="hcTodayType">중강도 근력</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="condition-tags" id="hcTagList">
+            <!-- JS에서 태그 렌더링 -->
+          </div>
+        </article>
+      </section>
+
+      <!-- 핵심 지표 4개 -->
+      <section class="metric-section">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <span class="metric-label">휴식 심박수</span>
+            <span class="metric-value">
+              <span id="hcRestHr">63</span><span class="metric-unit">bpm</span>
+            </span>
+            <span class="metric-desc">평소보다 안정적인 편이에요.</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">스트레스 지수</span>
+            <span class="metric-value">
+              <span id="hcStress">35</span><span class="metric-unit">/100</span>
+            </span>
+            <span class="metric-desc">가벼운 스트레칭을 추천해요.</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">어제 수면 시간</span>
+            <span class="metric-value">
+              <span id="hcSleep">7.1</span><span class="metric-unit">시간</span>
+            </span>
+            <span class="metric-desc">6~8시간 수면이면 충분해요.</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">오늘 수분 섭취</span>
+            <span class="metric-value">
+              <span id="hcWater">1.6</span><span class="metric-unit">L</span>
+            </span>
+            <span class="metric-desc">운동 전·후로 한 컵씩 더 마셔볼까요?</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 회복 히스토리 -->
+      <section class="history-section">
+        <div class="history-header">
+          <h3>최근 7일 회복 히스토리</h3>
+          <span class="history-sub">색이 진할수록 회복 상태가 좋았던 날이에요.</span>
+        </div>
+
+        <!-- 상단 링 아이콘 스트립 -->
+        <div class="history-strip" id="hcHistoryStrip">
+          <!-- JS에서 렌더링 -->
+        </div>
+
+        <!-- 아래 텍스트 리스트 -->
+        <ul class="history-list" id="hcHistoryList">
+          <!-- JS에서 렌더링 -->
+        </ul>
+      </section>
+
+      <!-- 메모 -->
+      <section class="memo-section">
+        <div class="memo-header">
+          <h3>오늘 몸 상태 메모</h3>
+          <span class="memo-sub">간단한 메모만 적어도 패턴 확인에 큰 도움이 돼요.</span>
+        </div>
+        <textarea
+          id="hcMemo"
+          class="memo-textarea"
+          placeholder="예) 어깨가 약간 뭉침, 하체 피로감 거의 없음, 수면은 깊게 잤음"
+        ></textarea>
+        <button type="button" class="memo-save-btn" id="hcMemoSaveBtn">
+          메모 저장하기
+        </button>
+        <p class="memo-status" id="hcMemoStatus"></p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 하단 탭바 -->
+  <nav class="tabbar" aria-label="하단 탭">
+    <button class="tab" data-tab="home" type="button" onclick="goPage('main.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z" />
+      </svg>
+      <span>홈</span>
+    </button>
+
+    <button class="tab" data-tab="reserve" type="button" onclick="goPage('reserve.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z" />
+      </svg>
+      <span>예약</span>
+    </button>
+
+    <button class="tab" data-tab="community" type="button" onclick="goPage('community.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path
+          d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"
+        />
+      </svg>
+      <span>커뮤니티</span>
+    </button>
+
+    <button class="tab active" data-tab="myfit" type="button" onclick="goPage('myfit.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path
+          d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z"
+        />
+      </svg>
+      <span>마이핏</span>
+    </button>
+  </nav>
+
+  <script src="./js/healthcare.js"></script>
+</body>
+</html>

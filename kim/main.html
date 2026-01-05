@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Fitness Hub 메인</title>
+
+  <!-- 공통 메인 스타일 -->
+  <link rel="stylesheet" href="./css/main.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단 히어로 영역 -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+
+      <div class="hero-content">
+        <div class="hero-greeting">
+          <p class="hero-subtitle"><span id="userName">회원</span>님,</p>
+          <h1 class="hero-title">오늘도 가볍게 한 세트 어떠세요?</h1>
+        </div>
+
+        <div class="hero-actions">
+          <button class="hero-btn primary">
+            <span>🏋 운동 시작</span>
+          </button>
+          <button class="hero-btn ghost" onclick="window.location.href='membership.html'">
+                 📱 모바일 회원증 </button>
+
+        </div>
+
+        <div class="hero-membership">
+          <div class="membership-header">
+            <span class="brand">FITNESS HUB</span>
+            <span class="badge">헬스 3개월</span>
+          </div>
+          <div class="membership-body">
+            <div>
+              <p class="label">이용기간</p>
+              <p class="value">2025.11.07 ~ 2026.02.06</p>
+            </div>
+            <div class="membership-tags">
+              <span class="remain">이용 1개월째</span>
+              <button class="chip">추천 루틴 보기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 운동기구 가로 스크롤 섹션 -->
+    <section class="section">
+      <div class="section-header">
+        <h2>오늘의 추천 장비</h2>
+        <p>워밍업부터 메인 운동까지, 루틴에 맞는 장비를 확인해 보세요.</p>
+      </div>
+
+      <div class="equipment-scroll">
+        <div class="equipment-list">
+          <article class="equipment-card active">
+            <img src="./images/메인사진2.png" alt="인클라인 벤치" />
+            <div class="equipment-info">
+              <h3>인클라인 벤치</h3>
+              <p>상부 가슴과 어깨를 집중 타겟으로 하는 필수 장비.</p>
+            </div>
+          </article>
+
+          <article class="equipment-card">
+            <img src="./images/메인사진3.png" alt="스쿼트 랙" />
+            <div class="equipment-info">
+              <h3>스쿼트 랙</h3>
+              <p>하체·코어 강화의 핵심. 스쿼트와 오버헤드 프레스에 활용.</p>
+            </div>
+          </article>
+
+          <article class="equipment-card">
+            <img src="./images/메인사진4.png" alt="데드리프트 존" />
+            <div class="equipment-info">
+              <h3>데드리프트 존</h3>
+              <p>전신 근력 강화, 체형 교정에 효과적인 중량 존.</p>
+            </div>
+          </article>
+
+          <article class="equipment-card">
+            <img src="./images/메인사진5.png" alt="체스트 프레스 머신" />
+            <div class="equipment-info">
+              <h3>체스트 프레스</h3>
+              <p>안정적으로 가슴을 자극할 수 있는 머신 운동.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 운동 설명 카드(세로) -->
+    <section class="section">
+      <div class="section-header">
+        <h2>오늘의 루틴 가이드</h2>
+        <p>3대 운동을 중심으로 한 기본 루틴 예시입니다.</p>
+      </div>
+
+      <article class="workout-card">
+        <div class="workout-thumb">
+          <img src="./images/메인사진7.png" alt="벤치 프레스" />
+        </div>
+        <div class="workout-text">
+          <h3>벤치 프레스</h3>
+          <ol>
+            <li>벤치에 누워 견갑을 모으고, 발로 바닥을 단단히 밀어 줍니다.</li>
+            <li>바를 가슴 중앙까지 천천히 내렸다가 숨을 내쉬며 밀어 올립니다.</li>
+            <li>허리가 과하게 꺾이지 않도록 복부에 힘을 유지합니다.</li>
+          </ol>
+        </div>
+      </article>
+
+      <article class="workout-card">
+        <div class="workout-thumb">
+          <img src="./images/메인사진8.png" alt="스쿼트" />
+        </div>
+        <div class="workout-text">
+          <h3>스쿼트</h3>
+          <ol>
+            <li>바를 승모근 위에 올리고, 어깨너비보다 약간 넓게 섭니다.</li>
+            <li>엉덩이와 무릎을 동시에 굽히며 시선은 정면을 유지합니다.</li>
+            <li>발바닥 전체로 바닥을 밀어 올리듯 일어납니다.</li>
+          </ol>
+        </div>
+      </article>
+
+      <article class="workout-card">
+        <div class="workout-thumb">
+          <img src="./images/메인사진9.png" alt="데드리프트" />
+        </div>
+        <div class="workout-text">
+          <h3>데드리프트</h3>
+          <ol>
+            <li>발은 골반 너비, 바는 정강이에 가깝게 위치시킵니다.</li>
+            <li>엉덩이를 뒤로 빼며 상체를 숙이고, 견갑을 조이면서 잡습니다.</li>
+            <li>무릎과 엉덩이를 펴며 일어나고, 바는 몸에 가깝게 유지합니다.</li>
+          </ol>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <!-- 하단 공통 탭바: 홈 / 예약 / 커뮤니티 / 마이핏 -->
+  <nav class="tabbar" aria-label="하단 탭">
+    <button class="tab active" data-tab="home" type="button" aria-label="홈" onclick="goPage('main.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+        <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
+      </svg>
+      <span>홈</span>
+    </button>
+
+    <button class="tab" data-tab="reserve" type="button" aria-label="예약" onclick="goPage('reserve.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+        <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z"/>
+      </svg>
+      <span>예약</span>
+    </button>
+
+    <button class="tab" data-tab="community" type="button" aria-label="커뮤니티" onclick="goPage('community.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+        <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+      </svg>
+      <span>커뮤니티</span>
+    </button>
+
+    <button class="tab" data-tab="myfit" type="button" aria-label="마이핏" onclick="goPage('myfit.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+        <path d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z"/>
+      </svg>
+      <span>마이핏</span>
+    </button>
+  </nav>
+
+  <script src="./js/main.js"></script>
+</body>
+</html>
