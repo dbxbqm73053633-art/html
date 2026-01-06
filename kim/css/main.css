@@ -54,6 +54,81 @@ body {
   background-size: cover;
   background-position: center;
 }
+/* ===== 메인 상단 알림종 버튼 ===== */
+
+.hero {
+  position: relative; /* 이미 들어있으면 추가 안 해도 됨 */
+}
+
+/* 동그란 알림 버튼 */
+.hero-notif-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+
+  background: rgba(15, 23, 42, 0.92);
+  color: #f9fafb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.8);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+
+/* 눌렀을 때 살짝 눌리는 느낌 */
+.hero-notif-btn:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.8);
+}
+
+/* 벨 아이콘 크기 */
+.hero-notif-ico {
+  width: 20px;
+  height: 20px;
+}
+
+/* 빨간 점 (읽지 않은 공지 표시용) */
+.hero-notif-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.25);
+}
+
+/* 점에 살짝 맥동하는 느낌 */
+.hero-notif-dot {
+  animation: notif-pulse 1.8s infinite;
+}
+
+@keyframes notif-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
 
 .hero::after {
   content: "";
