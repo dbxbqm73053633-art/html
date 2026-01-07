@@ -9,7 +9,6 @@
 :root {
   --bg-main: #fefaf6;
   --bg-soft: #ffffff;
-  --bg-accent: #fff7ed;
   --primary: #f97316;
   --primary-soft: #ffedd5;
   --accent: #22c55e;
@@ -19,8 +18,8 @@
   --border-soft: #e5e7eb;
   --radius-lg: 20px;
   --radius-md: 14px;
-  --shadow-soft: 0 18px 46px rgba(148, 163, 184, 0.35);
-  --shadow-light: 0 12px 30px rgba(148, 163, 184, 0.3);
+  --shadow-soft: 0 18px 40px rgba(148, 163, 184, 0.32);
+  --shadow-light: 0 12px 28px rgba(148, 163, 184, 0.28);
 }
 
 html,
@@ -42,7 +41,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
 /* 상단 헤더 */
@@ -123,7 +121,7 @@ body {
   flex-direction: column;
 }
 
-.brand-text-block .brand-name {
+.brand-name {
   font-weight: 800;
   font-size: 1.15rem;
   letter-spacing: 0.06em;
@@ -195,7 +193,7 @@ body {
   background: #fffbeb;
 }
 
-/* 히어로 스트립 */
+/* 히어로 */
 
 .hero-strip {
   display: flex;
@@ -276,24 +274,27 @@ body {
 
 .search-bar {
   margin-bottom: 10px;
-  padding: 10px 12px 12px;
+  padding: 12px 14px;
   border-radius: var(--radius-lg);
   background: #ffffff;
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--border-soft);
 }
 
-/* 필터 그룹 */
-
-.filter-group {
-  margin-bottom: 8px;
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column-gap: 10px;
+  grid-row-gap: 8px;
 }
 
-.filter-label-row {
+.filter-field {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 4px;
+  flex-direction: column;
+}
+
+.filter-field-full {
+  grid-column: 1 / -1;
 }
 
 .filter-label {
@@ -302,69 +303,27 @@ body {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #4b5563;
+  margin-bottom: 4px;
 }
 
-.filter-hint {
-  font-size: 0.7rem;
-  color: #9ca3af;
-}
-
-/* 지역/분류 버튼 – 가로 스크롤 */
-
-.filter-chip-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  -webkit-overflow-scrolling: touch;
-}
-
-.filter-chip-row::-webkit-scrollbar {
-  height: 4px;
-}
-
-.filter-chip-row::-webkit-scrollbar-track {
-  background: #f3f4f6;
+.select-input {
   border-radius: 999px;
-}
-
-.filter-chip-row::-webkit-scrollbar-thumb {
-  background: #fec89a;
-  border-radius: 999px;
-}
-
-.filter-chip {
-  border-radius: 999px;
-  padding: 6px 11px;
-  font-size: 0.78rem;
   border: 1px solid var(--border-soft);
+  padding: 7px 12px;
+  font-size: 0.86rem;
   background: #f9fafb;
-  color: #4b5563;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
+  outline: none;
 }
 
-.filter-chip:hover {
-  background: #fffbeb;
-  border-color: #fed7aa;
-  color: #b45309;
+.select-input:focus {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75);
+  background: #ffffff;
 }
-
-.filter-chip-active {
-  background: #f97316;
-  border-color: #ea580c;
-  color: #fefce8;
-  box-shadow: 0 6px 18px rgba(248, 113, 113, 0.5);
-}
-
-/* 키워드 */
 
 .search-row {
   display: flex;
   gap: 8px;
-  margin-top: 2px;
 }
 
 .keyword-input {
@@ -381,6 +340,17 @@ body {
   border-color: #fb923c;
   box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75);
   background: #ffffff;
+}
+
+.search-toolbar {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.query-state {
+  font-size: 0.74rem;
+  color: var(--text-sub);
 }
 
 /* 메인 레이아웃 */
@@ -441,16 +411,11 @@ body {
   color: #92400e;
 }
 
-.query-state {
-  font-size: 0.7rem;
-  color: var(--text-sub);
-}
-
-/* 리스트 스켈레톤 */
+/* 스켈레톤 */
 
 .list-skeleton {
   display: none;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .skeleton-card {
@@ -476,16 +441,13 @@ body {
   }
 }
 
-/* 리스트 컨테이너 – 모바일에서도 확실히 스크롤 */
+/* 리스트 컨테이너 : 블록 구조 + margin으로 겹침 방지 */
 
 .list-container {
   max-height: 60vh;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
   padding-right: 4px;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
 }
 
 .list-container::-webkit-scrollbar {
@@ -506,35 +468,21 @@ body {
 .card {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 8px 10px;
+  padding: 9px 10px;
   border-radius: var(--radius-md);
-  background: #fefefe;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   cursor: pointer;
   transition: all 0.16s ease;
-  position: relative;
-  overflow: hidden;
+  margin-bottom: 8px; /* 여기 때문에 카드끼리 무조건 떨어져 있음 */
   min-height: 68px;
 }
 
-/* ⛔ 이 부분 있었으면 통째로 삭제해줘
-.card::before { ... }
-*/
-
-.card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-light);
-  border-color: #fdba74;
-  background: #fff7ed;
+.card:last-child {
+  margin-bottom: 0;
 }
 
-.card-active {
-  border-color: #fb923c;
-  box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75), var(--shadow-light);
-  background: #fffbeb;
-}
-
+/* pseudo 장식 제거 → 겹침 원인 자체를 없앰 */
 
 .card-thumb {
   width: 60px;
@@ -565,8 +513,7 @@ body {
   flex-direction: column;
   gap: 4px;
   flex: 1;
-  position: relative;
-  z-index: 1;
+  margin-left: 8px;
 }
 
 .card-title-row {
@@ -621,6 +568,19 @@ body {
   background: #eff6ff;
   border: 1px solid #dbeafe;
   color: #1d4ed8;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-light);
+  border-color: #fdba74;
+  background: #fff7ed;
+}
+
+.card-active {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75), var(--shadow-light);
+  background: #fffbeb;
 }
 
 /* 지도 패널 */
@@ -729,14 +689,8 @@ body {
   }
 
   .list-container {
-  max-height: 60vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;          /* 8 → 10으로 살짝 넓힘 */
-  padding-right: 4px;
-  padding-bottom: 8px;/* 카드 아래쪽 여유 */
-}
+    max-height: calc(100vh - 260px);
+  }
 
   .map {
     height: calc(100vh - 220px);

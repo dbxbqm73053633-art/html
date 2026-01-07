@@ -24,8 +24,8 @@ const STATE = {
 let currentRequestId = 0;
 
 // ===== DOM =====
-const areaButtonsEl = document.getElementById("areaButtons");
-const categoryButtonsEl = document.getElementById("categoryButtons");
+const selArea = document.getElementById("selArea");
+const selCategory = document.getElementById("selCategory");
 const iptKeyword = document.getElementById("iptKeyword");
 const btnSearch = document.getElementById("btnSearch");
 const btnNearby = document.getElementById("btnNearby");
@@ -66,9 +66,8 @@ function buildUrl(path, extraParams = {}) {
 async function fetchTour(path, params = {}) {
   const url = buildUrl(path, params);
   const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`API 오류 (${res.status})`);
-  }
+  if (!res.ok) throw new Error(`API 오류 (${res.status})`);
+
   const data = await res.json();
   const body = data.response && data.response.body;
 
@@ -217,9 +216,7 @@ function renderList(items) {
 
     listContainer.appendChild(fragment);
 
-    if (index < items.length) {
-      requestAnimationFrame(renderChunk);
-    }
+    if (index < items.length) requestAnimationFrame(renderChunk);
   }
 
   requestAnimationFrame(renderChunk);
@@ -396,75 +393,50 @@ async function openDetail(contentId, contentTypeId) {
   }
 }
 
-/* ===== 지역/분류 버튼 생성 ===== */
-function makeFilterChip(label, code, group, onClick) {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "filter-chip";
-  btn.dataset.code = code;
-  btn.textContent = label;
-
-  btn.addEventListener("click", () => {
-    group.querySelectorAll(".filter-chip").forEach((chip) => {
-      chip.classList.toggle(
-        "filter-chip-active",
-        chip.dataset.code === code
-      );
-    });
-    onClick(code);
-  });
-
-  return btn;
-}
-
+// ===== 지역/분류 로딩 (셀렉트 버전) =====
 async function loadAreas() {
-  const allBtn = makeFilterChip("전국", "", areaButtonsEl, (code) => {
-    STATE.areaCode = code;
-    STATE.mode = "area";
-    runSearch();
-  });
-  allBtn.classList.add("filter-chip-active");
-  areaButtonsEl.appendChild(allBtn);
+  // 기본 옵션
+  selArea.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "";
+  optAll.textContent = "전국 전체";
+  selArea.appendChild(optAll);
 
   try {
     const { items } = await fetchTour("areaCode", {
       numOfRows: 50,
       pageNo: 1,
     });
+
     items.forEach((area) => {
-      const btn = makeFilterChip(area.name, area.code, areaButtonsEl, (code) => {
-        STATE.areaCode = code;
-        STATE.mode = "area";
-        runSearch();
-      });
-      areaButtonsEl.appendChild(btn);
+      const opt = document.createElement("option");
+      opt.value = area.code;
+      opt.textContent = area.name;
+      selArea.appendChild(opt);
     });
   } catch {
-    // 무시 (초기 서울 fallback 사용)
+    // 실패해도 fallback 코드 사용 가능
   }
 }
 
 async function loadCategories() {
-  const allBtn = makeFilterChip("전체", "", categoryButtonsEl, (code) => {
-    STATE.categoryCode = code;
-    STATE.mode = "area";
-    runSearch();
-  });
-  allBtn.classList.add("filter-chip-active");
-  categoryButtonsEl.appendChild(allBtn);
+  selCategory.innerHTML = "";
+  const optAll = document.createElement("option");
+  optAll.value = "";
+  optAll.textContent = "전체 분류";
+  selCategory.appendChild(optAll);
 
   try {
     const { items } = await fetchTour("categoryCode", {
       numOfRows: 50,
       pageNo: 1,
     });
+
     items.forEach((cat) => {
-      const btn = makeFilterChip(cat.name, cat.code, categoryButtonsEl, (code) => {
-        STATE.categoryCode = code;
-        STATE.mode = "area";
-        runSearch();
-      });
-      categoryButtonsEl.appendChild(btn);
+      const opt = document.createElement("option");
+      opt.value = cat.code;
+      opt.textContent = cat.name;
+      selCategory.appendChild(opt);
     });
   } catch {}
 }
@@ -488,6 +460,8 @@ async function runSearch() {
   const requestId = ++currentRequestId;
 
   STATE.keyword = iptKeyword.value.trim();
+  STATE.areaCode = selArea.value || "";
+  STATE.categoryCode = selCategory.value || "";
 
   setLoading(
     true,
@@ -507,8 +481,8 @@ async function runSearch() {
         arrange: "E",
         mapX: pos.coords.longitude,
         mapY: pos.coords.latitude,
-        radius: 15000, // 15km
-        numOfRows: 40, // 최대 40개까지만
+        radius: 15000,
+        numOfRows: 40,
         pageNo: 1,
       });
 
@@ -518,7 +492,7 @@ async function runSearch() {
         arrange: "E",
         areaCode: STATE.areaCode || "",
         cat1: STATE.categoryCode || "",
-        numOfRows: 60, // 대표 60개만
+        numOfRows: 60,
         pageNo: 1,
       });
 
@@ -550,22 +524,23 @@ async function runInitialSeoul() {
   STATE.keyword = "";
   iptKeyword.value = "";
 
-  setLoading(true, "서울 주요 반려동물 동반 여행지 불러오는 중…");
+  txtQueryState.textContent = "서울 기준 주요 여행지 로딩 중…";
   listContainer.innerHTML = "";
   txtCount.textContent = "0곳";
 
-  const seoulChip = Array.from(
-    areaButtonsEl.querySelectorAll(".filter-chip")
-  ).find((chip) => chip.textContent.includes("서울"));
+  // 셀렉트에서 서울 옵션 찾기
+  let seoulCode = SEOUL_FALLBACK_CODE;
+  const options = Array.from(selArea.options);
+  const seoulOption = options.find((opt) => opt.textContent.includes("서울"));
 
-  if (seoulChip) {
-    areaButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
-      chip.classList.toggle("filter-chip-active", chip === seoulChip);
-    });
-    STATE.areaCode = seoulChip.dataset.code || SEOUL_FALLBACK_CODE;
+  if (seoulOption) {
+    seoulCode = seoulOption.value || SEOUL_FALLBACK_CODE;
+    selArea.value = seoulCode;
   } else {
-    STATE.areaCode = SEOUL_FALLBACK_CODE;
+    selArea.value = "";
   }
+
+  STATE.areaCode = seoulCode;
 
   try {
     const { items } = await fetchTour("areaBasedList", {
@@ -602,31 +577,29 @@ function bindEvents() {
     }
   });
 
+  selArea.addEventListener("change", () => {
+    STATE.mode = "area";
+    runSearch();
+  });
+
+  selCategory.addEventListener("change", () => {
+    STATE.mode = "area";
+    runSearch();
+  });
+
   btnNearby.addEventListener("click", () => {
     STATE.mode = "nearby";
     runSearch();
   });
 
   btnReset.addEventListener("click", () => {
+    selArea.value = "";
+    selCategory.value = "";
     iptKeyword.value = "";
     STATE.keyword = "";
     STATE.areaCode = "";
     STATE.categoryCode = "";
     STATE.mode = "area";
-
-    areaButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
-      chip.classList.toggle(
-        "filter-chip-active",
-        chip.textContent === "전국"
-      );
-    });
-    categoryButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
-      chip.classList.toggle(
-        "filter-chip-active",
-        chip.textContent === "전체"
-      );
-    });
-
     runSearch();
   });
 

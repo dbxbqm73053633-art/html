@@ -21,7 +21,7 @@
         </div>
         <div class="brand-text-block">
           <span class="brand-name">PetTour</span>
-          <span class="brand-sub">전국 반려동물 동반 여행지 지도</span>
+          <span class="brand-sub">전국 반려동물 동반 여행 가이드</span>
         </div>
       </div>
       <nav class="top-actions">
@@ -30,11 +30,11 @@
       </nav>
     </header>
 
-    <!-- 상단 펫 히어로 카드 -->
+    <!-- 히어로 -->
     <section class="hero-strip">
       <div class="hero-text">
-        <h1>우리 집 반려동물과 떠나는 여행</h1>
-        <p>지역 · 분류 · 키워드만 선택하면, 반려동물 동반 가능한 여행지를 한눈에 볼 수 있어요.</p>
+        <h1>반려동물과 함께, 가볍게 떠나는 여행</h1>
+        <p>지역과 분류를 고르고, 키워드만 입력하면 동반 가능한 여행지를 바로 확인할 수 있어요.</p>
       </div>
       <div class="hero-pets">
         <div class="hero-paw hero-paw-1"></div>
@@ -44,47 +44,41 @@
       </div>
     </section>
 
-    <!-- 검색/필터 바 -->
+    <!-- 검색/필터 바 : 셀렉트 기반 -->
     <section class="search-bar">
-      <!-- 지역 -->
-      <div class="filter-group">
-        <div class="filter-label-row">
-          <span class="filter-label">지역</span>
-          <span class="filter-hint">서울 · 수도권 · 전국</span>
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label for="selArea" class="filter-label">지역</label>
+          <select id="selArea" class="select-input">
+            <!-- JS로 옵션 생성 -->
+          </select>
         </div>
-        <div id="areaButtons" class="filter-chip-row scroll-chips">
-          <!-- JS로 버튼 생성 -->
+
+        <div class="filter-field">
+          <label for="selCategory" class="filter-label">분류</label>
+          <select id="selCategory" class="select-input">
+            <!-- JS로 옵션 생성 -->
+          </select>
+        </div>
+
+        <div class="filter-field filter-field-full">
+          <label for="iptKeyword" class="filter-label">키워드</label>
+          <div class="search-row">
+            <input
+              id="iptKeyword"
+              type="text"
+              class="keyword-input"
+              placeholder="장소 이름 · 특징 · 동네명으로 검색 (예: 애견카페, 여의도공원)"
+            />
+            <button id="btnSearch" type="button" class="btn btn-primary">
+              검색
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- 분류 -->
-      <div class="filter-group">
-        <div class="filter-label-row">
-          <span class="filter-label">분류</span>
-          <span class="filter-hint">숙소 / 관광지 / 음식점 등</span>
-        </div>
-        <div id="categoryButtons" class="filter-chip-row scroll-chips">
-          <!-- JS로 버튼 생성 -->
-        </div>
-      </div>
-
-      <!-- 키워드 -->
-      <div class="filter-group">
-        <div class="filter-label-row">
-          <span class="filter-label">키워드</span>
-          <span class="filter-hint">예: 애견카페, 펜션, 캠핑장</span>
-        </div>
-        <div class="search-row">
-          <input
-            id="iptKeyword"
-            type="text"
-            class="keyword-input"
-            placeholder="장소 이름 · 특징 · 동네명으로 검색 (서울 20개 기준)"
-          />
-          <button id="btnSearch" type="button" class="btn btn-primary">
-            검색
-          </button>
-        </div>
+      <div class="search-toolbar">
+        <span id="txtQueryState" class="query-state">서울 기준 주요 여행지 로딩 중…</span>
       </div>
     </section>
 
@@ -96,12 +90,11 @@
           <div>
             <h2>반려동물 동반 여행지</h2>
             <p class="panel-sub">
-              검색 조건에 해당하는 여행지를 리스트와 지도에서 동시에 확인하세요.
+              리스트에서 장소를 선택하면 오른쪽 지도에서 위치를 바로 확인할 수 있습니다.
             </p>
           </div>
           <div class="panel-meta">
             <span id="txtCount" class="badge-count">0곳</span>
-            <span id="txtQueryState" class="query-state">대기 중</span>
           </div>
         </header>
 
@@ -122,7 +115,7 @@
           <div>
             <h2>지도에서 보기</h2>
             <p class="panel-sub">
-              카드를 클릭하면 지도 중심이 이동하고, 클러스터를 확대하면 지역별 여행지를 더 자세히 볼 수 있습니다.
+              마커 또는 리스트를 클릭하면 상세 정보를 확인할 수 있습니다.
             </p>
           </div>
         </header>
@@ -135,9 +128,7 @@
       <div class="modal-backdrop"></div>
       <div class="modal-dialog">
         <button id="btnModalClose" class="modal-close">×</button>
-        <div id="modalBody" class="modal-body">
-          <!-- JS 내용 -->
-        </div>
+        <div id="modalBody" class="modal-body"></div>
       </div>
     </div>
   </div>
