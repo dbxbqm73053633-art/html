@@ -1,4 +1,6 @@
-// ===== 기본 설정 =====
+// ========================
+//  기본 설정 & 전역 상태
+// ========================
 const END_POINT = "https://apis.data.go.kr/B551011/KorPetTourService";
 const SERVICE_KEY_RAW =
   "37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a";
@@ -10,20 +12,22 @@ const COMMON_PARAMS = {
   _type: "json",
 };
 
-const SEOUL_FALLBACK_CODE = "1"; // 서울 코드 fallback
+const SEOUL_FALLBACK_CODE = "1"; // 서울 지역코드 기본값
+const PAGE_SIZE = 100; // 전국 키워드 전체 검색용 페이지 크기
 
-// 상태
 const STATE = {
   items: [],
   areaCode: "",
   categoryCode: "",
   keyword: "",
-  mode: "area", // area | nearby
+  mode: "area", // "area" | "nearby"
 };
 
 let currentRequestId = 0;
 
-// ===== DOM =====
+// ========================
+//  DOM 요소
+// ========================
 const selArea = document.getElementById("selArea");
 const selCategory = document.getElementById("selCategory");
 const iptKeyword = document.getElementById("iptKeyword");
@@ -39,86 +43,14 @@ const detailModal = document.getElementById("detailModal");
 const btnModalClose = document.getElementById("btnModalClose");
 const modalBody = document.getElementById("modalBody");
 
-// ===== Kakao Map & Clusterer =====
+// ========================
+//  Kakao 지도 / 클러스터러
+// ========================
 let map;
 let markers = [];
 let clusterer;
 let activeContentId = null;
 
-// ===== URL 빌더 =====
-function buildUrl(path, extraParams = {}) {
-  const url = new URL(`${END_POINT}/${path}`);
-  url.searchParams.set("serviceKey", SERVICE_KEY);
-
-  Object.entries(COMMON_PARAMS).forEach(([k, v]) =>
-    url.searchParams.set(k, v)
-  );
-  Object.entries(extraParams).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "") {
-      url.searchParams.set(k, v);
-    }
-  });
-
-  return url.toString();
-}
-
-// ===== 공통 Fetch =====
-async function fetchTour(path, params = {}) {
-  const url = buildUrl(path, params);
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API 오류 (${res.status})`);
-
-  const data = await res.json();
-  const body = data.response && data.response.body;
-
-  if (!body || !body.items || !body.items.item) {
-    return {
-      items: [],
-      totalCount: body ? body.totalCount || 0 : 0,
-    };
-  }
-
-  const item = body.items.item;
-  const itemsArray = Array.isArray(item) ? item : [item];
-
-  return {
-    items: itemsArray,
-    totalCount: body.totalCount || itemsArray.length,
-  };
-}
-
-// ===== 키워드 필터링 =====
-function filterItemsByKeyword(items, keyword) {
-  if (!keyword) return items;
-
-  const kw = keyword.toLowerCase();
-  return items.filter((item) => {
-    const title = (item.title || "").toLowerCase();
-    const addr1 = (item.addr1 || "").toLowerCase();
-    const addr2 = (item.addr2 || "").toLowerCase();
-    const cat =
-      (item.cat3name || item.cat2name || item.cat1name || "").toLowerCase();
-    return (
-      title.includes(kw) ||
-      addr1.includes(kw) ||
-      addr2.includes(kw) ||
-      cat.includes(kw)
-    );
-  });
-}
-
-// ===== 로딩 표시 =====
-function setLoading(isLoading, message = "") {
-  if (isLoading) {
-    listSkeleton.style.display = "block";
-    txtQueryState.textContent = message || "검색 중…";
-  } else {
-    listSkeleton.style.display = "none";
-    txtQueryState.textContent = STATE.items.length ? "완료" : "결과 없음";
-  }
-}
-
-// ===== 카카오맵 초기화 =====
 function initMap() {
   const container = document.getElementById("map");
   const options = {
@@ -168,7 +100,7 @@ function renderMarkers(items) {
 
     kakao.maps.event.addListener(marker, "click", () => {
       setActiveCard(marker.contentId);
-      focusOnMarker(marker);
+      map.panTo(marker.getPosition());
       openDetail(marker.contentId, marker.contentTypeId);
     });
 
@@ -179,16 +111,128 @@ function renderMarkers(items) {
   if (!bounds.isEmpty()) map.setBounds(bounds);
 }
 
-function focusOnMarker(marker) {
-  map.panTo(marker.getPosition());
-}
-
 function focusMarkerByContentId(contentId) {
   const marker = markers.find((m) => String(m.contentId) === String(contentId));
-  if (marker) focusOnMarker(marker);
+  if (marker) map.panTo(marker.getPosition());
 }
 
-// ===== 리스트 렌더링 =====
+// ========================
+//  공통 API 헬퍼
+// ========================
+function buildUrl(path, extraParams = {}) {
+  const url = new URL(`${END_POINT}/${path}`);
+  url.searchParams.set("serviceKey", SERVICE_KEY);
+
+  Object.entries(COMMON_PARAMS).forEach(([k, v]) =>
+    url.searchParams.set(k, v)
+  );
+  Object.entries(extraParams).forEach(([k, v]) => {
+    if (v !== undefined && v !== null && v !== "") {
+      url.searchParams.set(k, v);
+    }
+  });
+
+  return url.toString();
+}
+
+async function fetchTour(path, params = {}) {
+  const url = buildUrl(path, params);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`API 오류 (${res.status})`);
+
+  const data = await res.json();
+  const body = data.response && data.response.body;
+
+  if (!body || !body.items || !body.items.item) {
+    return {
+      items: [],
+      totalCount: body ? body.totalCount || 0 : 0,
+    };
+  }
+
+  const item = body.items.item;
+  const itemsArray = Array.isArray(item) ? item : [item];
+
+  return {
+    items: itemsArray,
+    totalCount: body.totalCount || itemsArray.length,
+  };
+}
+
+// 전국 + 전체 분류 + 키워드 검색용 전체 조회
+async function fetchAllByKeyword(keyword, requestId) {
+  const all = [];
+
+  // 1페이지
+  const first = await fetchTour("areaBasedList", {
+    arrange: "E",
+    keyword,
+    numOfRows: PAGE_SIZE,
+    pageNo: 1,
+  });
+
+  if (requestId !== currentRequestId) return [];
+
+  all.push(...first.items);
+  const totalCount = first.totalCount || first.items.length;
+  const maxPage = Math.ceil(totalCount / PAGE_SIZE);
+
+  // 2페이지 이후
+  for (let page = 2; page <= maxPage; page++) {
+    if (requestId !== currentRequestId) break;
+
+    const res = await fetchTour("areaBasedList", {
+      arrange: "E",
+      keyword,
+      numOfRows: PAGE_SIZE,
+      pageNo: page,
+    });
+
+    all.push(...res.items);
+  }
+
+  return all;
+}
+
+// ========================
+//  유틸: 키워드 필터
+// ========================
+function filterItemsByKeyword(items, keyword) {
+  if (!keyword) return items;
+
+  const kw = keyword.toLowerCase();
+  return items.filter((item) => {
+    const title = (item.title || "").toLowerCase();
+    const addr1 = (item.addr1 || "").toLowerCase();
+    const addr2 = (item.addr2 || "").toLowerCase();
+    const cat =
+      (item.cat3name || item.cat2name || item.cat1name || "").toLowerCase();
+
+    return (
+      title.includes(kw) ||
+      addr1.includes(kw) ||
+      addr2.includes(kw) ||
+      cat.includes(kw)
+    );
+  });
+}
+
+// ========================
+//  로딩 표시
+// ========================
+function setLoading(isLoading, message = "") {
+  if (isLoading) {
+    listSkeleton.style.display = "block";
+    txtQueryState.textContent = message || "검색 중…";
+  } else {
+    listSkeleton.style.display = "none";
+    txtQueryState.textContent = STATE.items.length ? "완료" : "결과 없음";
+  }
+}
+
+// ========================
+//  리스트 렌더링
+// ========================
 function renderList(items) {
   listContainer.innerHTML = "";
   txtCount.textContent = `${items.length}곳`;
@@ -208,8 +252,7 @@ function renderList(items) {
 
     while (index < items.length && rendered < chunkSize) {
       const item = items[index];
-      const card = createCardElement(item);
-      fragment.appendChild(card);
+      fragment.appendChild(createCardElement(item));
       index++;
       rendered++;
     }
@@ -298,7 +341,9 @@ function createCardElement(item) {
   return card;
 }
 
-// ===== 상세 정보 모달 =====
+// ========================
+//  상세 모달
+// ========================
 async function openDetail(contentId, contentTypeId) {
   try {
     modalBody.innerHTML =
@@ -315,10 +360,7 @@ async function openDetail(contentId, contentTypeId) {
         mapinfoYN: "Y",
         overviewYN: "Y",
       }),
-      fetchTour("detailIntro", {
-        contentId,
-        contentTypeId,
-      }),
+      fetchTour("detailIntro", { contentId, contentTypeId }),
       fetchTour("detailImage", {
         contentId,
         imageYN: "Y",
@@ -387,16 +429,18 @@ async function openDetail(contentId, contentTypeId) {
           : ""
       }
     `;
-  } catch {
+  } catch (e) {
     modalBody.innerHTML =
       '<p style="font-size:0.82rem;color:#6b7280;">상세 정보를 불러오지 못했습니다.</p>';
   }
 }
 
-// ===== 지역/분류 로딩 (셀렉트 버전) =====
+// ========================
+//  지역 / 분류 select 로딩
+// ========================
 async function loadAreas() {
-  // 기본 옵션
   selArea.innerHTML = "";
+
   const optAll = document.createElement("option");
   optAll.value = "";
   optAll.textContent = "전국 전체";
@@ -414,13 +458,14 @@ async function loadAreas() {
       opt.textContent = area.name;
       selArea.appendChild(opt);
     });
-  } catch {
-    // 실패해도 fallback 코드 사용 가능
+  } catch (e) {
+    // 실패해도 fallback 사용 가능
   }
 }
 
 async function loadCategories() {
   selCategory.innerHTML = "";
+
   const optAll = document.createElement("option");
   optAll.value = "";
   optAll.textContent = "전체 분류";
@@ -438,10 +483,12 @@ async function loadCategories() {
       opt.textContent = cat.name;
       selCategory.appendChild(opt);
     });
-  } catch {}
+  } catch (e) {}
 }
 
-// ===== 현재 위치 =====
+// ========================
+//  현재 위치
+// ========================
 function getCurrentPositionPromise() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -455,7 +502,9 @@ function getCurrentPositionPromise() {
   });
 }
 
-// ===== 검색 실행 (빠른 버전) =====
+// ========================
+//  검색 실행
+// ========================
 async function runSearch() {
   const requestId = ++currentRequestId;
 
@@ -474,6 +523,7 @@ async function runSearch() {
     let items = [];
 
     if (STATE.mode === "nearby") {
+      // 내 주변 검색 (빠른 1페이지)
       const pos = await getCurrentPositionPromise();
       if (requestId !== currentRequestId) return;
 
@@ -485,18 +535,26 @@ async function runSearch() {
         numOfRows: 40,
         pageNo: 1,
       });
-
       items = resItems;
     } else {
-      const { items: resItems = [] } = await fetchTour("areaBasedList", {
-        arrange: "E",
-        areaCode: STATE.areaCode || "",
-        cat1: STATE.categoryCode || "",
-        numOfRows: 60,
-        pageNo: 1,
-      });
+      // 지역/분류 검색
+      const isNationWideKeywordOnly =
+        !STATE.areaCode && !STATE.categoryCode && STATE.keyword;
 
-      items = resItems;
+      if (isNationWideKeywordOnly) {
+        // 전국 전체 + 전체 분류 + 키워드 → 전국 전체에서 키워드 전체 조회
+        items = await fetchAllByKeyword(STATE.keyword, requestId);
+      } else {
+        // 일반 케이스 → 빠르게 1페이지 샘플만
+        const { items: resItems = [] } = await fetchTour("areaBasedList", {
+          arrange: "E",
+          areaCode: STATE.areaCode || "",
+          cat1: STATE.categoryCode || "",
+          numOfRows: 60,
+          pageNo: 1,
+        });
+        items = resItems;
+      }
     }
 
     if (requestId !== currentRequestId) return;
@@ -507,7 +565,7 @@ async function runSearch() {
     renderList(STATE.items);
     renderMarkers(STATE.items);
     setLoading(false);
-  } catch {
+  } catch (e) {
     if (requestId !== currentRequestId) return;
     setLoading(false);
     listContainer.innerHTML =
@@ -516,7 +574,9 @@ async function runSearch() {
   }
 }
 
-// ===== 초기 - 서울 20개만 로딩 =====
+// ========================
+//  초기 서울 20개 로딩
+// ========================
 async function runInitialSeoul() {
   const requestId = ++currentRequestId;
 
@@ -556,14 +616,16 @@ async function runInitialSeoul() {
     renderList(STATE.items);
     renderMarkers(STATE.items);
     setLoading(false);
-  } catch {
+  } catch (e) {
     if (requestId !== currentRequestId) return;
     setLoading(false);
     txtQueryState.textContent = "서울 기본 데이터 로딩 실패";
   }
 }
 
-// ===== 이벤트 =====
+// ========================
+//  이벤트 바인딩
+// ========================
 function bindEvents() {
   btnSearch.addEventListener("click", () => {
     STATE.mode = "area";
@@ -606,6 +668,7 @@ function bindEvents() {
   btnModalClose.addEventListener("click", () => {
     detailModal.classList.add("hidden");
   });
+
   detailModal.addEventListener("click", (e) => {
     if (e.target.classList.contains("modal-backdrop")) {
       detailModal.classList.add("hidden");
@@ -613,7 +676,9 @@ function bindEvents() {
   });
 }
 
-// ===== 초기화 =====
+// ========================
+//  초기화
+// ========================
 window.addEventListener("DOMContentLoaded", async () => {
   initMap();
   bindEvents();
