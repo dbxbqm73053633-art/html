@@ -13,7 +13,10 @@ const COMMON_PARAMS = {
 };
 
 const SEOUL_FALLBACK_CODE = "1"; // 서울 지역코드 기본값
-const PAGE_SIZE = 100; // 전국 키워드 전체 검색용 페이지 크기
+
+// 전국 키워드 검색용
+const KEYWORD_PAGE_SIZE = 80;   // searchKeyword 페이지 크기
+const KEYWORD_MAX_PAGES = 8;    // 최대 8페이지(640개)까지만
 
 const STATE = {
   items: [],
@@ -21,6 +24,8 @@ const STATE = {
   categoryCode: "",
   keyword: "",
   mode: "area", // "area" | "nearby"
+  userLat: null,
+  userLng: null,
 };
 
 let currentRequestId = 0;
@@ -54,7 +59,7 @@ let activeContentId = null;
 function initMap() {
   const container = document.getElementById("map");
   const options = {
-    center: new kakao.maps.LatLng(37.5665, 126.978), // 서울 시청 근처
+    center: new kakao.maps.LatLng(37.5665, 126.978),
     level: 8,
   };
   map = new kakao.maps.Map(container, options);
@@ -159,15 +164,17 @@ async function fetchTour(path, params = {}) {
   };
 }
 
-// 전국 + 전체 분류 + 키워드 검색용 전체 조회
-async function fetchAllByKeyword(keyword, requestId) {
+// ========================
+//  전국 키워드 검색 (searchKeyword 사용)
+// ========================
+async function fetchAllSearchKeyword(keyword, requestId) {
   const all = [];
 
   // 1페이지
-  const first = await fetchTour("areaBasedList", {
+  const first = await fetchTour("searchKeyword", {
     arrange: "E",
     keyword,
-    numOfRows: PAGE_SIZE,
+    numOfRows: KEYWORD_PAGE_SIZE,
     pageNo: 1,
   });
 
@@ -175,16 +182,19 @@ async function fetchAllByKeyword(keyword, requestId) {
 
   all.push(...first.items);
   const totalCount = first.totalCount || first.items.length;
-  const maxPage = Math.ceil(totalCount / PAGE_SIZE);
+  const maxPage = Math.min(
+    Math.ceil(totalCount / KEYWORD_PAGE_SIZE),
+    KEYWORD_MAX_PAGES
+  );
 
   // 2페이지 이후
   for (let page = 2; page <= maxPage; page++) {
     if (requestId !== currentRequestId) break;
 
-    const res = await fetchTour("areaBasedList", {
+    const res = await fetchTour("searchKeyword", {
       arrange: "E",
       keyword,
-      numOfRows: PAGE_SIZE,
+      numOfRows: KEYWORD_PAGE_SIZE,
       pageNo: page,
     });
 
@@ -195,7 +205,39 @@ async function fetchAllByKeyword(keyword, requestId) {
 }
 
 // ========================
-//  유틸: 키워드 필터
+//  거리 계산 (Haversine)
+// ========================
+function deg2rad(d) {
+  return (d * Math.PI) / 180;
+}
+
+function calcDistanceKm(lat1, lng1, lat2, lng2) {
+  const R = 6371; // km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLng = deg2rad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) *
+      Math.cos(deg2rad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function addDistanceToItems(items, userLat, userLng) {
+  return items.map((item) => {
+    const x = parseFloat(item.mapx);
+    const y = parseFloat(item.mapy);
+    if (!x || !y) return { ...item };
+
+    const d = calcDistanceKm(userLat, userLng, y, x);
+    return { ...item, distance: d.toFixed(1), _distance: d };
+  });
+}
+
+// ========================
+//  키워드 필터
 // ========================
 function filterItemsByKeyword(items, keyword) {
   if (!keyword) return items;
@@ -429,7 +471,7 @@ async function openDetail(contentId, contentTypeId) {
           : ""
       }
     `;
-  } catch (e) {
+  } catch {
     modalBody.innerHTML =
       '<p style="font-size:0.82rem;color:#6b7280;">상세 정보를 불러오지 못했습니다.</p>';
   }
@@ -458,9 +500,7 @@ async function loadAreas() {
       opt.textContent = area.name;
       selArea.appendChild(opt);
     });
-  } catch (e) {
-    // 실패해도 fallback 사용 가능
-  }
+  } catch {}
 }
 
 async function loadCategories() {
@@ -483,7 +523,7 @@ async function loadCategories() {
       opt.textContent = cat.name;
       selCategory.appendChild(opt);
     });
-  } catch (e) {}
+  } catch {}
 }
 
 // ========================
@@ -523,29 +563,43 @@ async function runSearch() {
     let items = [];
 
     if (STATE.mode === "nearby") {
-      // 내 주변 검색 (빠른 1페이지)
+      // 내 주변 검색: 위치 + 거리 계산 + 가까운 순 정렬
       const pos = await getCurrentPositionPromise();
       if (requestId !== currentRequestId) return;
 
+      STATE.userLat = pos.coords.latitude;
+      STATE.userLng = pos.coords.longitude;
+
       const { items: resItems = [] } = await fetchTour("locationBasedList", {
         arrange: "E",
-        mapX: pos.coords.longitude,
-        mapY: pos.coords.latitude,
-        radius: 15000,
-        numOfRows: 40,
+        mapX: STATE.userLng,
+        mapY: STATE.userLat,
+        radius: 20000, // 20km
+        numOfRows: 80,
         pageNo: 1,
       });
-      items = resItems;
+
+      const withDist = addDistanceToItems(
+        resItems,
+        STATE.userLat,
+        STATE.userLng
+      ).sort((a, b) => {
+        if (a._distance == null) return 1;
+        if (b._distance == null) return -1;
+        return a._distance - b._distance;
+      });
+
+      items = withDist;
     } else {
       // 지역/분류 검색
       const isNationWideKeywordOnly =
         !STATE.areaCode && !STATE.categoryCode && STATE.keyword;
 
       if (isNationWideKeywordOnly) {
-        // 전국 전체 + 전체 분류 + 키워드 → 전국 전체에서 키워드 전체 조회
-        items = await fetchAllByKeyword(STATE.keyword, requestId);
+        // 전국 전체 + 전체 분류 + 키워드 → searchKeyword로 전국 전체 검색
+        items = await fetchAllSearchKeyword(STATE.keyword, requestId);
       } else {
-        // 일반 케이스 → 빠르게 1페이지 샘플만
+        // 일반 케이스 → areaBasedList 1페이지
         const { items: resItems = [] } = await fetchTour("areaBasedList", {
           arrange: "E",
           areaCode: STATE.areaCode || "",
@@ -559,13 +613,15 @@ async function runSearch() {
 
     if (requestId !== currentRequestId) return;
 
+    // searchKeyword는 이미 키워드를 반영해서 가져오지만,
+    // 일관성을 위해 한번 더 로컬 필터
     const filtered = filterItemsByKeyword(items, STATE.keyword);
     STATE.items = filtered;
 
     renderList(STATE.items);
     renderMarkers(STATE.items);
     setLoading(false);
-  } catch (e) {
+  } catch {
     if (requestId !== currentRequestId) return;
     setLoading(false);
     listContainer.innerHTML =
@@ -588,7 +644,6 @@ async function runInitialSeoul() {
   listContainer.innerHTML = "";
   txtCount.textContent = "0곳";
 
-  // 셀렉트에서 서울 옵션 찾기
   let seoulCode = SEOUL_FALLBACK_CODE;
   const options = Array.from(selArea.options);
   const seoulOption = options.find((opt) => opt.textContent.includes("서울"));
@@ -616,7 +671,7 @@ async function runInitialSeoul() {
     renderList(STATE.items);
     renderMarkers(STATE.items);
     setLoading(false);
-  } catch (e) {
+  } catch {
     if (requestId !== currentRequestId) return;
     setLoading(false);
     txtQueryState.textContent = "서울 기본 데이터 로딩 실패";
