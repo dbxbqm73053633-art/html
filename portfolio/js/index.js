@@ -174,17 +174,13 @@ function renderMarkers(items) {
 
     const marker = new kakao.maps.Marker({ position: pos });
     marker.contentId = item.contentid;
+    marker.contentTypeId = item.contenttypeid;
 
+    // 지도 마커 클릭 시 → 카드 활성화 + 상세 모달
     kakao.maps.event.addListener(marker, "click", () => {
       setActiveCard(marker.contentId);
       focusOnMarker(marker);
-      if (item.title) {
-        const iw = new kakao.maps.InfoWindow({
-          content: `<div style="padding:6px 10px;font-size:12px;">${item.title}</div>`,
-          removable: true,
-        });
-        iw.open(map, marker);
-      }
+      openDetail(marker.contentId, marker.contentTypeId);
     });
 
     markers.push(marker);
@@ -306,6 +302,7 @@ function createCardElement(item) {
   card.appendChild(thumb);
   card.appendChild(body);
 
+  // 카드 클릭 → 지도 이동 + 상세 모달
   card.addEventListener("click", () => {
     setActiveCard(item.contentid);
     focusMarkerByContentId(item.contentid);
@@ -410,7 +407,7 @@ async function openDetail(contentId, contentTypeId) {
   }
 }
 
-// ===== 지역/분류 버튼 생성 =====
+/* ===== 지역/분류 버튼 생성 ===== */
 function makeFilterChip(label, code, group, onClick) {
   const btn = document.createElement("button");
   btn.type = "button";
@@ -432,7 +429,6 @@ function makeFilterChip(label, code, group, onClick) {
 }
 
 async function loadAreas() {
-  // "전국" 기본 버튼
   const allBtn = makeFilterChip("전국", "", areaButtonsEl, (code) => {
     STATE.areaCode = code;
     STATE.mode = "area";
@@ -454,13 +450,10 @@ async function loadAreas() {
       });
       areaButtonsEl.appendChild(btn);
     });
-  } catch {
-    // 무시
-  }
+  } catch {}
 }
 
 async function loadCategories() {
-  // "전체" 기본
   const allBtn = makeFilterChip("전체", "", categoryButtonsEl, (code) => {
     STATE.categoryCode = code;
     STATE.mode = "area";
@@ -474,7 +467,6 @@ async function loadCategories() {
       numOfRows: 50,
       pageNo: 1,
     });
-
     items.forEach((cat) => {
       const btn = makeFilterChip(cat.name, cat.code, categoryButtonsEl, (code) => {
         STATE.categoryCode = code;
@@ -483,9 +475,7 @@ async function loadCategories() {
       });
       categoryButtonsEl.appendChild(btn);
     });
-  } catch {
-    // 무시
-  }
+  } catch {}
 }
 
 // ===== 현재 위치 =====
@@ -580,7 +570,6 @@ function bindEvents() {
     STATE.categoryCode = "";
     STATE.mode = "area";
 
-    // 지역/분류 버튼 다시 초기화
     areaButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
       chip.classList.toggle(
         "filter-chip-active",

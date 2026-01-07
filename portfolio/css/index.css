@@ -124,14 +124,20 @@ body {
 
 .brand-text-block .brand-name {
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-sub {
   font-size: 0.75rem;
   color: var(--text-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .top-actions {
@@ -143,8 +149,8 @@ body {
 
 .btn {
   border-radius: 999px;
-  padding: 8px 16px;
-  font-size: 0.86rem;
+  padding: 8px 14px;
+  font-size: 0.83rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -194,9 +200,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 14px 14px;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, #eef2ff, #fef9c3);
   box-shadow: var(--shadow-soft);
@@ -205,29 +211,34 @@ body {
 }
 
 .hero-text h1 {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hero-text p {
-  font-size: 0.86rem;
+  font-size: 0.8rem;
   color: var(--text-sub);
+  line-height: 1.4;
+  max-width: 22rem;
 }
 
 .hero-pets {
   position: relative;
   flex-shrink: 0;
-  width: 120px;
-  height: 70px;
+  width: 100px;
+  height: 60px;
 }
 
 .hero-paw {
   position: absolute;
   right: -10px;
   top: -18px;
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background-image: radial-gradient(circle at 30% 30%, rgba(251, 191, 36, 0.5) 45%, transparent 47%),
     radial-gradient(circle at 70% 30%, rgba(251, 191, 36, 0.45) 45%, transparent 47%),
     radial-gradient(circle at 50% 70%, rgba(251, 191, 36, 0.6) 60%, transparent 62%);
@@ -238,43 +249,45 @@ body {
 .hero-pet-dog,
 .hero-pet-cat {
   position: absolute;
-  font-size: 1.9rem;
+  font-size: 1.7rem;
 }
 
 .hero-pet-dog {
   bottom: 0;
-  left: 12px;
+  left: 8px;
 }
 
 .hero-pet-cat {
   bottom: 2px;
-  right: 18px;
+  right: 12px;
 }
 
 /* 검색 바 */
 
 .search-bar {
-  margin-bottom: 12px;
-  padding: 12px 14px 10px;
+  margin-bottom: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-lg);
   background: #ffffff;
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--border-soft);
 }
 
+/* 필터 그룹을 모바일에서 더 단정하게 한 줄씩 */
+
 .filter-group {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .filter-label-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .filter-label {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -282,11 +295,11 @@ body {
 }
 
 .filter-hint {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: #9ca3af;
 }
 
-/* 지역/분류 버튼 전체 보이게 */
+/* 지역/분류 버튼 – wrap, 간격 일정 */
 
 .filter-chip-row {
   display: flex;
@@ -296,7 +309,7 @@ body {
 
 .filter-chip {
   border-radius: 999px;
-  padding: 6px 11px;
+  padding: 5px 9px;
   font-size: 0.78rem;
   border: 1px solid var(--border-soft);
   background: #f9fafb;
@@ -315,7 +328,7 @@ body {
   background: #eef2ff;
   border-color: #4f46e5;
   color: #312e81;
-  box-shadow: 0 10px 26px rgba(129, 140, 248, 0.45);
+  box-shadow: 0 6px 18px rgba(129, 140, 248, 0.4);
 }
 
 /* 키워드 */
@@ -330,8 +343,8 @@ body {
   flex: 1;
   border-radius: 999px;
   border: 1px solid var(--border-soft);
-  padding: 8px 12px;
-  font-size: 0.9rem;
+  padding: 7px 12px;
+  font-size: 0.88rem;
   outline: none;
 }
 
@@ -345,7 +358,7 @@ body {
 .main-layout {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .panel {
@@ -358,23 +371,26 @@ body {
 /* 리스트 패널 */
 
 .panel-list {
-  padding: 10px 12px 12px;
+  padding: 8px 10px 10px;
 }
 
 .panel-header {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .panel-header h2 {
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .panel-sub {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-sub);
   margin-top: 2px;
 }
@@ -391,12 +407,12 @@ body {
   border-radius: 999px;
   background: #eef2ff;
   border: 1px solid #c7d2fe;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: #3730a3;
 }
 
 .query-state {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-sub);
 }
 
@@ -404,11 +420,11 @@ body {
 
 .list-skeleton {
   display: none;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .skeleton-card {
-  height: 72px;
+  height: 68px;
   border-radius: var(--radius-md);
   background: linear-gradient(
     90deg,
@@ -418,7 +434,7 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 1.1s infinite;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 @keyframes shimmer {
@@ -430,14 +446,14 @@ body {
   }
 }
 
-/* 리스트 컨테이너 */
+/* 리스트 컨테이너 – 모바일에서도 안 겹치게 높이 제한 */
 
 .list-container {
-  max-height: 380px;
+  max-height: min(380px, 55vh);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   padding-right: 2px;
 }
 
@@ -458,8 +474,8 @@ body {
 
 .card {
   display: flex;
-  gap: 10px;
-  padding: 8px;
+  gap: 8px;
+  padding: 7px;
   border-radius: var(--radius-md);
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -495,8 +511,8 @@ body {
 }
 
 .card-thumb {
-  width: 64px;
-  height: 64px;
+  width: 60px;
+  height: 60px;
   border-radius: 14px;
   background-color: #e5e7eb;
   background-position: center;
@@ -534,25 +550,36 @@ body {
 }
 
 .card-title {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-badge {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   padding: 2px 7px;
   border-radius: 999px;
   background: #fef3c7;
   color: #92400e;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .card-meta {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--text-sub);
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
+}
+
+.card-meta span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .card-tags {
@@ -573,16 +600,16 @@ body {
 /* 지도 패널 */
 
 .panel-map {
-  padding: 10px;
+  padding: 8px 10px 10px;
 }
 
 .panel-header-map {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .map {
   width: 100%;
-  height: 280px;
+  height: 260px;
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
@@ -656,6 +683,10 @@ body {
 @media (min-width: 880px) {
   .app-shell {
     padding: 16px 18px 26px;
+  }
+
+  .hero-strip {
+    padding: 12px 16px;
   }
 
   .main-layout {
