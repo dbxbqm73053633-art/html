@@ -11,62 +11,86 @@
     <!-- 상단 헤더 -->
     <header class="top-bar">
       <div class="brand">
-        <span class="brand-mark">🐾</span>
-        <span class="brand-text">PetTour</span>
+        <div class="brand-logo">
+          <div class="brand-pet-ears"></div>
+          <div class="brand-pet-face">
+            <span class="brand-pet-eye left"></span>
+            <span class="brand-pet-eye right"></span>
+            <span class="brand-pet-nose"></span>
+          </div>
+        </div>
+        <div class="brand-text-block">
+          <span className="brand-name">PetTour</span>
+          <span class="brand-sub">전국 반려동물 동반 여행지 지도</span>
+        </div>
       </div>
       <nav class="top-actions">
-        <button id="btnNearby" class="btn btn-ghost">내 주변</button>
-        <button id="btnReset" class="btn btn-outline">필터 초기화</button>
+        <button id="btnNearby" class="btn btn-ghost">내 주변 찾기</button>
+        <button id="btnReset" class="btn btn-outline">조건 초기화</button>
       </nav>
     </header>
 
-    <!-- 검색/필터 바 (sticky) -->
-    <section class="search-bar">
-      <div class="search-row">
-        <div class="field">
-          <label for="selArea">지역</label>
-          <select id="selArea">
-            <option value="">전국</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="selCategory">분류</label>
-          <select id="selCategory">
-            <option value="">전체</option>
-          </select>
-        </div>
+    <!-- 상단 펫 히어로 카드 -->
+    <section class="hero-strip">
+      <div class="hero-text">
+        <h1>우리 집 반려동물과 떠나는 여행</h1>
+        <p>지역 · 분류 · 키워드만 선택하면, 반려동물 동반 가능한 여행지를 한눈에 볼 수 있어요.</p>
       </div>
-
-      <div class="search-row">
-        <div class="field field-full">
-          <label for="iptKeyword">키워드</label>
-          <div class="field-inline">
-            <input id="iptKeyword" type="text" placeholder="예: 애견카페, 펜션, 캠핑장" />
-            <button id="btnSearch" type="button" class="btn btn-primary">
-              검색
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="chip-row" id="chipRow">
-        <button class="chip chip-active" data-type="all">전체</button>
-        <button class="chip" data-type="stay">숙소</button>
-        <button class="chip" data-type="cafe">카페</button>
-        <button class="chip" data-type="park">공원/산책</button>
-        <button class="chip" data-type="etc">기타</button>
+      <div class="hero-pets">
+        <div class="hero-paw"></div>
+        <div class="hero-pet-dog">🐶</div>
+        <div class="hero-pet-cat">🐱</div>
       </div>
     </section>
 
-    <!-- 메인 콘텐츠 영역 -->
+    <!-- 검색/필터 바 -->
+    <section class="search-bar">
+      <!-- 지역 -->
+      <div class="filter-group">
+        <div class="filter-label-row">
+          <span class="filter-label">지역</span>
+          <span class="filter-hint">전국 / 시·도 단위 선택</span>
+        </div>
+        <div id="areaButtons" class="filter-chip-row">
+          <!-- JS로 버튼 생성 -->
+        </div>
+      </div>
+
+      <!-- 분류 -->
+      <div class="filter-group">
+        <div class="filter-label-row">
+          <span class="filter-label">분류</span>
+          <span class="filter-hint">숙박 / 관광지 / 음식점 등</span>
+        </div>
+        <div id="categoryButtons" class="filter-chip-row">
+          <!-- JS로 버튼 생성 -->
+        </div>
+      </div>
+
+      <!-- 키워드 -->
+      <div class="filter-group">
+        <div class="filter-label-row">
+          <span class="filter-label">키워드</span>
+          <span class="filter-hint">예: 애견카페, 펜션, 캠핑장</span>
+        </div>
+        <div class="search-row">
+          <input id="iptKeyword" type="text" class="keyword-input" placeholder="장소 이름 · 특징 · 동네명으로 검색" />
+          <button id="btnSearch" type="button" class="btn btn-primary">
+            검색
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 메인 레이아웃 -->
     <main class="main-layout">
-      <!-- 좌측 리스트 -->
+      <!-- 리스트 패널 -->
       <section class="panel panel-list">
         <header class="panel-header">
           <div>
-            <h1>반려동물 동반 여행지</h1>
-            <p class="sub">
-              전국 반려동물 동반 가능한 여행지를 지역·분류·키워드로 한 번에 조회
+            <h2>반려동물 동반 여행지</h2>
+            <p class="panel-sub">
+              검색 조건에 해당하는 전국 여행지를 리스트와 지도에서 동시에 확인하세요.
             </p>
           </div>
           <div class="panel-meta">
@@ -75,31 +99,24 @@
           </div>
         </header>
 
-        <!-- 로딩 스켈레톤 -->
         <div id="listSkeleton" class="list-skeleton">
           <div class="skeleton-card"></div>
           <div class="skeleton-card"></div>
           <div class="skeleton-card"></div>
         </div>
 
-        <!-- 결과 리스트 -->
         <div id="listContainer" class="list-container">
           <!-- JS 렌더링 -->
         </div>
-
-        <!-- 더 보기 버튼 (페이지 로딩) -->
-        <button id="btnLoadMore" class="btn btn-block btn-outline hidden">
-          더 보기
-        </button>
       </section>
 
-      <!-- 우측 지도 -->
+      <!-- 지도 패널 -->
       <section class="panel panel-map">
         <header class="panel-header panel-header-map">
           <div>
-            <h2>지도 보기</h2>
-            <p class="sub">
-              카드 또는 클러스터를 선택하면 해당 여행지 위치로 이동합니다.
+            <h2>지도에서 보기</h2>
+            <p class="panel-sub">
+              카드를 클릭하면 지도 중심이 이동하고, 클러스터를 확대하면 지역별 여행지를 더 자세히 볼 수 있습니다.
             </p>
           </div>
         </header>

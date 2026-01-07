@@ -10,7 +10,7 @@ const COMMON_PARAMS = {
   _type: "json",
 };
 
-const PAGE_SIZE = 100; // 전국 전체 다 가져오기 위해 페이지당 최대치로
+const PAGE_SIZE = 100;
 
 // 상태
 const STATE = {
@@ -18,15 +18,14 @@ const STATE = {
   areaCode: "",
   categoryCode: "",
   keyword: "",
-  tabType: "all",
   mode: "area", // area | nearby
 };
 
 let currentRequestId = 0;
 
 // ===== DOM =====
-const selArea = document.getElementById("selArea");
-const selCategory = document.getElementById("selCategory");
+const areaButtonsEl = document.getElementById("areaButtons");
+const categoryButtonsEl = document.getElementById("categoryButtons");
 const iptKeyword = document.getElementById("iptKeyword");
 const btnSearch = document.getElementById("btnSearch");
 const btnNearby = document.getElementById("btnNearby");
@@ -35,7 +34,6 @@ const listSkeleton = document.getElementById("listSkeleton");
 const listContainer = document.getElementById("listContainer");
 const txtCount = document.getElementById("txtCount");
 const txtQueryState = document.getElementById("txtQueryState");
-const chipRow = document.getElementById("chipRow");
 
 const detailModal = document.getElementById("detailModal");
 const btnModalClose = document.getElementById("btnModalClose");
@@ -106,7 +104,6 @@ async function fetchAllPages(path, baseParams, requestId) {
   const totalCount = first.totalCount || first.items.length;
   const maxPage = Math.ceil(totalCount / PAGE_SIZE);
 
-  // 2페이지 이후
   for (let page = 2; page <= maxPage; page++) {
     if (requestId !== currentRequestId) break;
     const res = await fetchTour(path, {
@@ -127,11 +124,7 @@ function setLoading(isLoading, message = "") {
     txtQueryState.textContent = message || "검색 중…";
   } else {
     listSkeleton.style.display = "none";
-    if (!STATE.items.length) {
-      txtQueryState.textContent = "결과 없음";
-    } else {
-      txtQueryState.textContent = "완료";
-    }
+    txtQueryState.textContent = STATE.items.length ? "완료" : "결과 없음";
   }
 }
 
@@ -210,7 +203,7 @@ function focusMarkerByContentId(contentId) {
   if (marker) focusOnMarker(marker);
 }
 
-// ===== 리스트 렌더링 (chunk) =====
+// ===== 리스트 렌더링 =====
 function renderList(items) {
   listContainer.innerHTML = "";
   txtCount.textContent = `${items.length}곳`;
@@ -326,7 +319,7 @@ function createCardElement(item) {
 async function openDetail(contentId, contentTypeId) {
   try {
     modalBody.innerHTML =
-      '<p style="font-size:0.82rem;color:#9ca3af;">상세 정보 로딩 중…</p>';
+      '<p style="font-size:0.82rem;color:#6b7280;">상세 정보 로딩 중…</p>';
     detailModal.classList.remove("hidden");
 
     const [commonRes, introRes, imageRes] = await Promise.all([
@@ -368,10 +361,10 @@ async function openDetail(contentId, contentTypeId) {
             </div>`
           : ""
       }
-      <p style="font-size:0.86rem;color:#cbd5f5;line-height:1.6;margin-bottom:10px;">
+      <p style="font-size:0.86rem;color:#4b5563;line-height:1.6;margin-bottom:10px;">
         ${common.overview || "상세 설명이 제공되지 않았습니다."}
       </p>
-      <div style="font-size:0.8rem;color:#9ca3af;margin-bottom:8px;">
+      <div style="font-size:0.8rem;color:#6b7280;margin-bottom:8px;">
         ${
           common.addr1
             ? `<div><strong>주소</strong> : ${common.addr1} ${
@@ -398,7 +391,7 @@ async function openDetail(contentId, contentTypeId) {
       ${
         images.length
           ? `<div style="margin-top:4px;">
-              <strong style="font-size:0.8rem;color:#e5e7eb;">추가 이미지</strong>
+              <strong style="font-size:0.8rem;color:#111827;">추가 이미지</strong>
               <div style="display:flex;gap:6px;margin-top:4px;overflow-x:auto;">
                 ${images
                   .map(
@@ -413,58 +406,86 @@ async function openDetail(contentId, contentTypeId) {
     `;
   } catch {
     modalBody.innerHTML =
-      '<p style="font-size:0.82rem;color:#9ca3af;">상세 정보를 불러오지 못했습니다.</p>';
+      '<p style="font-size:0.82rem;color:#6b7280;">상세 정보를 불러오지 못했습니다.</p>';
   }
 }
 
-// ===== 카테고리(숙소/카페/공원산책) 파라미터 =====
-function buildCategoryParamsByTab(tabType) {
-  const params = {};
-  switch (tabType) {
-    case "stay":
-      params.contentTypeId = 32; // 숙박
-      break;
-    case "cafe":
-      params.cat3 = "A05020900"; // 카페
-      break;
-    case "park":
-      params.cat2 = "A0202"; // 공원/자연
-      break;
-    default:
-      break;
-  }
-  return params;
+// ===== 지역/분류 버튼 생성 =====
+function makeFilterChip(label, code, group, onClick) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "filter-chip";
+  btn.dataset.code = code;
+  btn.textContent = label;
+
+  btn.addEventListener("click", () => {
+    group.querySelectorAll(".filter-chip").forEach((chip) => {
+      chip.classList.toggle(
+        "filter-chip-active",
+        chip.dataset.code === code
+      );
+    });
+    onClick(code);
+  });
+
+  return btn;
 }
 
-// ===== 지역/분류 코드 로딩 =====
 async function loadAreas() {
+  // "전국" 기본 버튼
+  const allBtn = makeFilterChip("전국", "", areaButtonsEl, (code) => {
+    STATE.areaCode = code;
+    STATE.mode = "area";
+    runSearch();
+  });
+  allBtn.classList.add("filter-chip-active");
+  areaButtonsEl.appendChild(allBtn);
+
   try {
     const { items } = await fetchTour("areaCode", {
       numOfRows: 50,
       pageNo: 1,
     });
     items.forEach((area) => {
-      const opt = document.createElement("option");
-      opt.value = area.code;
-      opt.textContent = area.name;
-      selArea.appendChild(opt);
+      const btn = makeFilterChip(area.name, area.code, areaButtonsEl, (code) => {
+        STATE.areaCode = code;
+        STATE.mode = "area";
+        runSearch();
+      });
+      areaButtonsEl.appendChild(btn);
     });
-  } catch {}
+  } catch {
+    // 무시
+  }
 }
 
 async function loadCategories() {
+  // "전체" 기본
+  const allBtn = makeFilterChip("전체", "", categoryButtonsEl, (code) => {
+    STATE.categoryCode = code;
+    STATE.mode = "area";
+    runSearch();
+  });
+  allBtn.classList.add("filter-chip-active");
+  categoryButtonsEl.appendChild(allBtn);
+
   try {
     const { items } = await fetchTour("categoryCode", {
-      numOfRows: 100,
+      numOfRows: 50,
       pageNo: 1,
     });
+
     items.forEach((cat) => {
-      const opt = document.createElement("option");
-      opt.value = cat.code;
-      opt.textContent = cat.name;
-      selCategory.appendChild(opt);
+      const btn = makeFilterChip(cat.name, cat.code, categoryButtonsEl, (code) => {
+        STATE.categoryCode = code;
+        STATE.mode = "area";
+        runSearch();
+      });
+      categoryButtonsEl.appendChild(btn);
     });
-  } catch {}
+  } catch {
+    // 무시
+  }
 }
 
 // ===== 현재 위치 =====
@@ -485,8 +506,6 @@ function getCurrentPositionPromise() {
 async function runSearch() {
   const requestId = ++currentRequestId;
 
-  STATE.areaCode = selArea.value;
-  STATE.categoryCode = selCategory.value;
   STATE.keyword = iptKeyword.value.trim();
 
   setLoading(
@@ -511,12 +530,11 @@ async function runSearch() {
       };
       items = await fetchAllPages("locationBasedList", baseParams, requestId);
     } else {
-      const catParams = buildCategoryParamsByTab(STATE.tabType);
       const baseParams = {
         arrange: "E",
         areaCode: STATE.areaCode || "",
+        cat1: STATE.categoryCode || "",
         keyword: STATE.keyword || "",
-        ...catParams,
       };
       items = await fetchAllPages("areaBasedList", baseParams, requestId);
     }
@@ -527,22 +545,16 @@ async function runSearch() {
     renderList(STATE.items);
     renderMarkers(STATE.items);
     setLoading(false);
-  } catch (err) {
+  } catch {
     if (requestId !== currentRequestId) return;
     setLoading(false);
     listContainer.innerHTML =
-      '<p style="font-size:0.82rem;color:#f97373;padding:6px;">데이터 조회 중 문제가 발생했습니다.</p>';
+      '<p style="font-size:0.82rem;color:#ef4444;padding:6px;">데이터 조회 중 문제가 발생했습니다.</p>';
     txtCount.textContent = "0곳";
   }
 }
 
 // ===== 이벤트 =====
-function setChipActive(type) {
-  chipRow.querySelectorAll(".chip").forEach((chip) => {
-    chip.classList.toggle("chip-active", chip.dataset.type === type);
-  });
-}
-
 function bindEvents() {
   btnSearch.addEventListener("click", () => {
     STATE.mode = "area";
@@ -562,23 +574,27 @@ function bindEvents() {
   });
 
   btnReset.addEventListener("click", () => {
-    selArea.value = "";
-    selCategory.value = "";
     iptKeyword.value = "";
-    STATE.tabType = "all";
+    STATE.keyword = "";
+    STATE.areaCode = "";
+    STATE.categoryCode = "";
     STATE.mode = "area";
-    setChipActive("all");
-    runSearch();
-  });
 
-  chipRow.querySelectorAll(".chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const type = chip.dataset.type;
-      STATE.tabType = type;
-      STATE.mode = "area";
-      setChipActive(type);
-      runSearch();
+    // 지역/분류 버튼 다시 초기화
+    areaButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
+      chip.classList.toggle(
+        "filter-chip-active",
+        chip.textContent === "전국"
+      );
     });
+    categoryButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
+      chip.classList.toggle(
+        "filter-chip-active",
+        chip.textContent === "전체"
+      );
+    });
+
+    runSearch();
   });
 
   btnModalClose.addEventListener("click", () => {
