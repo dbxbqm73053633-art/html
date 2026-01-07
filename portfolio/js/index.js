@@ -1,509 +1,442 @@
-// ====== CONFIG ======
-const PUBLIC_DATA_API_KEY =
+// =========================
+//  설정
+// =========================
+const SERVICE_KEY =
   "37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a";
 
-// TODO: 실제로 사용할 실거래가 서비스 URL 로 교체
-// 예: 국토부 아파트 매매 실거래: https://apis.data.go.kr/1613000/AptTradeService/getRTMSDataSvcAptTrade
-const REAL_ESTATE_API_URL =
-  "https://apis.data.go.kr/PUT_YOUR_REAL_ESTATE_SERVICE_HERE";
-
-// ====== STATE ======
-let map;
-let mapMarkers = [];
-let deals = [];
-let currentPage = 1;
-let isLoading = false;
-let currentFilters = {
-  dealType: "sale", // sale | jeonse | rent
-  periodMonths: 3, // 3 | 6 | 12
-  keyword: "",
-  sort: "recent",
-  lat: null,
-  lng: null,
+// 거래유형 → EndPoint 매핑
+const API_ENDPOINTS = {
+  aptTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev",
+  aptRent: "https://apis.data.go.kr/1613000/RTMSDataSvcAptRent",
+  offiTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcOffiTrade",
+  offiRent: "https://apis.data.go.kr/1613000/RTMSDataSvcOffiRent",
+  rhTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcRHTrade",
+  induTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcInduTrade",
+  nrgTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcNrgTrade",
+  landTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcLandTrade",
+  silvTrade: "https://apis.data.go.kr/1613000/RTMSDataSvcSilvTrade",
 };
 
-// ====== DOM ======
-const loadingOverlay = document.getElementById("loading-overlay");
-const dealListEl = document.getElementById("deal-list");
-const summaryCountEl = document.getElementById("summary-count");
-const summaryPriceRangeEl = document.getElementById("summary-price-range");
-const keywordInput = document.getElementById("keyword-input");
-const btnClearKeyword = document.getElementById("btn-clear-keyword");
-const btnSearch = document.getElementById("btn-search");
-const btnLoadMore = document.getElementById("btn-load-more");
-const sortSelect = document.getElementById("sort-select");
-const btnRefreshLocation = document.getElementById("btn-refresh-location");
-const currentLocationLabel = document.getElementById(
-  "current-location-label"
-);
-const btnFitMarkers = document.getElementById("btn-fit-markers");
-const toastEl = document.getElementById("toast");
+// 간단 예시용: 임의의 법정동 코드 매핑 (실서비스에서는 검색/선택 UI 필요)
+const DONG_CODE_MAP = {
+  "서초구 서초동": "11650",
+  "강남구 대치동": "11680",
+  "부산 해운대구 우동": "26350",
+};
 
-// ====== UTILS ======
-function showLoading(show) {
-  isLoading = show;
-  if (show) {
-    loadingOverlay.classList.add("show");
-  } else {
-    loadingOverlay.classList.remove("show");
-  }
-}
+// =========================
+//  DOM 요소
+// =========================
+const dealTypeTabs = document.getElementById("dealTypeTabs");
+const btnSearch = document.getElementById("btnSearch");
+const resultList = document.getElementById("resultList");
+const resultMeta = document.getElementById("resultMeta");
+const btnMore = document.getElementById("btnMore");
+const inputDong = document.getElementById("inputDong");
+const inputMonth = document.getElementById("inputMonth");
+const selectSort = document.getElementById("selectSort");
+const inputMinArea = document.getElementById("inputMinArea");
+const inputMaxPrice = document.getElementById("inputMaxPrice");
+const btnCurrentLocation = document.getElementById("btnCurrentLocation");
 
-function showToast(message, duration = 2000) {
-  toastEl.textContent = message;
-  toastEl.classList.add("show");
-  setTimeout(() => {
-    toastEl.classList.remove("show");
-  }, duration);
-}
+let currentDealType = "aptTrade";
+let currentPage = 1;
+let totalCount = 0;
+let currentList = [];
 
-function formatPriceKRW(value) {
-  if (!value && value !== 0) return "-";
-  const num = Number(value);
-  if (Number.isNaN(num)) return value;
-  if (num >= 10000) {
-    const eok = Math.floor(num / 10000);
-    const man = num % 10000;
-    return man > 0 ? `${eok}억 ${man.toLocaleString()}만` : `${eok}억`;
-  }
-  return `${num.toLocaleString()}만`;
-}
+// =========================
+//  Kakao Map 초기화
+// =========================
+let map;
+let currentMarker;
 
-function formatArea(area) {
-  if (!area) return "-";
-  return `${Number(area).toFixed(1)}㎡`;
-}
-
-function getDealTypeLabel(type) {
-  switch (type) {
-    case "sale":
-      return "매매";
-    case "jeonse":
-      return "전세";
-    case "rent":
-      return "월세";
-    default:
-      return type;
-  }
-}
-
-function computeSummary(deals) {
-  if (!deals.length) {
-    summaryCountEl.textContent = "실거래 0건";
-    summaryPriceRangeEl.textContent = "가격 범위 -";
-    return;
-  }
-  const prices = deals
-    .map((d) => d.price)
-    .filter((p) => typeof p === "number" && !Number.isNaN(p));
-  if (!prices.length) {
-    summaryCountEl.textContent = `실거래 ${deals.length}건`;
-    summaryPriceRangeEl.textContent = "가격 범위 -";
-    return;
-  }
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  summaryCountEl.textContent = `실거래 ${deals.length}건`;
-  summaryPriceRangeEl.textContent = `가격 범위 ${formatPriceKRW(
-    min
-  )} ~ ${formatPriceKRW(max)}`;
-}
-
-// ====== 공공데이터 API 연동 ======
-
-async function fetchDealsFromApi(page = 1) {
-  // 실제 사용하는 서비스에 따라 파라미터 구조 변경 필요
-  // 여기서는 대표적인 형태 예시
-  const now = new Date();
-  const past = new Date();
-  past.setMonth(now.getMonth() - currentFilters.periodMonths);
-
-  const dealYmdFrom = `${past.getFullYear()}${String(
-    past.getMonth() + 1
-  ).padStart(2, "0")}01`;
-
-  // 실거래 API가 보통 region (법정동 코드) 기반이므로,
-  // 키워드는 서버 쪽에서 동코드 매핑하거나, 프런트에서 동코드 API를 한 번 더 호출해서 변환하는 식으로 구성.
-  // 여기서는 keyword를 단순히 그대로 넘긴다는 가정으로 예시 작성.
-  const params = new URLSearchParams({
-    serviceKey: PUBLIC_DATA_API_KEY,
-    pageNo: String(page),
-    numOfRows: "30",
-    // API 스펙에 맞게 필드명 교체 필요
-    LAWD_CD: "", // 법정동 코드 (TODO)
-    DEAL_YMD: dealYmdFrom.slice(0, 6), // 예: 202601
-  });
-
-  const url = `${REAL_ESTATE_API_URL}?${params.toString()}`;
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("실거래 API 호출 실패");
-  }
-
-  const text = await response.text();
-
-  // 공공데이터포털은 XML을 반환하는 경우가 많음.
-  // XML → JS object 파싱은 실제 서비스에서 DOMParser 등을 사용해서 구현.
-  // 여기서는 샘플을 위해 가공된 JSON 형태라고 가정하고 parseDealsFromApi() 예시를 만든다.
-  // const xmlDoc = new DOMParser().parseFromString(text, "text/xml");
-  // TODO: xmlDoc 에서 items 파싱 후 deals 배열로 변환
-
-  // ===== 샘플 MOCK (실제 구현 시 위 XML 파싱으로 대체) =====
-  const mockDeals = [
-    {
-      id: `mock-${page}-1`,
-      aptName: "샘플자이아파트",
-      address: "서울특별시 강남구 역삼동 123-4",
-      dealType: currentFilters.dealType,
-      price: 135000, // 만원 단위
-      area: 84.97,
-      floor: 15,
-      tradeDate: "2026-01-01",
-      lat: currentFilters.lat || 37.4979,
-      lng: currentFilters.lng || 127.0276,
-    },
-    {
-      id: `mock-${page}-2`,
-      aptName: "샘플래미안",
-      address: "서울특별시 강남구 역삼동 567-8",
-      dealType: currentFilters.dealType,
-      price: 98000,
-      area: 59.83,
-      floor: 7,
-      tradeDate: "2025-12-20",
-      lat: (currentFilters.lat || 37.4979) + 0.002,
-      lng: (currentFilters.lng || 127.0276) + 0.002,
-    },
-  ];
-
-  return mockDeals;
-}
-
-// XML/JSON → 내부 공통 포맷
-// 실제로는 API 스펙에 맞게 필드를 맵핑해주면 된다.
-function parseDealsFromApi(apiDeals) {
-  return apiDeals.map((d) => ({
-    id: d.id,
-    aptName: d.aptName,
-    address: d.address,
-    dealType: d.dealType,
-    price: Number(d.price),
-    area: Number(d.area),
-    floor: d.floor,
-    tradeDate: d.tradeDate,
-    lat: d.lat,
-    lng: d.lng,
-  }));
-}
-
-// ====== Kakao Map ======
 function initMap() {
   const container = document.getElementById("map");
   const options = {
-    center: new kakao.maps.LatLng(37.5665, 126.978),
+    center: new kakao.maps.LatLng(37.4979, 127.0276), // 강남역 근처
     level: 5,
   };
   map = new kakao.maps.Map(container, options);
 }
 
-function clearMarkers() {
-  mapMarkers.forEach((m) => m.setMap(null));
-  mapMarkers = [];
+if (window.kakao && window.kakao.maps) {
+  kakao.maps.load(initMap);
 }
 
-function renderMarkers(dealsToShow) {
-  if (!map) return;
-  clearMarkers();
-  if (!dealsToShow.length) return;
+// 선택된 매물 위치로 이동
+function focusOnDeal(deal) {
+  if (!map || !deal.lat || !deal.lng) return;
 
-  const bounds = new kakao.maps.LatLngBounds();
+  const latLng = new kakao.maps.LatLng(deal.lat, deal.lng);
+  map.setCenter(latLng);
+  map.setLevel(4);
 
-  dealsToShow.forEach((deal) => {
-    if (!deal.lat || !deal.lng) return;
-    const position = new kakao.maps.LatLng(deal.lat, deal.lng);
-    const marker = new kakao.maps.Marker({
-      position,
+  if (!currentMarker) {
+    currentMarker = new kakao.maps.Marker({
+      position: latLng,
       map,
     });
-    bounds.extend(position);
-
-    const content = `
-      <div style="
-        padding:6px 10px;
-        border-radius:999px;
-        background:rgba(15,23,42,0.95);
-        border:1px solid rgba(56,189,248,0.7);
-        color:#e5e7eb;
-        font-size:11px;
-        white-space:nowrap;
-      ">
-        ${deal.aptName} · ${formatPriceKRW(deal.price)}
-      </div>
-    `;
-    const overlay = new kakao.maps.CustomOverlay({
-      position,
-      content,
-      yAnchor: 1.2,
-    });
-
-    kakao.maps.event.addListener(marker, "mouseover", () =>
-      overlay.setMap(map)
-    );
-    kakao.maps.event.addListener(marker, "mouseout", () =>
-      overlay.setMap(null)
-    );
-
-    mapMarkers.push(marker);
-  });
-
-  if (!bounds.isEmpty()) {
-    map.setBounds(bounds, 30);
+  } else {
+    currentMarker.setPosition(latLng);
   }
 }
 
-function fitMarkersToBounds() {
-  if (!map || !mapMarkers.length) return;
-  const bounds = new kakao.maps.LatLngBounds();
-  mapMarkers.forEach((m) => bounds.extend(m.getPosition()));
-  if (!bounds.isEmpty()) {
-    map.setBounds(bounds, 30);
-  }
+// =========================
+//  거래유형 탭 이벤트
+// =========================
+dealTypeTabs.addEventListener("click", (e) => {
+  const btn = e.target.closest(".chip-tab");
+  if (!btn) return;
+
+  document
+    .querySelectorAll(".chip-tab")
+    .forEach((el) => el.classList.remove("active"));
+  btn.classList.add("active");
+
+  currentDealType = btn.dataset.dealType;
+});
+
+// =========================
+//  필터에서 법정동 코드 찾기 (예시)
+// =========================
+function getLawdCdFromInput() {
+  const text = inputDong.value.trim();
+  if (DONG_CODE_MAP[text]) return DONG_CODE_MAP[text];
+  // 실제 서비스에서는 여기서 검색 API 연동 또는 선택 UI로 대체
+  return null;
 }
 
-// ====== RENDER LIST ======
-
-function renderDealList() {
-  dealListEl.innerHTML = "";
-
-  // 정렬
-  let sorted = [...deals];
-  switch (currentFilters.sort) {
-    case "price-desc":
-      sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-      break;
-    case "price-asc":
-      sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-      break;
-    case "area-desc":
-      sorted.sort((a, b) => (b.area || 0) - (a.area || 0));
-      break;
-    case "recent":
-    default:
-      sorted.sort(
-        (a, b) => new Date(b.tradeDate) - new Date(a.tradeDate)
-      );
+// =========================
+//  공공데이터 호출 (예시)
+// =========================
+async function fetchDeals(pageNo = 1) {
+  const lawdCd = getLawdCdFromInput();
+  const monthValue = inputMonth.value; // "2026-01"
+  if (!lawdCd || !monthValue) {
+    alert("지역과 거래월을 입력해주세요.");
+    return { deals: [], totalCount: 0 };
   }
 
-  sorted.forEach((deal) => {
+  const dealYmd = monthValue.replace("-", ""); // "202601"
+
+  const endpoint = API_ENDPOINTS[currentDealType];
+  const url = new URL(endpoint);
+
+  // 실제 문서에 맞게 파라미터 조정 필요
+  url.searchParams.set("serviceKey", SERVICE_KEY);
+  url.searchParams.set("LAWD_CD", lawdCd);
+  url.searchParams.set("DEAL_YMD", dealYmd);
+  url.searchParams.set("pageNo", pageNo);
+  url.searchParams.set("numOfRows", 50);
+  url.searchParams.set("type", "json");
+
+  const res = await fetch(url.toString());
+  if (!res.ok) {
+    alert("API 호출 중 문제가 발생했습니다.");
+    return { deals: [], totalCount: 0 };
+  }
+
+  const data = await res.json();
+
+  // 공공데이터 응답 구조에 맞춰 파싱 (예시)
+  // 실제: data.response.body.items.item 배열 형태일 가능성 높음
+  const items =
+    data?.response?.body?.items?.item && Array.isArray(data.response.body.items.item)
+      ? data.response.body.items.item
+      : [];
+
+  const total =
+    typeof data?.response?.body?.totalCount === "number"
+      ? data.response.body.totalCount
+      : items.length;
+
+  const deals = items.map((item) => normalizeDeal(item, currentDealType));
+
+  return { deals, totalCount: total };
+}
+
+// =========================
+//  응답 → 화면용 데이터로 변환 (예시)
+// =========================
+function normalizeDeal(item, dealType) {
+  // 공공데이터 항목은 각 서비스마다 약간 다름
+  // 대표적으로 아파트 매매 기준 예시:
+  // 법정동: item.법정동, 아파트명: item.아파트, 전용면적: item.전용면적, 층: item.층,
+  // 거래금액: item.거래금액, 년/월/일: item.년, item.월, item.일 등
+
+  const isRent = dealType === "aptRent" || dealType === "offiRent";
+  const isLand = dealType === "landTrade";
+
+  const name =
+    item["아파트"] ||
+    item["단지명"] ||
+    item["건물명"] ||
+    item["지번"] ||
+    "이름 없음";
+
+  const dong = item["법정동"] || item["법정동명"] || "";
+  const jibun = item["지번"] || "";
+
+  const area = parseFloat(item["전용면적"] || item["대지면적"] || 0);
+  const floor = item["층"] || "";
+  const year = item["년"] || item["dealYear"];
+  const month = item["월"] || item["dealMonth"];
+  const day = item["일"] || item["dealDay"];
+
+  let priceStr = "";
+  if (isRent) {
+    const deposit = (item["보증금액"] || "").toString().trim();
+    const rent = (item["월세금액"] || "").toString().trim();
+    priceStr = `보증금 ${deposit} / 월세 ${rent}`;
+  } else {
+    const rawPrice = (item["거래금액"] || "").toString().replace(/,/g, "").trim();
+    if (rawPrice) {
+      const num = Number(rawPrice);
+      const uk = Math.floor(num / 10000);
+      const man = num % 10000;
+      priceStr = uk > 0 ? `${uk}억 ${man.toLocaleString()}만` : `${num.toLocaleString()}만`;
+    } else {
+      priceStr = "가격 정보 없음";
+    }
+  }
+
+  const tradeDate = year && month && day ? `${year}.${month}.${day}` : "";
+
+  // 지도 위치는 공공데이터에 좌표가 없을 수 있으므로, 우선 null로 두고
+  // 추후 주소로 kakao geocoder 사용
+  return {
+    name,
+    dong,
+    jibun,
+    area,
+    floor,
+    priceStr,
+    tradeDate,
+    dealType,
+    lat: null,
+    lng: null,
+    raw: item,
+  };
+}
+
+// =========================
+//  리스트 렌더링
+// =========================
+function renderDeals(list, append = false) {
+  if (!append) {
+    resultList.innerHTML = "";
+  }
+
+  if (!list.length && !append) {
+    resultList.innerHTML =
+      '<div class="deal-sub">조건에 해당하는 실거래가가 없습니다.</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+
+  list.forEach((deal, idx) => {
     const card = document.createElement("article");
     card.className = "deal-card";
-    card.dataset.id = deal.id;
+    card.dataset.index = idx;
 
     card.innerHTML = `
-      <div class="deal-header">
-        <div class="deal-title">${deal.aptName || "-"}</div>
-        <div class="deal-badge">${getDealTypeLabel(deal.dealType)}</div>
+      <div class="deal-card-header">
+        <div>
+          <div class="deal-title">${deal.name}</div>
+          <div class="deal-tag-row">
+            <span class="deal-tag primary">${formatDealType(deal.dealType)}</span>
+            ${
+              deal.floor
+                ? `<span class="deal-tag">${deal.floor}층</span>`
+                : ""
+            }
+            ${
+              deal.area
+                ? `<span class="deal-tag">${deal.area.toFixed(1)}m²</span>`
+                : ""
+            }
+          </div>
+        </div>
+        <div class="deal-price">${deal.priceStr}</div>
       </div>
-      <div class="deal-meta">
-        <span>${deal.address || "-"}</span>
-        <span>전용 ${formatArea(deal.area)}</span>
-        <span>${deal.floor ? deal.floor + "층" : ""}</span>
+      <div class="deal-sub">
+        ${deal.dong} ${deal.jibun}
+      </div>
+      <div class="deal-meta-row">
         <span>${deal.tradeDate || ""}</span>
-      </div>
-      <div class="deal-price-row">
-        <span class="deal-price">${formatPriceKRW(
-          deal.price
-        )}</span>
-        <span class="deal-sub-info">클릭 시 지도에서 위치 강조</span>
+        <span>상세보기 · 지도</span>
       </div>
     `;
 
     card.addEventListener("click", () => {
-      focusDealOnMap(deal);
+      focusOnDeal(deal);
     });
 
-    dealListEl.appendChild(card);
+    frag.appendChild(card);
   });
 
-  computeSummary(sorted);
-  renderMarkers(sorted);
+  resultList.appendChild(frag);
 }
 
-function focusDealOnMap(deal) {
-  if (!map || !deal.lat || !deal.lng) return;
+// 거래유형 텍스트
+function formatDealType(dealType) {
+  switch (dealType) {
+    case "aptTrade":
+      return "아파트 매매";
+    case "aptRent":
+      return "아파트 전월세";
+    case "offiTrade":
+      return "오피스텔 매매";
+    case "offiRent":
+      return "오피스텔 전월세";
+    case "rhTrade":
+      return "연립다세대 매매";
+    case "induTrade":
+      return "공장·창고 매매";
+    case "nrgTrade":
+      return "상업업무용 매매";
+    case "landTrade":
+      return "토지 매매";
+    case "silvTrade":
+      return "분양권 전매";
+    default:
+      return "실거래";
+  }
+}
 
-  const position = new kakao.maps.LatLng(deal.lat, deal.lng);
-  map.setLevel(4);
-  map.panTo(position);
+// =========================
+//  정렬 & 필터
+// =========================
+function applySortAndFilter(list) {
+  const minArea = Number(inputMinArea.value || 0);
+  const maxPriceUk = Number(inputMaxPrice.value || 0);
+  const sort = selectSort.value;
 
-  const content = `
-    <div style="
-      padding:8px 12px;
-      border-radius:10px;
-      background:rgba(15,23,42,0.98);
-      border:1px solid rgba(56,189,248,0.8);
-      color:#e5e7eb;
-      font-size:11px;
-      min-width:160px;
-    ">
-      <strong style="font-size:12px;">${deal.aptName}</strong>
-      <div style="margin-top:3px;">${deal.address}</div>
-      <div style="margin-top:3px;">실거래가 ${formatPriceKRW(
-        deal.price
-      )}</div>
-      <div style="margin-top:3px;">전용 ${formatArea(
-        deal.area
-      )} · ${deal.floor || "-"}층</div>
-      <div style="margin-top:3px; color:#9ca3af;">${deal.tradeDate}</div>
-    </div>
-  `;
-  const overlay = new kakao.maps.CustomOverlay({
-    position,
-    content,
-    yAnchor: 1.2,
+  let filtered = list.filter((d) => {
+    if (minArea && d.area && d.area < minArea) return false;
+
+    if (maxPriceUk && !d.dealType.endsWith("Rent")) {
+      // 가격 문자열에서 억 기준으로 대략 추출 (예시)
+      const match = d.priceStr.match(/(\d+)억/);
+      if (match) {
+        const uk = Number(match[1]);
+        if (uk > maxPriceUk) return false;
+      }
+    }
+    return true;
   });
 
-  overlay.setMap(map);
-  setTimeout(() => overlay.setMap(null), 3000);
+  if (sort === "priceDesc" || sort === "priceAsc") {
+    filtered.sort((a, b) => extractPrice(a) - extractPrice(b));
+    if (sort === "priceDesc") filtered.reverse();
+  } else if (sort === "areaDesc" || sort === "areaAsc") {
+    filtered.sort((a, b) => (a.area || 0) - (b.area || 0));
+    if (sort === "areaDesc") filtered.reverse();
+  } else if (sort === "recent") {
+    filtered.sort((a, b) => {
+      const da = new Date(a.tradeDate.replace(/\./g, "-"));
+      const db = new Date(b.tradeDate.replace(/\./g, "-"));
+      return db - da;
+    });
+  }
+
+  return filtered;
 }
 
-// ====== LOCATION ======
+function extractPrice(deal) {
+  // "12억 300만" → 대충 만원 단위 숫자로 변환 (예시)
+  const matchUk = deal.priceStr.match(/(\d+)억/);
+  const matchMan = deal.priceStr.match(/(\d+)만/);
+  const uk = matchUk ? Number(matchUk[1]) : 0;
+  const man = matchMan ? Number(matchMan[1]) : 0;
+  return uk * 10000 + man;
+}
 
-function getCurrentPosition() {
+// =========================
+//  검색 실행
+// =========================
+btnSearch.addEventListener("click", async () => {
+  currentPage = 1;
+  resultMeta.textContent = "실거래가 조회 중...";
+  btnSearch.disabled = true;
+
+  try {
+    const { deals, totalCount: total } = await fetchDeals(currentPage);
+    totalCount = total;
+    currentList = deals;
+
+    const processed = applySortAndFilter(currentList);
+    renderDeals(processed);
+
+    resultMeta.textContent = `총 ${total.toLocaleString()}건 중 ${
+      processed.length
+    }건 표시`;
+    btnMore.disabled = total <= deals.length;
+  } catch (e) {
+    resultMeta.textContent = "데이터를 불러오는 중 문제가 발생했습니다.";
+  } finally {
+    btnSearch.disabled = false;
+  }
+});
+
+// 더 불러오기
+btnMore.addEventListener("click", async () => {
+  if (btnMore.disabled) return;
+  currentPage += 1;
+  btnMore.disabled = true;
+
+  try {
+    const { deals } = await fetchDeals(currentPage);
+    currentList = currentList.concat(deals);
+
+    const processed = applySortAndFilter(currentList);
+    renderDeals(processed);
+
+    resultMeta.textContent = `총 ${totalCount.toLocaleString()}건 중 ${
+      processed.length
+    }건 표시`;
+    if (currentList.length >= totalCount) {
+      btnMore.disabled = true;
+    } else {
+      btnMore.disabled = false;
+    }
+  } catch (e) {
+    btnMore.disabled = false;
+  }
+});
+
+// 필터 변경 시 즉시 재정렬
+[selectSort, inputMinArea, inputMaxPrice].forEach((el) => {
+  el.addEventListener("change", () => {
+    const processed = applySortAndFilter(currentList);
+    renderDeals(processed);
+    if (totalCount) {
+      resultMeta.textContent = `총 ${totalCount.toLocaleString()}건 중 ${
+        processed.length
+      }건 표시`;
+    }
+  });
+});
+
+// 현위치 버튼 (예시: 좌표만 확보, 실제로는 역지오코딩 후 법정동 코드 매핑)
+btnCurrentLocation.addEventListener("click", () => {
   if (!navigator.geolocation) {
-    showToast("브라우저에서 위치 정보를 지원하지 않는다.");
+    alert("현재 위치를 가져올 수 없습니다.");
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const { latitude, longitude } = pos.coords;
-      currentFilters.lat = latitude;
-      currentFilters.lng = longitude;
-
-      currentLocationLabel.textContent = `현 위치: ${latitude.toFixed(
-        4
-      )}, ${longitude.toFixed(4)}`;
-
       if (map) {
-        const center = new kakao.maps.LatLng(latitude, longitude);
-        map.setCenter(center);
-        map.setLevel(5);
+        map.setCenter(new kakao.maps.LatLng(latitude, longitude));
+        map.setLevel(4);
       }
+      // 실제 서비스에서는 kakao geocoder로 주소 → 법정동 코드 매핑 필요
     },
     () => {
-      currentLocationLabel.textContent = "위치를 가져올 수 없다.";
-      showToast("위치 권한을 허용하면 주변 실거래를 보여줄 수 있다.");
+      alert("위치 정보를 활성화 해주세요.");
     }
   );
-}
-
-// ====== MAIN FLOW ======
-
-async function loadDeals(reset = false) {
-  if (isLoading) return;
-  showLoading(true);
-
-  try {
-    const pageToLoad = reset ? 1 : currentPage + 1;
-    const apiDeals = await fetchDealsFromApi(pageToLoad);
-    const parsed = parseDealsFromApi(apiDeals);
-
-    if (reset) {
-      deals = parsed;
-      currentPage = 1;
-    } else {
-      deals = [...deals, ...parsed];
-      currentPage = pageToLoad;
-    }
-
-    renderDealList();
-  } catch (e) {
-    console.error(e);
-    showToast("실거래 데이터를 불러오는 중 문제가 발생했다.");
-  } finally {
-    showLoading(false);
-  }
-}
-
-// ====== EVENT BINDINGS ======
-
-function bindFilterChips() {
-  // 거래유형
-  const dealTypeGroup = document.getElementById("deal-type-group");
-  dealTypeGroup.addEventListener("click", (e) => {
-    const btn = e.target.closest(".chip");
-    if (!btn) return;
-    dealTypeGroup
-      .querySelectorAll(".chip")
-      .forEach((c) => c.classList.remove("chip-active"));
-    btn.classList.add("chip-active");
-    currentFilters.dealType = btn.dataset.value;
-    loadDeals(true);
-  });
-
-  // 기간
-  const periodGroup = document.getElementById("period-group");
-  periodGroup.addEventListener("click", (e) => {
-    const btn = e.target.closest(".chip");
-    if (!btn) return;
-    periodGroup
-      .querySelectorAll(".chip")
-      .forEach((c) => c.classList.remove("chip-active"));
-    btn.classList.add("chip-active");
-    currentFilters.periodMonths = Number(btn.dataset.value);
-    loadDeals(true);
-  });
-
-  // 정렬
-  sortSelect.addEventListener("change", () => {
-    currentFilters.sort = sortSelect.value;
-    renderDealList();
-  });
-}
-
-function bindSearch() {
-  btnSearch.addEventListener("click", () => {
-    currentFilters.keyword = keywordInput.value.trim();
-    loadDeals(true);
-  });
-
-  keywordInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      currentFilters.keyword = keywordInput.value.trim();
-      loadDeals(true);
-    }
-  });
-
-  btnClearKeyword.addEventListener("click", () => {
-    keywordInput.value = "";
-    currentFilters.keyword = "";
-    loadDeals(true);
-  });
-}
-
-function bindOthers() {
-  btnLoadMore.addEventListener("click", () => {
-    loadDeals(false);
-  });
-
-  btnRefreshLocation.addEventListener("click", () => {
-    getCurrentPosition();
-  });
-
-  btnFitMarkers.addEventListener("click", () => {
-    fitMarkersToBounds();
-  });
-}
-
-// ====== INIT ======
-
-window.addEventListener("DOMContentLoaded", () => {
-  initMap();
-  bindFilterChips();
-  bindSearch();
-  bindOthers();
-  getCurrentPosition();
-  loadDeals(true); // 초기 로딩
 });
