@@ -1,327 +1,209 @@
-// 공공데이터포털 부산 맛집 API
+// 공공데이터포털 부산맛집 API
 const API_URL = "https://apis.data.go.kr/6260000/FoodService/getFoodKr";
 const API_KEY =
-  "37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a";
+  "37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a"; // 인코딩키 기준
 
-// DOM 엘리먼트
-const mapContainer = document.getElementById("map");
-const recenterBtn = document.getElementById("recenterBtn");
-
-const locationStatusEl = document.getElementById("locationStatus");
-const keywordInput = document.getElementById("keywordInput");
-const radiusSelect = document.getElementById("radiusSelect");
 const restaurantListEl = document.getElementById("restaurantList");
+const keywordInput = document.getElementById("keywordInput");
 
-// 바텀시트
-const sheetEl = document.getElementById("bottomSheet");
-const closeSheetBtn = document.getElementById("closeSheetBtn");
-const toastEl = document.getElementById("toast");
+const prevPageBtn = document.getElementById("prevPageBtn");
+const nextPageBtn = document.getElementById("nextPageBtn");
+const pageInfoEl = document.getElementById("pageInfo");
 
-const bsTitleEl = document.getElementById("bsTitle");
-const bsDistanceEl = document.getElementById("bsDistance");
-const bsImageEl = document.getElementById("bsImage");
-const bsAddressEl = document.getElementById("bsAddress");
-const bsDescEl = document.getElementById("bsDesc");
-const bsMenuEl = document.getElementById("bsMenu");
-const bsTelEl = document.getElementById("bsTel");
-const bsTimeEl = document.getElementById("bsTime");
-const bsCallBtn = document.getElementById("bsCallBtn");
-const bsHomepageBtn = document.getElementById("bsHomepageBtn");
+const detailPlaceholderEl = document.getElementById("detailPlaceholder");
+const detailViewEl = document.getElementById("detailView");
 
-// 상태
-let mapInstance = null;
-let userMarker = null;
-let poiMarker = null;
-let userPos = null;
+const detailImageEl = document.getElementById("detailImage");
+const detailTitleEl = document.getElementById("detailTitle");
+const detailAddressEl = document.getElementById("detailAddress");
+const detailDescEl = document.getElementById("detailDesc");
+const detailMenuEl = document.getElementById("detailMenu");
+const detailTelEl = document.getElementById("detailTel");
+const detailTimeEl = document.getElementById("detailTime");
+const detailHomepageEl = document.getElementById("detailHomepage");
+const noHomepageBarEl = document.getElementById("noHomepageBar");
 
-let allItems = []; // 원본 + distance
-let viewItems = []; // 검색/필터 적용 후
+// 클라이언트 상태
+let rawItems = []; // API에서 받은 원본
+let filteredItems = []; // 검색 필터 후 리스트에 쓰는 배열
+let currentPage = 1;
+const rowsPerPage = 10;
 
-// ----------------------- 초기 로딩 ------------------------ //
+let kakaoMap = null;
+let kakaoMarker = null;
 
-window.addEventListener("load", () => {
-  initMap();
-  fetchRestaurants();
-  requestUserLocation();
-});
-
-// ----------------------- 지도 초기화 ---------------------- //
-
-function initMap() {
-  const center = new kakao.maps.LatLng(35.1796, 129.0756); // 부산 시청 근처
-  mapInstance = new kakao.maps.Map(mapContainer, {
-    center,
-    level: 6
-  });
-
-  userMarker = new kakao.maps.Marker({
-    map: mapInstance,
-    position: center
-  });
-
-  poiMarker = new kakao.maps.Marker({
-    map: mapInstance,
-    position: center
-  });
-  poiMarker.setMap(null); // 처음엔 숨김
-}
-
-// ----------------------- 데이터 로딩 ---------------------- //
+// ---------------------- 데이터 로딩 ------------------------
 
 async function fetchRestaurants() {
-  try {
-    const params = new URLSearchParams({
-      serviceKey: API_KEY,
-      numOfRows: "200",
-      pageNo: "1",
-      resultType: "json"
-    });
-
-    const res = await fetch(`${API_URL}?${params.toString()}`);
-    const data = await res.json();
-
-    const items = data.getFoodKr?.item || [];
-    const arr = Array.isArray(items) ? items : [items];
-
-    allItems = arr.map((item) => ({
-      ...item,
-      distance: null // 나중에 계산
-    }));
-
-    applyFilterAndRender();
-  } catch (e) {
-    console.error(e);
-    restaurantListEl.innerHTML =
-      '<li class="restaurant-item"><div class="item-main-title">데이터를 불러오지 못했습니다.</div></li>';
-  }
-}
-
-// ----------------------- 위치 권한 ------------------------ //
-
-function requestUserLocation() {
-  if (!navigator.geolocation) {
-    locationStatusEl.textContent = "위치 서비스를 지원하지 않는 기기입니다.";
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      userPos = { lat, lng };
-
-      locationStatusEl.textContent = "현 위치 기준 정렬 완료";
-      locationStatusEl.classList.add("chip-strong");
-
-      updateUserMarker();
-      recenterMap();
-
-      recomputeDistances();
-      applyFilterAndRender();
-      showToast("현 위치를 기준으로 가까운 맛집부터 보여줍니다.");
-    },
-    () => {
-      locationStatusEl.textContent = "위치 권한이 꺼져 있어 기본 정렬로 표시됩니다.";
-      showToast("위치 권한 허용 시 거리 기준 정렬이 활성화됩니다.");
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 7000
-    }
-  );
-}
-
-function updateUserMarker() {
-  if (!userPos || !mapInstance) return;
-  const pos = new kakao.maps.LatLng(userPos.lat, userPos.lng);
-  userMarker.setPosition(pos);
-}
-
-function recenterMap() {
-  if (!userPos || !mapInstance) return;
-  const pos = new kakao.maps.LatLng(userPos.lat, userPos.lng);
-  mapInstance.setCenter(pos);
-  mapInstance.setLevel(5);
-}
-
-// ----------------------- 거리 계산 ------------------------ //
-
-function recomputeDistances() {
-  if (!userPos) return;
-
-  allItems = allItems.map((item) => {
-    const lat = parseFloat(item.LAT);
-    const lng = parseFloat(item.LNG);
-
-    if (isNaN(lat) || isNaN(lng)) {
-      return { ...item, distance: null };
-    }
-    const distKm = haversineDistance(userPos.lat, userPos.lng, lat, lng);
-    return { ...item, distance: distKm };
-  });
-}
-
-function haversineDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // km
-  const toRad = (d) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-// ----------------------- 필터 & 정렬 ---------------------- //
-
-function applyFilterAndRender() {
-  const keyword = keywordInput.value.trim().toLowerCase();
-  const radiusKm = Number(radiusSelect.value || 0);
-
-  viewItems = allItems.filter((item) => {
-    const title = (item.MAIN_TITLE || "").toLowerCase();
-    const menu = (item.RPRSNTV_MENU || "").toLowerCase();
-
-    const matchKeyword =
-      !keyword || title.includes(keyword) || menu.includes(keyword);
-
-    const matchRadius =
-      !radiusKm || item.distance === null || item.distance <= radiusKm;
-
-    return matchKeyword && matchRadius;
+  const params = new URLSearchParams({
+    serviceKey: API_KEY,
+    numOfRows: "150", // 전체를 한번에 받아놓고 클라이언트에서 페이징
+    pageNo: "1",
+    resultType: "json"
   });
 
-  // 거리 → null 은 맨 뒤로
-  viewItems.sort((a, b) => {
-    const da = a.distance == null ? Number.POSITIVE_INFINITY : a.distance;
-    const db = b.distance == null ? Number.POSITIVE_INFINITY : b.distance;
-    return da - db;
-  });
+  const res = await fetch(`${API_URL}?${params.toString()}`);
+  const data = await res.json();
+
+  const items = data.getFoodKr?.item || [];
+  rawItems = Array.isArray(items) ? items : [items];
+  filteredItems = [...rawItems];
+  currentPage = 1;
 
   renderList();
+  updatePagination();
 }
+
+// ---------------------- 리스트 렌더링 ------------------------
 
 function renderList() {
   restaurantListEl.innerHTML = "";
 
-  if (viewItems.length === 0) {
+  if (filteredItems.length === 0) {
     restaurantListEl.innerHTML =
-      '<li class="restaurant-item"><div class="item-main-title">검색 결과가 없습니다.</div></li>';
+      '<li class="restaurant-item">검색 결과가 없습니다.</li>';
     return;
   }
 
-  viewItems.forEach((item, index) => {
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageItems = filteredItems.slice(start, end);
+
+  pageItems.forEach((item, index) => {
     const li = document.createElement("li");
     li.className = "restaurant-item";
-    li.dataset.index = String(index);
-
-    const distanceText =
-      item.distance == null
-        ? "거리 정보 없음"
-        : item.distance < 1
-        ? `${(item.distance * 1000).toFixed(0)}m`
-        : `${item.distance.toFixed(1)}km`;
+    li.dataset.idx = String(start + index);
 
     li.innerHTML = `
-      <div class="restaurant-item-header">
-        <div class="item-main-title">${escapeHtml(item.MAIN_TITLE || "-")}</div>
-        <span class="item-distance-badge">${distanceText}</span>
+      <div class="item-header">
+        <div class="item-title">${escapeHtml(item.MAIN_TITLE || "-")}</div>
+        <div class="item-icons">
+          <button class="icon-btn" aria-hidden="true">🔍</button>
+          <button class="icon-btn" aria-hidden="true">♡</button>
+        </div>
       </div>
-      <div class="item-sub">
-        <div class="item-sub-row">
-          <span>주소</span> ${escapeHtml(item.ADDR1 || "")}
-        </div>
-        <div class="item-sub-row">
-          <span>메뉴</span> ${escapeHtml(item.RPRSNTV_MENU || "정보 없음")}
-        </div>
+      <div class="item-meta">
+        <div><span>주소:</span> ${escapeHtml(item.ADDR1 || "")}</div>
+        <div><span>메뉴:</span> ${escapeHtml(item.RPRSNTV_MENU || "정보 없음")}</div>
       </div>
     `;
 
     li.addEventListener("click", () => {
-      onSelectItem(item);
+      document
+        .querySelectorAll(".restaurant-item")
+        .forEach((el) => el.classList.remove("active"));
+      li.classList.add("active");
+      showDetail(item);
     });
 
     restaurantListEl.appendChild(li);
   });
 }
 
-// ----------------------- 리스트 선택 ---------------------- //
+function updatePagination() {
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredItems.length / rowsPerPage)
+  );
+  pageInfoEl.textContent = `${currentPage} / ${totalPages}`;
+  prevPageBtn.disabled = currentPage <= 1;
+  nextPageBtn.disabled = currentPage >= totalPages;
+}
 
-function onSelectItem(item) {
+// ---------------------- 검색 필터 ------------------------
+
+function applyFilter() {
+  const keyword = keywordInput.value.trim();
+  if (!keyword) {
+    filteredItems = [...rawItems];
+  } else {
+    const lower = keyword.toLowerCase();
+    filteredItems = rawItems.filter((item) => {
+      const title = (item.MAIN_TITLE || "").toLowerCase();
+      const menu = (item.RPRSNTV_MENU || "").toLowerCase();
+      return title.includes(lower) || menu.includes(lower);
+    });
+  }
+  currentPage = 1;
+  renderList();
+  updatePagination();
+}
+
+// ---------------------- 상세 뷰 ------------------------
+
+function showDetail(item) {
+  detailPlaceholderEl.style.display = "none";
+  detailViewEl.classList.remove("hidden");
+
+  const title = item.MAIN_TITLE || "";
+  const address = item.ADDR1 || "";
+  const desc = (item.ITEMCNTNTS || "").trim();
+  const menu = item.RPRSNTV_MENU || "";
+  const tel = item.CNTCT_TEL || "";
+  const time = item.USAGE_DAY_WEEK_AND_TIME || "";
+  const homepage = (item.HOMEPAGE_URL || "").trim();
   const lat = parseFloat(item.LAT);
   const lng = parseFloat(item.LNG);
 
-  if (!isNaN(lat) && !isNaN(lng)) {
-    const pos = new kakao.maps.LatLng(lat, lng);
-    poiMarker.setPosition(pos);
-    poiMarker.setMap(mapInstance);
-    mapInstance.setCenter(pos);
-    mapInstance.setLevel(4);
+  // 이미지 URL
+  let imageUrl = item.MAIN_IMG_NORMAL || item.MAIN_IMG_THUMB || "";
+  if (imageUrl && imageUrl.startsWith("/")) {
+    imageUrl = "https://www.visitbusan.net" + imageUrl;
   }
 
-  openBottomSheet(item);
-}
+  detailImageEl.src = imageUrl || "";
+  detailImageEl.alt = title || "맛집 대표 이미지";
 
-// ----------------------- 바텀시트 ------------------------ //
-
-function openBottomSheet(item) {
-  const title = item.MAIN_TITLE || "";
-  const addr = item.ADDR1 || "";
-  const desc = (item.ITEMCNTNTS || "").trim();
-  const menu = item.RPRSNTV_MENU || "";
-  const tel = (item.CNTCT_TEL || "").trim();
-  const time = item.USAGE_DAY_WEEK_AND_TIME || "";
-  const homepage = (item.HOMEPAGE_URL || "").trim();
-
-  let imgUrl = item.MAIN_IMG_NORMAL || item.MAIN_IMG_THUMB || "";
-  if (imgUrl && imgUrl.startsWith("/")) {
-    imgUrl = "https://www.visitbusan.net" + imgUrl;
-  }
-
-  const distanceText =
-    item.distance == null
-      ? "거리 정보 없음"
-      : item.distance < 1
-      ? `${(item.distance * 1000).toFixed(0)}m`
-      : `${item.distance.toFixed(1)}km`;
-
-  bsTitleEl.textContent = title;
-  bsDistanceEl.textContent = distanceText;
-  bsImageEl.src = imgUrl || "";
-  bsImageEl.alt = title || "맛집 이미지";
-
-  bsAddressEl.textContent = addr;
-  bsDescEl.textContent = desc || "상세 설명 정보가 없습니다.";
-  bsMenuEl.textContent = menu || "대표 메뉴 정보가 없습니다.";
-  bsTelEl.textContent = tel || "문의 정보 없음";
-  bsTimeEl.textContent = time || "운영 시간 정보 없음";
-
-  if (tel) {
-    bsCallBtn.href = `tel:${tel.replace(/[^0-9]/g, "")}`;
-    bsCallBtn.style.display = "block";
-  } else {
-    bsCallBtn.style.display = "none";
-  }
+  detailTitleEl.textContent = title;
+  detailAddressEl.textContent = address;
+  detailDescEl.textContent = desc || "상세 설명 정보가 없습니다.";
+  detailMenuEl.textContent = menu || "대표 메뉴 정보가 없습니다.";
+  detailTelEl.textContent = tel || "문의 전화 정보가 없습니다.";
+  detailTimeEl.textContent = time || "운영 시간 정보가 없습니다.";
 
   if (homepage) {
-    bsHomepageBtn.href = homepage;
-    bsHomepageBtn.style.display = "block";
+    detailHomepageEl.href = homepage;
+    detailHomepageEl.style.display = "inline-flex";
+    noHomepageBarEl.style.display = "none";
   } else {
-    bsHomepageBtn.style.display = "none";
+    detailHomepageEl.style.display = "none";
+    noHomepageBarEl.style.display = "inline-flex";
   }
 
-  sheetEl.classList.add("open");
+  // 카카오맵 업데이트
+  if (!isNaN(lat) && !isNaN(lng)) {
+    renderMap(lat, lng, title);
+  }
 }
 
-function closeBottomSheet() {
-  sheetEl.classList.remove("open");
+// ---------------------- 카카오맵 ------------------------
+
+function renderMap(lat, lng, title) {
+  const container = document.getElementById("map");
+  const position = new kakao.maps.LatLng(lat, lng);
+
+  if (!kakaoMap) {
+    kakaoMap = new kakao.maps.Map(container, {
+      center: position,
+      level: 3
+    });
+    kakaoMarker = new kakao.maps.Marker({
+      position,
+      map: kakaoMap
+    });
+  } else {
+    kakaoMap.setCenter(position);
+    kakaoMarker.setPosition(position);
+  }
+
+  const iwContent = `<div style="padding:5px 10px;font-size:12px;">${title}</div>`;
+  const infowindow = new kakao.maps.InfoWindow({
+    content: iwContent
+  });
+  infowindow.open(kakaoMap, kakaoMarker);
 }
 
-// ----------------------- 유틸 ----------------------------- //
+// ---------------------- 유틸 ------------------------
 
 function escapeHtml(str) {
   return String(str)
@@ -330,35 +212,33 @@ function escapeHtml(str) {
     .replace(/>/g, "&gt;");
 }
 
-function showToast(msg) {
-  toastEl.textContent = msg;
-  toastEl.classList.add("show");
-  setTimeout(() => {
-    toastEl.classList.remove("show");
-  }, 2600);
-}
-
-// ----------------------- 이벤트 --------------------------- //
+// ---------------------- 이벤트 바인딩 ------------------------
 
 keywordInput.addEventListener("input", () => {
-  applyFilterAndRender();
+  applyFilter();
 });
 
-radiusSelect.addEventListener("change", () => {
-  applyFilterAndRender();
+prevPageBtn.addEventListener("click", () => {
+  if (currentPage <= 1) return;
+  currentPage -= 1;
+  renderList();
+  updatePagination();
 });
 
-recenterBtn.addEventListener("click", () => {
-  if (!userPos) {
-    showToast("위치 권한 허용 후 사용 가능합니다.");
-    return;
-  }
-  recenterMap();
-  showToast("현 위치로 지도를 이동했습니다.");
+nextPageBtn.addEventListener("click", () => {
+  const totalPages = Math.ceil(filteredItems.length / rowsPerPage);
+  if (currentPage >= totalPages) return;
+  currentPage += 1;
+  renderList();
+  updatePagination();
 });
 
-closeSheetBtn.addEventListener("click", () => {
-  closeBottomSheet();
-});
+// ---------------------- 초기 실행 ------------------------
 
-// 바텀시트 바깥(검은 배경)은 없으니, 아래로 스와이프 제스처 등은 필요시 추가 구현 가능
+window.addEventListener("load", () => {
+  fetchRestaurants().catch((e) => {
+    console.error("API 호출 오류", e);
+    restaurantListEl.innerHTML =
+      '<li class="restaurant-item">데이터를 불러오지 못했습니다.</li>';
+  });
+});
