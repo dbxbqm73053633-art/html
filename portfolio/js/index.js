@@ -15,8 +15,9 @@ const COMMON_PARAMS = {
 const SEOUL_FALLBACK_CODE = "1"; // 서울 지역코드 기본값
 
 // 전국 키워드 검색용
-const KEYWORD_PAGE_SIZE = 80;   // searchKeyword 페이지 크기
-const KEYWORD_MAX_PAGES = 8;    // 최대 8페이지(640개)까지만
+const KEYWORD_PAGE_SIZE = 80; // searchKeyword 페이지 크기
+const KEYWORD_MAX_PAGES = 8; // 최대 8페이지(640개)까지만
+const DEFAULT_RADIUS_KM = 20; // 내 주변 검색 기본 반경
 
 const STATE = {
   items: [],
@@ -26,6 +27,7 @@ const STATE = {
   mode: "area", // "area" | "nearby"
   userLat: null,
   userLng: null,
+  radiusKm: DEFAULT_RADIUS_KM,
 };
 
 let currentRequestId = 0;
@@ -35,6 +37,7 @@ let currentRequestId = 0;
 // ========================
 const selArea = document.getElementById("selArea");
 const selCategory = document.getElementById("selCategory");
+const selRadius = document.getElementById("selRadius"); // 👈 새 반경 셀렉트
 const iptKeyword = document.getElementById("iptKeyword");
 const btnSearch = document.getElementById("btnSearch");
 const btnNearby = document.getElementById("btnNearby");
@@ -268,7 +271,14 @@ function setLoading(isLoading, message = "") {
     txtQueryState.textContent = message || "검색 중…";
   } else {
     listSkeleton.style.display = "none";
-    txtQueryState.textContent = STATE.items.length ? "완료" : "결과 없음";
+
+    if (STATE.mode === "nearby") {
+      txtQueryState.textContent = STATE.items.length
+        ? `현재 위치 기준 반경 ${STATE.radiusKm}km 내 ${STATE.items.length}곳`
+        : `현재 위치 기준 반경 ${STATE.radiusKm}km 내 결과 없음`;
+    } else {
+      txtQueryState.textContent = STATE.items.length ? "완료" : "결과 없음";
+    }
   }
 }
 
@@ -554,7 +564,9 @@ async function runSearch() {
 
   setLoading(
     true,
-    STATE.mode === "nearby" ? "내 주변 여행지 검색 중…" : "검색 중…"
+    STATE.mode === "nearby"
+      ? `현재 위치 기준 반경 ${STATE.radiusKm}km 내 검색 중…`
+      : "검색 중…"
   );
   listContainer.innerHTML = "";
   txtCount.textContent = "0곳";
@@ -570,11 +582,13 @@ async function runSearch() {
       STATE.userLat = pos.coords.latitude;
       STATE.userLng = pos.coords.longitude;
 
+      const radiusMeters = STATE.radiusKm * 1000;
+
       const { items: resItems = [] } = await fetchTour("locationBasedList", {
         arrange: "E",
         mapX: STATE.userLng,
         mapY: STATE.userLat,
-        radius: 20000, // 20km
+        radius: radiusMeters,
         numOfRows: 80,
         pageNo: 1,
       });
@@ -613,8 +627,6 @@ async function runSearch() {
 
     if (requestId !== currentRequestId) return;
 
-    // searchKeyword는 이미 키워드를 반영해서 가져오지만,
-    // 일관성을 위해 한번 더 로컬 필터
     const filtered = filterItemsByKeyword(items, STATE.keyword);
     STATE.items = filtered;
 
@@ -704,6 +716,19 @@ function bindEvents() {
     runSearch();
   });
 
+  // 👇 반경 셀렉트 변경 시 반경 갱신
+  if (selRadius) {
+    selRadius.addEventListener("change", () => {
+      const v = parseInt(selRadius.value, 10);
+      STATE.radiusKm = Number.isNaN(v) ? DEFAULT_RADIUS_KM : v;
+
+      // 내 주변 모드일 때 반경 변경하면 바로 다시 검색
+      if (STATE.mode === "nearby") {
+        runSearch();
+      }
+    });
+  }
+
   btnNearby.addEventListener("click", () => {
     STATE.mode = "nearby";
     runSearch();
@@ -712,10 +737,14 @@ function bindEvents() {
   btnReset.addEventListener("click", () => {
     selArea.value = "";
     selCategory.value = "";
+    if (selRadius) {
+      selRadius.value = String(DEFAULT_RADIUS_KM);
+    }
     iptKeyword.value = "";
     STATE.keyword = "";
     STATE.areaCode = "";
     STATE.categoryCode = "";
+    STATE.radiusKm = DEFAULT_RADIUS_KM;
     STATE.mode = "area";
     runSearch();
   });

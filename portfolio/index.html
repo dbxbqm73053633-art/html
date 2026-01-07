@@ -77,9 +77,21 @@
         </div>
       </div>
 
-      <div class="search-toolbar">
-        <span id="txtQueryState" class="query-state">서울 기준 주요 여행지 로딩 중…</span>
-      </div>
+      <!-- 검색/필터 바 아래쪽 툴바 영역 안에 추가 -->
+<div class="search-toolbar">
+  <span id="txtQueryState" class="query-state">서울 기준 주요 여행지 로딩 중…</span>
+
+  <!-- 👇 새로 추가 -->
+  <div style="margin-left:auto; display:flex; align-items:center; gap:6px; font-size:0.75rem;">
+    <span style="color:#6b7280;">내 주변 반경</span>
+    <select id="selRadius" style="border-radius:999px; border:1px solid #e5e7eb; padding:2px 8px; font-size:0.75rem;">
+      <option value="5">5km</option>
+      <option value="10">10km</option>
+      <option value="20" selected>20km</option>
+    </select>
+  </div>
+</div>
+
     </section>
 
     <!-- 메인 레이아웃 -->
