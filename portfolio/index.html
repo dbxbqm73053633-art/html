@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REALTRACK - 부동산 실거래가</title>
+  <link rel="stylesheet" href="./css/index.css" />
+  <!-- Kakao Map SDK -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 상단 헤더 -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">R</div>
+        <div class="brand-text">
+          <div class="brand-title">REALTRACK</div>
+          <div class="brand-subtitle">부동산 실거래 인사이트</div>
+        </div>
+      </div>
+      <button class="icon-button" id="btn-alert">
+        <span class="icon-bell"></span>
+      </button>
+    </header>
+
+    <!-- 위치/검색/필터 영역 -->
+    <section class="search-section">
+      <div class="location-row">
+        <div class="location-info">
+          <span class="location-dot"></span>
+          <span id="current-location-label">현 위치 파악 중...</span>
+        </div>
+        <button class="pill-button" id="btn-refresh-location">위치 새로고침</button>
+      </div>
+
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span class="icon-search"></span>
+          <input
+            type="text"
+            id="keyword-input"
+            placeholder="동 이름, 단지명으로 검색 (예: 역삼동, 자이)"
+          />
+          <button class="clear-btn" id="btn-clear-keyword">&times;</button>
+        </div>
+        <button class="primary-button" id="btn-search">검색</button>
+      </div>
+
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">거래유형</span>
+          <div class="chip-group" id="deal-type-group">
+            <button class="chip chip-active" data-value="sale">매매</button>
+            <button class="chip" data-value="jeonse">전세</button>
+            <button class="chip" data-value="rent">월세</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">기간</span>
+          <div class="chip-group" id="period-group">
+            <button class="chip chip-active" data-value="3">3개월</button>
+            <button class="chip" data-value="6">6개월</button>
+            <button class="chip" data-value="12">1년</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-row">
+        <span id="summary-count">실거래 0건</span>
+        <span id="summary-price-range" class="summary-badge">가격 범위 -</span>
+      </div>
+    </section>
+
+    <!-- 메인 콘텐츠: 리스트 + 지도 -->
+    <main class="main-layout">
+      <!-- 리스트 영역 -->
+      <section class="list-panel">
+        <div class="panel-header">
+          <h2>실거래 리스트</h2>
+          <select id="sort-select" class="sort-select">
+            <option value="recent">최신순</option>
+            <option value="price-desc">가격 높은순</option>
+            <option value="price-asc">가격 낮은순</option>
+            <option value="area-desc">면적 큰순</option>
+          </select>
+        </div>
+
+        <div id="deal-list" class="deal-list">
+          <!-- JS로 카드 렌더링 -->
+        </div>
+
+        <div class="list-footer">
+          <button class="ghost-button" id="btn-load-more">더 불러오기</button>
+        </div>
+      </section>
+
+      <!-- 지도 영역 -->
+      <section class="map-panel">
+        <div class="panel-header map-header">
+          <h2>지도</h2>
+          <div class="map-tools">
+            <button class="pill-button" id="btn-fit-markers">매물 영역 맞추기</button>
+          </div>
+        </div>
+        <div id="map" class="map-container"></div>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 -->
+    <nav class="bottom-nav">
+      <button class="nav-item nav-item-active">
+        <span class="nav-icon icon-home"></span>
+        <span>홈</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon icon-map"></span>
+        <span>지도</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon icon-stats"></span>
+        <span>통계</span>
+      </button>
+      <button class="nav-item">
+        <span class="nav-icon icon-user"></span>
+        <span>마이</span>
+      </button>
+    </nav>
+
+    <!-- 로딩 오버레이 -->
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="spinner"></div>
+      <p>실거래 데이터를 불러오는 중...</p>
+    </div>
+
+    <!-- 토스트 메시지 -->
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="./js/index.js"></script>
+</body>
+</html>
