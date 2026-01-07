@@ -337,11 +337,6 @@ function createCardElement(item) {
   title.className = "card-title";
   title.textContent = item.title || "이름 미제공";
 
-  const badge = document.createElement("span");
-  badge.className = "card-badge";
-  badge.textContent =
-    item.cat3name || item.cat2name || item.cat1name || "반려동물 동반";
-
   titleRow.appendChild(title);
   titleRow.appendChild(badge);
 
