@@ -10,8 +10,7 @@ const COMMON_PARAMS = {
   _type: "json",
 };
 
-const PAGE_SIZE = 100;
-const SEOUL_FALLBACK_CODE = "1"; // 혹시 API areaCode 못 찾을 때 대비
+const SEOUL_FALLBACK_CODE = "1"; // 서울 코드 fallback
 
 // 상태
 const STATE = {
@@ -87,35 +86,6 @@ async function fetchTour(path, params = {}) {
     items: itemsArray,
     totalCount: body.totalCount || itemsArray.length,
   };
-}
-
-// ===== 전국 전체 페이지 한 번에 가져오기 =====
-async function fetchAllPages(path, baseParams, requestId) {
-  const all = [];
-
-  // 1페이지
-  const first = await fetchTour(path, {
-    ...baseParams,
-    numOfRows: PAGE_SIZE,
-    pageNo: 1,
-  });
-  if (requestId !== currentRequestId) return [];
-
-  all.push(...first.items);
-  const totalCount = first.totalCount || first.items.length;
-  const maxPage = Math.ceil(totalCount / PAGE_SIZE);
-
-  for (let page = 2; page <= maxPage; page++) {
-    if (requestId !== currentRequestId) break;
-    const res = await fetchTour(path, {
-      ...baseParams,
-      numOfRows: PAGE_SIZE,
-      pageNo: page,
-    });
-    all.push(...res.items);
-  }
-
-  return all;
 }
 
 // ===== 키워드 필터링 =====
@@ -197,7 +167,6 @@ function renderMarkers(items) {
     marker.contentId = item.contentid;
     marker.contentTypeId = item.contenttypeid;
 
-    // 지도 마커 클릭 시 → 카드 활성화 + 상세 모달
     kakao.maps.event.addListener(marker, "click", () => {
       setActiveCard(marker.contentId);
       focusOnMarker(marker);
@@ -323,7 +292,6 @@ function createCardElement(item) {
   card.appendChild(thumb);
   card.appendChild(body);
 
-  // 카드 클릭 → 지도 이동 + 상세 모달
   card.addEventListener("click", () => {
     setActiveCard(item.contentid);
     focusMarkerByContentId(item.contentid);
@@ -472,7 +440,7 @@ async function loadAreas() {
       areaButtonsEl.appendChild(btn);
     });
   } catch {
-    // areaCode 실패해도 초기 서울용 fallback 사용할 거라 여기서는 조용히 패스
+    // 무시 (초기 서울 fallback 사용)
   }
 }
 
@@ -515,7 +483,7 @@ function getCurrentPositionPromise() {
   });
 }
 
-// ===== 검색 실행 =====
+// ===== 검색 실행 (빠른 버전) =====
 async function runSearch() {
   const requestId = ++currentRequestId;
 
@@ -535,21 +503,26 @@ async function runSearch() {
       const pos = await getCurrentPositionPromise();
       if (requestId !== currentRequestId) return;
 
-      const baseParams = {
+      const { items: resItems = [] } = await fetchTour("locationBasedList", {
         arrange: "E",
         mapX: pos.coords.longitude,
         mapY: pos.coords.latitude,
-        radius: 20000,
-      };
-      items = await fetchAllPages("locationBasedList", baseParams, requestId);
+        radius: 15000, // 15km
+        numOfRows: 40, // 최대 40개까지만
+        pageNo: 1,
+      });
+
+      items = resItems;
     } else {
-      const baseParams = {
+      const { items: resItems = [] } = await fetchTour("areaBasedList", {
         arrange: "E",
         areaCode: STATE.areaCode || "",
         cat1: STATE.categoryCode || "",
-        // keyword는 API가 아니라 로컬 필터링에서 처리
-      };
-      items = await fetchAllPages("areaBasedList", baseParams, requestId);
+        numOfRows: 60, // 대표 60개만
+        pageNo: 1,
+      });
+
+      items = resItems;
     }
 
     if (requestId !== currentRequestId) return;
@@ -581,7 +554,6 @@ async function runInitialSeoul() {
   listContainer.innerHTML = "";
   txtCount.textContent = "0곳";
 
-  // areaButtons에서 '서울' chip 찾아서 기본 선택
   const seoulChip = Array.from(
     areaButtonsEl.querySelectorAll(".filter-chip")
   ).find((chip) => chip.textContent.includes("서울"));
@@ -673,6 +645,5 @@ window.addEventListener("DOMContentLoaded", async () => {
   initMap();
   bindEvents();
   await Promise.all([loadAreas(), loadCategories()]);
-  // 로딩 이후: 서울 20개 기본 노출
   runInitialSeoul();
 });

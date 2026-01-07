@@ -507,7 +507,7 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 8px;
+  padding: 8px 10px;
   border-radius: var(--radius-md);
   background: #fefefe;
   border: 1px solid #e5e7eb;
@@ -518,18 +518,9 @@ body {
   min-height: 68px;
 }
 
-.card::before {
-  content: "";
-  position: absolute;
-  right: -18px;
-  bottom: -18px;
-  width: 52px;
-  height: 52px;
-  background-image: radial-gradient(circle at 30% 30%, rgba(251, 146, 60, 0.16) 45%, transparent 47%),
-    radial-gradient(circle at 70% 30%, rgba(251, 146, 60, 0.16) 45%, transparent 47%),
-    radial-gradient(circle at 50% 70%, rgba(251, 146, 60, 0.22) 60%, transparent 62%);
-  opacity: 0.7;
-}
+/* ⛔ 이 부분 있었으면 통째로 삭제해줘
+.card::before { ... }
+*/
 
 .card:hover {
   transform: translateY(-1px);
@@ -543,6 +534,7 @@ body {
   box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75), var(--shadow-light);
   background: #fffbeb;
 }
+
 
 .card-thumb {
   width: 60px;
@@ -737,8 +729,14 @@ body {
   }
 
   .list-container {
-    max-height: calc(100vh - 260px);
-  }
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;          /* 8 → 10으로 살짝 넓힘 */
+  padding-right: 4px;
+  padding-bottom: 8px;/* 카드 아래쪽 여유 */
+}
 
   .map {
     height: calc(100vh - 220px);
