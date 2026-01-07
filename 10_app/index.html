@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>부산 맛집 리스트</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/index.css" />
+  <!-- 카카오맵 SDK -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 리스트 영역 -->
+    <aside class="list-panel">
+      <header class="list-header">
+        <h1>부산 맛집</h1>
+        <p class="list-sub">공공데이터 기반 로컬 맛집 정보</p>
+        <div class="search-box">
+          <input id="keywordInput" type="text" placeholder="상호명 / 메뉴 검색" />
+        </div>
+      </header>
+
+      <ul id="restaurantList" class="restaurant-list">
+        <!-- JS에서 동적으로 렌더링 -->
+      </ul>
+
+      <div class="list-footer">
+        <button id="prevPageBtn" class="page-btn" disabled>이전</button>
+        <span id="pageInfo" class="page-info">1 / 1</span>
+        <button id="nextPageBtn" class="page-btn">다음</button>
+      </div>
+    </aside>
+
+    <!-- 상세 영역 -->
+    <main class="detail-panel">
+      <section id="detailPlaceholder" class="detail-placeholder">
+        리스트에서 맛집을 선택해 주세요.
+      </section>
+
+      <section id="detailView" class="detail-view hidden">
+        <div class="detail-top">
+          <div class="detail-image-wrap">
+            <button class="favorite-btn" aria-label="즐겨찾기">
+              ❤
+            </button>
+            <img id="detailImage" src="" alt="맛집 대표 이미지" />
+          </div>
+
+          <div class="detail-info">
+            <div class="info-row">
+              <span class="info-label">상호명</span>
+              <span id="detailTitle" class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">주소</span>
+              <span id="detailAddress" class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">소개</span>
+              <span id="detailDesc" class="info-value multiline"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">대표메뉴</span>
+              <span id="detailMenu" class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">문의</span>
+              <span id="detailTel" class="info-value"></span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">운영시간</span>
+              <span id="detailTime" class="info-value"></span>
+            </div>
+
+            <a id="detailHomepage" href="#" target="_blank" class="homepage-bar" rel="noopener noreferrer">
+              공식 홈페이지 이동
+            </a>
+            <div id="noHomepageBar" class="homepage-bar is-empty">
+              공식 홈페이지 없음
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-map-wrap">
+          <div id="map" class="map-box"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./js/index.js"></script>
+</body>
+</html>
