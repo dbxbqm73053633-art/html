@@ -747,5 +747,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   initMap();
   bindEvents();
   await Promise.all([loadAreas(), loadCategories()]);
-  runInitialSeoul();
+
+  // 처음 시작할 때부터 내 주변 20km 검색 모드
+  STATE.mode = "nearby";
+  STATE.radiusKm = DEFAULT_RADIUS_KM; // 20km 고정
+  runSearch();
 });
+
