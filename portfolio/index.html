@@ -3,102 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>펫투어 - 전국 반려동물 동반 여행</title>
+  <title>PetTour - 전국 반려동물 동반 여행</title>
   <link rel="stylesheet" href="./css/index.css" />
 </head>
 <body>
-  <div class="app">
-    <!-- 헤더 -->
-    <header class="app-header">
-      <div class="app-logo">PetTour</div>
-      <div class="app-header-right">
-        <button id="nearbyBtn" class="btn btn-outline">내 주변 찾기</button>
+  <div class="app-shell">
+    <!-- 상단 헤더 -->
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-mark">🐾</span>
+        <span class="brand-text">PetTour</span>
       </div>
+      <nav class="top-actions">
+        <button id="btnNearby" class="btn btn-ghost">내 주변</button>
+        <button id="btnReset" class="btn btn-outline">필터 초기화</button>
+      </nav>
     </header>
 
-    <!-- 검색 패널 -->
-    <section class="search-panel">
+    <!-- 검색/필터 바 (sticky) -->
+    <section class="search-bar">
       <div class="search-row">
         <div class="field">
-          <label for="areaSelect">지역</label>
-          <select id="areaSelect">
+          <label for="selArea">지역</label>
+          <select id="selArea">
             <option value="">전국</option>
-            <!-- JS로 지역코드 조회 API 결과를 채움 -->
           </select>
         </div>
         <div class="field">
-          <label for="categorySelect">분류</label>
-          <select id="categorySelect">
+          <label for="selCategory">분류</label>
+          <select id="selCategory">
             <option value="">전체</option>
-            <!-- JS로 서비스 분류코드 조회 API 결과를 채움 -->
           </select>
         </div>
       </div>
 
       <div class="search-row">
-        <div class="field field-flex">
-          <label for="keywordInput">키워드</label>
+        <div class="field field-full">
+          <label for="iptKeyword">키워드</label>
           <div class="field-inline">
-            <input id="keywordInput" type="text" placeholder="예: 애견카페, 펜션, 캠핑장" />
-            <button id="searchBtn" class="btn btn-primary">검색</button>
+            <input id="iptKeyword" type="text" placeholder="예: 애견카페, 펜션, 캠핑장" />
+            <button id="btnSearch" type="button" class="btn btn-primary">
+              검색
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="chip-row">
-        <span class="chip chip-active" data-type="all">전체</span>
-        <span class="chip" data-type="stay">숙소</span>
-        <span class="chip" data-type="cafe">카페</span>
-        <span class="chip" data-type="park">공원/산책</span>
-        <span class="chip" data-type="etc">기타</span>
+      <div class="chip-row" id="chipRow">
+        <button class="chip chip-active" data-type="all">전체</button>
+        <button class="chip" data-type="stay">숙소</button>
+        <button class="chip" data-type="cafe">카페</button>
+        <button class="chip" data-type="park">공원/산책</button>
+        <button class="chip" data-type="etc">기타</button>
       </div>
     </section>
 
-    <!-- 콘텐츠 영역: 리스트 + 지도 -->
-    <main class="content">
-      <!-- 리스트 패널 -->
-      <section class="list-panel">
-        <div class="list-header">
-          <h2>반려동물 동반 여행지</h2>
-          <span id="resultCount" class="result-count">0곳</span>
-        </div>
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="main-layout">
+      <!-- 좌측 리스트 -->
+      <section class="panel panel-list">
+        <header class="panel-header">
+          <div>
+            <h1>반려동물 동반 여행지</h1>
+            <p class="sub">
+              전국 반려동물 동반 가능한 여행지를 지역·분류·키워드로 한 번에 조회
+            </p>
+          </div>
+          <div class="panel-meta">
+            <span id="txtCount" class="badge-count">0곳</span>
+            <span id="txtQueryState" class="query-state">대기 중</span>
+          </div>
+        </header>
 
+        <!-- 로딩 스켈레톤 -->
         <div id="listSkeleton" class="list-skeleton">
           <div class="skeleton-card"></div>
           <div class="skeleton-card"></div>
           <div class="skeleton-card"></div>
         </div>
 
-        <div id="placeList" class="place-list">
-          <!-- JS에서 카드 렌더링 -->
+        <!-- 결과 리스트 -->
+        <div id="listContainer" class="list-container">
+          <!-- JS 렌더링 -->
         </div>
+
+        <!-- 더 보기 버튼 (페이지 로딩) -->
+        <button id="btnLoadMore" class="btn btn-block btn-outline hidden">
+          더 보기
+        </button>
       </section>
 
-      <!-- 지도 패널 -->
-      <section class="map-panel">
-        <div class="map-header">
-          <h2>지도</h2>
-          <span id="mapHint">카드를 누르면 지도에서 위치를 바로 볼 수 있어요.</span>
-        </div>
-        <div id="map" class="map-container"></div>
+      <!-- 우측 지도 -->
+      <section class="panel panel-map">
+        <header class="panel-header panel-header-map">
+          <div>
+            <h2>지도 보기</h2>
+            <p class="sub">
+              카드 또는 클러스터를 선택하면 해당 여행지 위치로 이동합니다.
+            </p>
+          </div>
+        </header>
+        <div id="map" class="map"></div>
       </section>
     </main>
 
-    <!-- 상세 모달 (공통정보/소개정보/이미지정보 확장용) -->
+    <!-- 상세 모달 -->
     <div id="detailModal" class="modal hidden">
       <div class="modal-backdrop"></div>
-      <div class="modal-content">
-        <button id="modalCloseBtn" class="modal-close">×</button>
-        <div id="modalBody">
-          <!-- JS에서 상세 정보 렌더링 -->
+      <div class="modal-dialog">
+        <button id="btnModalClose" class="modal-close">×</button>
+        <div id="modalBody" class="modal-body">
+          <!-- JS 내용 -->
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 카카오맵 SDK -->
-  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services"></script>
-  <!-- 메인 스크립트 -->
+  <!-- 카카오맵 SDK + 클러스터러 -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services,clusterer"></script>
   <script src="./js/index.js"></script>
 </body>
 </html>
