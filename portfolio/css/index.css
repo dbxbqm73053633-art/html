@@ -441,7 +441,7 @@ body {
   }
 }
 
-/* 리스트 컨테이너 : 블록 구조 + margin으로 겹침 방지 */
+/* 리스트 컨테이너 */
 
 .list-container {
   max-height: 60vh;
@@ -474,15 +474,13 @@ body {
   border: 1px solid #e5e7eb;
   cursor: pointer;
   transition: all 0.16s ease;
-  margin-bottom: 8px; /* 여기 때문에 카드끼리 무조건 떨어져 있음 */
+  margin-bottom: 8px;
   min-height: 68px;
 }
 
 .card:last-child {
   margin-bottom: 0;
 }
-
-/* pseudo 장식 제거 → 겹침 원인 자체를 없앰 */
 
 .card-thumb {
   width: 60px;
@@ -528,16 +526,6 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.card-badge {
-  font-size: 0.7rem;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: #dcfce7;
-  color: #166534;
-  flex-shrink: 0;
-  white-space: nowrap;
 }
 
 .card-meta {

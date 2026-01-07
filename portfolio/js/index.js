@@ -37,7 +37,6 @@ let currentRequestId = 0;
 // ========================
 const selArea = document.getElementById("selArea");
 const selCategory = document.getElementById("selCategory");
-const selRadius = document.getElementById("selRadius"); // 👈 새 반경 셀렉트
 const iptKeyword = document.getElementById("iptKeyword");
 const btnSearch = document.getElementById("btnSearch");
 const btnNearby = document.getElementById("btnNearby");
@@ -337,13 +336,8 @@ function createCardElement(item) {
   title.className = "card-title";
   title.textContent = item.title || "이름 미제공";
 
-  const badge = document.createElement("span");
-  badge.className = "card-badge";
-  badge.textContent =
-    item.cat3name || item.cat2name || item.cat1name || "반려동물 동반";
-
+  // 오른쪽 초록 배지 제거
   titleRow.appendChild(title);
-  titleRow.appendChild(badge);
 
   const meta = document.createElement("div");
   meta.className = "card-meta";
@@ -716,30 +710,16 @@ function bindEvents() {
     runSearch();
   });
 
-  // 👇 반경 셀렉트 변경 시 반경 갱신
-  if (selRadius) {
-    selRadius.addEventListener("change", () => {
-      const v = parseInt(selRadius.value, 10);
-      STATE.radiusKm = Number.isNaN(v) ? DEFAULT_RADIUS_KM : v;
-
-      // 내 주변 모드일 때 반경 변경하면 바로 다시 검색
-      if (STATE.mode === "nearby") {
-        runSearch();
-      }
-    });
-  }
-
+  // 내 주변 찾기: 반경 20km 고정
   btnNearby.addEventListener("click", () => {
     STATE.mode = "nearby";
+    STATE.radiusKm = DEFAULT_RADIUS_KM; // 항상 20km
     runSearch();
   });
 
   btnReset.addEventListener("click", () => {
     selArea.value = "";
     selCategory.value = "";
-    if (selRadius) {
-      selRadius.value = String(DEFAULT_RADIUS_KM);
-    }
     iptKeyword.value = "";
     STATE.keyword = "";
     STATE.areaCode = "";
