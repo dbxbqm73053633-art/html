@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="brand-text-block">
-          <span className="brand-name">PetTour</span>
+          <span class="brand-name">PetTour</span>
           <span class="brand-sub">전국 반려동물 동반 여행지 지도</span>
         </div>
       </div>
@@ -37,7 +37,8 @@
         <p>지역 · 분류 · 키워드만 선택하면, 반려동물 동반 가능한 여행지를 한눈에 볼 수 있어요.</p>
       </div>
       <div class="hero-pets">
-        <div class="hero-paw"></div>
+        <div class="hero-paw hero-paw-1"></div>
+        <div class="hero-paw hero-paw-2"></div>
         <div class="hero-pet-dog">🐶</div>
         <div class="hero-pet-cat">🐱</div>
       </div>
@@ -49,9 +50,9 @@
       <div class="filter-group">
         <div class="filter-label-row">
           <span class="filter-label">지역</span>
-          <span class="filter-hint">전국 / 시·도 단위 선택</span>
+          <span class="filter-hint">서울 · 수도권 · 전국</span>
         </div>
-        <div id="areaButtons" class="filter-chip-row">
+        <div id="areaButtons" class="filter-chip-row scroll-chips">
           <!-- JS로 버튼 생성 -->
         </div>
       </div>
@@ -60,9 +61,9 @@
       <div class="filter-group">
         <div class="filter-label-row">
           <span class="filter-label">분류</span>
-          <span class="filter-hint">숙박 / 관광지 / 음식점 등</span>
+          <span class="filter-hint">숙소 / 관광지 / 음식점 등</span>
         </div>
-        <div id="categoryButtons" class="filter-chip-row">
+        <div id="categoryButtons" class="filter-chip-row scroll-chips">
           <!-- JS로 버튼 생성 -->
         </div>
       </div>
@@ -74,7 +75,12 @@
           <span class="filter-hint">예: 애견카페, 펜션, 캠핑장</span>
         </div>
         <div class="search-row">
-          <input id="iptKeyword" type="text" class="keyword-input" placeholder="장소 이름 · 특징 · 동네명으로 검색" />
+          <input
+            id="iptKeyword"
+            type="text"
+            class="keyword-input"
+            placeholder="장소 이름 · 특징 · 동네명으로 검색 (서울 20개 기준)"
+          />
           <button id="btnSearch" type="button" class="btn btn-primary">
             검색
           </button>
@@ -90,7 +96,7 @@
           <div>
             <h2>반려동물 동반 여행지</h2>
             <p class="panel-sub">
-              검색 조건에 해당하는 전국 여행지를 리스트와 지도에서 동시에 확인하세요.
+              검색 조건에 해당하는 여행지를 리스트와 지도에서 동시에 확인하세요.
             </p>
           </div>
           <div class="panel-meta">

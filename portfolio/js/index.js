@@ -11,6 +11,7 @@ const COMMON_PARAMS = {
 };
 
 const PAGE_SIZE = 100;
+const SEOUL_FALLBACK_CODE = "1"; // 혹시 API areaCode 못 찾을 때 대비
 
 // 상태
 const STATE = {
@@ -117,6 +118,26 @@ async function fetchAllPages(path, baseParams, requestId) {
   return all;
 }
 
+// ===== 키워드 필터링 =====
+function filterItemsByKeyword(items, keyword) {
+  if (!keyword) return items;
+
+  const kw = keyword.toLowerCase();
+  return items.filter((item) => {
+    const title = (item.title || "").toLowerCase();
+    const addr1 = (item.addr1 || "").toLowerCase();
+    const addr2 = (item.addr2 || "").toLowerCase();
+    const cat =
+      (item.cat3name || item.cat2name || item.cat1name || "").toLowerCase();
+    return (
+      title.includes(kw) ||
+      addr1.includes(kw) ||
+      addr2.includes(kw) ||
+      cat.includes(kw)
+    );
+  });
+}
+
 // ===== 로딩 표시 =====
 function setLoading(isLoading, message = "") {
   if (isLoading) {
@@ -132,8 +153,8 @@ function setLoading(isLoading, message = "") {
 function initMap() {
   const container = document.getElementById("map");
   const options = {
-    center: new kakao.maps.LatLng(36.5, 127.8),
-    level: 13,
+    center: new kakao.maps.LatLng(37.5665, 126.978), // 서울 시청 근처
+    level: 8,
   };
   map = new kakao.maps.Map(container, options);
 
@@ -342,7 +363,7 @@ async function openDetail(contentId, contentTypeId) {
 
     const common = commonRes.items[0] || {};
     const intro = introRes.items[0] || {};
-    const images = imageRes.items
+    const images = (imageRes.items || [])
       .map((i) => i.originimgurl || i.smallimageurl)
       .filter(Boolean)
       .slice(0, 5);
@@ -450,7 +471,9 @@ async function loadAreas() {
       });
       areaButtonsEl.appendChild(btn);
     });
-  } catch {}
+  } catch {
+    // areaCode 실패해도 초기 서울용 fallback 사용할 거라 여기서는 조용히 패스
+  }
 }
 
 async function loadCategories() {
@@ -524,14 +547,16 @@ async function runSearch() {
         arrange: "E",
         areaCode: STATE.areaCode || "",
         cat1: STATE.categoryCode || "",
-        keyword: STATE.keyword || "",
+        // keyword는 API가 아니라 로컬 필터링에서 처리
       };
       items = await fetchAllPages("areaBasedList", baseParams, requestId);
     }
 
     if (requestId !== currentRequestId) return;
 
-    STATE.items = items;
+    const filtered = filterItemsByKeyword(items, STATE.keyword);
+    STATE.items = filtered;
+
     renderList(STATE.items);
     renderMarkers(STATE.items);
     setLoading(false);
@@ -541,6 +566,53 @@ async function runSearch() {
     listContainer.innerHTML =
       '<p style="font-size:0.82rem;color:#ef4444;padding:6px;">데이터 조회 중 문제가 발생했습니다.</p>';
     txtCount.textContent = "0곳";
+  }
+}
+
+// ===== 초기 - 서울 20개만 로딩 =====
+async function runInitialSeoul() {
+  const requestId = ++currentRequestId;
+
+  STATE.mode = "area";
+  STATE.keyword = "";
+  iptKeyword.value = "";
+
+  setLoading(true, "서울 주요 반려동물 동반 여행지 불러오는 중…");
+  listContainer.innerHTML = "";
+  txtCount.textContent = "0곳";
+
+  // areaButtons에서 '서울' chip 찾아서 기본 선택
+  const seoulChip = Array.from(
+    areaButtonsEl.querySelectorAll(".filter-chip")
+  ).find((chip) => chip.textContent.includes("서울"));
+
+  if (seoulChip) {
+    areaButtonsEl.querySelectorAll(".filter-chip").forEach((chip) => {
+      chip.classList.toggle("filter-chip-active", chip === seoulChip);
+    });
+    STATE.areaCode = seoulChip.dataset.code || SEOUL_FALLBACK_CODE;
+  } else {
+    STATE.areaCode = SEOUL_FALLBACK_CODE;
+  }
+
+  try {
+    const { items } = await fetchTour("areaBasedList", {
+      arrange: "E",
+      areaCode: STATE.areaCode,
+      numOfRows: 20,
+      pageNo: 1,
+    });
+
+    if (requestId !== currentRequestId) return;
+
+    STATE.items = items || [];
+    renderList(STATE.items);
+    renderMarkers(STATE.items);
+    setLoading(false);
+  } catch {
+    if (requestId !== currentRequestId) return;
+    setLoading(false);
+    txtQueryState.textContent = "서울 기본 데이터 로딩 실패";
   }
 }
 
@@ -601,6 +673,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   initMap();
   bindEvents();
   await Promise.all([loadAreas(), loadCategories()]);
-  STATE.mode = "area";
-  runSearch();
+  // 로딩 이후: 서울 20개 기본 노출
+  runInitialSeoul();
 });

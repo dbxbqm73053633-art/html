@@ -7,20 +7,20 @@
 }
 
 :root {
-  --bg-main: #f5f7fb;
+  --bg-main: #fefaf6;
   --bg-soft: #ffffff;
-  --bg-accent: #fefce8;
-  --primary: #6366f1;
-  --primary-soft: #e0e7ff;
-  --accent: #f97316;
-  --accent-soft: #ffedd5;
+  --bg-accent: #fff7ed;
+  --primary: #f97316;
+  --primary-soft: #ffedd5;
+  --accent: #22c55e;
+  --accent-soft: #dcfce7;
   --text-main: #111827;
   --text-sub: #6b7280;
   --border-soft: #e5e7eb;
-  --radius-lg: 18px;
+  --radius-lg: 20px;
   --radius-md: 14px;
-  --shadow-soft: 0 14px 40px rgba(148, 163, 184, 0.4);
-  --shadow-light: 0 10px 26px rgba(148, 163, 184, 0.35);
+  --shadow-soft: 0 18px 46px rgba(148, 163, 184, 0.35);
+  --shadow-light: 0 12px 30px rgba(148, 163, 184, 0.3);
 }
 
 html,
@@ -31,7 +31,7 @@ body {
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Noto Sans KR", sans-serif;
-  background: radial-gradient(circle at top, #eff6ff 0, #f5f7fb 55%, #e5e7eb 100%);
+  background: radial-gradient(circle at top, #fee2e2 0, #fef9f3 45%, #e0f2fe 100%);
   color: var(--text-main);
 }
 
@@ -42,6 +42,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 /* 상단 헤더 */
@@ -63,11 +64,11 @@ body {
 
 .brand-logo {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 999px;
   background: radial-gradient(circle at 30% 0, #fee2e2, #fecaca);
-  box-shadow: 0 10px 28px rgba(248, 113, 113, 0.4);
+  box-shadow: 0 10px 28px rgba(248, 113, 113, 0.45);
 }
 
 .brand-pet-ears {
@@ -163,14 +164,14 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), #fb923c);
   color: #ffffff;
   box-shadow: var(--shadow-light);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 38px rgba(79, 70, 229, 0.55);
+  box-shadow: 0 16px 38px rgba(248, 113, 113, 0.55);
 }
 
 .btn-outline {
@@ -185,13 +186,13 @@ body {
 }
 
 .btn-ghost {
-  background: #f3f4ff;
-  border: 1px solid #c7d2fe;
-  color: #4f46e5;
+  background: #fef3c7;
+  border: 1px solid #fed7aa;
+  color: #b45309;
 }
 
 .btn-ghost:hover {
-  background: #e0e7ff;
+  background: #fffbeb;
 }
 
 /* 히어로 스트립 */
@@ -202,9 +203,9 @@ body {
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #eef2ff, #fef9c3);
+  background: radial-gradient(circle at 0 0, #fee2e2, #fffbeb 55%, #e0f2fe 100%);
   box-shadow: var(--shadow-soft);
   overflow: hidden;
   position: relative;
@@ -229,32 +230,41 @@ body {
 .hero-pets {
   position: relative;
   flex-shrink: 0;
-  width: 100px;
-  height: 60px;
+  width: 110px;
+  height: 66px;
 }
 
 .hero-paw {
   position: absolute;
-  right: -10px;
-  top: -18px;
   width: 70px;
   height: 70px;
-  background-image: radial-gradient(circle at 30% 30%, rgba(251, 191, 36, 0.5) 45%, transparent 47%),
-    radial-gradient(circle at 70% 30%, rgba(251, 191, 36, 0.45) 45%, transparent 47%),
-    radial-gradient(circle at 50% 70%, rgba(251, 191, 36, 0.6) 60%, transparent 62%);
+  background-image: radial-gradient(circle at 30% 30%, rgba(251, 146, 60, 0.3) 45%, transparent 47%),
+    radial-gradient(circle at 70% 30%, rgba(251, 146, 60, 0.28) 45%, transparent 47%),
+    radial-gradient(circle at 50% 70%, rgba(251, 146, 60, 0.35) 60%, transparent 62%);
   filter: blur(1px);
   opacity: 0.7;
+}
+
+.hero-paw-1 {
+  right: -10px;
+  top: -18px;
+}
+
+.hero-paw-2 {
+  left: -18px;
+  bottom: -28px;
+  opacity: 0.4;
 }
 
 .hero-pet-dog,
 .hero-pet-cat {
   position: absolute;
-  font-size: 1.7rem;
+  font-size: 1.9rem;
 }
 
 .hero-pet-dog {
-  bottom: 0;
-  left: 8px;
+  bottom: -2px;
+  left: 6px;
 }
 
 .hero-pet-cat {
@@ -266,14 +276,14 @@ body {
 
 .search-bar {
   margin-bottom: 10px;
-  padding: 10px 12px;
+  padding: 10px 12px 12px;
   border-radius: var(--radius-lg);
   background: #ffffff;
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--border-soft);
 }
 
-/* 필터 그룹을 모바일에서 더 단정하게 한 줄씩 */
+/* 필터 그룹 */
 
 .filter-group {
   margin-bottom: 8px;
@@ -299,36 +309,54 @@ body {
   color: #9ca3af;
 }
 
-/* 지역/분류 버튼 – wrap, 간격 일정 */
+/* 지역/분류 버튼 – 가로 스크롤 */
 
 .filter-chip-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-chip-row::-webkit-scrollbar {
+  height: 4px;
+}
+
+.filter-chip-row::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 999px;
+}
+
+.filter-chip-row::-webkit-scrollbar-thumb {
+  background: #fec89a;
+  border-radius: 999px;
 }
 
 .filter-chip {
   border-radius: 999px;
-  padding: 5px 9px;
+  padding: 6px 11px;
   font-size: 0.78rem;
   border: 1px solid var(--border-soft);
   background: #f9fafb;
   color: #4b5563;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .filter-chip:hover {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1d4ed8;
+  background: #fffbeb;
+  border-color: #fed7aa;
+  color: #b45309;
 }
 
 .filter-chip-active {
-  background: #eef2ff;
-  border-color: #4f46e5;
-  color: #312e81;
-  box-shadow: 0 6px 18px rgba(129, 140, 248, 0.4);
+  background: #f97316;
+  border-color: #ea580c;
+  color: #fefce8;
+  box-shadow: 0 6px 18px rgba(248, 113, 113, 0.5);
 }
 
 /* 키워드 */
@@ -343,14 +371,16 @@ body {
   flex: 1;
   border-radius: 999px;
   border: 1px solid var(--border-soft);
-  padding: 7px 12px;
+  padding: 8px 13px;
   font-size: 0.88rem;
   outline: none;
+  background: #f9fafb;
 }
 
 .keyword-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.7);
+  border-color: #fb923c;
+  box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75);
+  background: #ffffff;
 }
 
 /* 메인 레이아웃 */
@@ -405,10 +435,10 @@ body {
 .badge-count {
   padding: 3px 9px;
   border-radius: 999px;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
+  background: #fffbeb;
+  border: 1px solid #fed7aa;
   font-size: 0.74rem;
-  color: #3730a3;
+  color: #92400e;
 }
 
 .query-state {
@@ -446,15 +476,16 @@ body {
   }
 }
 
-/* 리스트 컨테이너 – 모바일에서도 안 겹치게 높이 제한 */
+/* 리스트 컨테이너 – 모바일에서도 확실히 스크롤 */
 
 .list-container {
-  max-height: min(380px, 55vh);
+  max-height: 60vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-right: 2px;
+  gap: 8px;
+  padding-right: 4px;
+  padding-bottom: 4px;
 }
 
 .list-container::-webkit-scrollbar {
@@ -466,7 +497,7 @@ body {
 }
 
 .list-container::-webkit-scrollbar-thumb {
-  background: #cbd5f5;
+  background: #fec89a;
   border-radius: 999px;
 }
 
@@ -474,15 +505,17 @@ body {
 
 .card {
   display: flex;
+  align-items: flex-start;
   gap: 8px;
-  padding: 7px;
+  padding: 8px;
   border-radius: var(--radius-md);
-  background: #f9fafb;
+  background: #fefefe;
   border: 1px solid #e5e7eb;
   cursor: pointer;
   transition: all 0.16s ease;
   position: relative;
   overflow: hidden;
+  min-height: 68px;
 }
 
 .card::before {
@@ -501,19 +534,20 @@ body {
 .card:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-light);
-  border-color: #c7d2fe;
-  background: #ffffff;
+  border-color: #fdba74;
+  background: #fff7ed;
 }
 
 .card-active {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.7), var(--shadow-light);
+  border-color: #fb923c;
+  box-shadow: 0 0 0 1px rgba(248, 153, 60, 0.75), var(--shadow-light);
+  background: #fffbeb;
 }
 
 .card-thumb {
   width: 60px;
   height: 60px;
-  border-radius: 14px;
+  border-radius: 16px;
   background-color: #e5e7eb;
   background-position: center;
   background-size: cover;
@@ -530,7 +564,7 @@ body {
   font-size: 0.6rem;
   padding: 2px 6px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(15, 23, 42, 0.78);
   color: #fee2e2;
 }
 
@@ -561,8 +595,8 @@ body {
   font-size: 0.7rem;
   padding: 2px 7px;
   border-radius: 999px;
-  background: #fef3c7;
-  color: #92400e;
+  background: #dcfce7;
+  color: #166534;
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -652,7 +686,7 @@ body {
 }
 
 .modal-dialog::-webkit-scrollbar-thumb {
-  background: #cbd5f5;
+  background: #fec89a;
   border-radius: 999px;
 }
 
@@ -686,7 +720,7 @@ body {
   }
 
   .hero-strip {
-    padding: 12px 16px;
+    padding: 14px 18px;
   }
 
   .main-layout {
