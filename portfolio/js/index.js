@@ -12,12 +12,9 @@ const COMMON_PARAMS = {
   _type: "json",
 };
 
-const SEOUL_FALLBACK_CODE = "1"; // 서울 지역코드 기본값
-
-// 전국 키워드 검색용
 const KEYWORD_PAGE_SIZE = 80; // searchKeyword 페이지 크기
-const KEYWORD_MAX_PAGES = 8; // 최대 8페이지(640개)까지만
-const DEFAULT_RADIUS_KM = 20; // 내 주변 검색 기본 반경
+const KEYWORD_MAX_PAGES = 8; // 최대 8페이지(640개)까지
+const DEFAULT_RADIUS_KM = 20; // 내 주변 기본 반경 20km
 
 const STATE = {
   items: [],
@@ -172,7 +169,6 @@ async function fetchTour(path, params = {}) {
 async function fetchAllSearchKeyword(keyword, requestId) {
   const all = [];
 
-  // 1페이지
   const first = await fetchTour("searchKeyword", {
     arrange: "E",
     keyword,
@@ -189,7 +185,6 @@ async function fetchAllSearchKeyword(keyword, requestId) {
     KEYWORD_MAX_PAGES
   );
 
-  // 2페이지 이후
   for (let page = 2; page <= maxPage; page++) {
     if (requestId !== currentRequestId) break;
 
@@ -214,7 +209,7 @@ function deg2rad(d) {
 }
 
 function calcDistanceKm(lat1, lng1, lat2, lng2) {
-  const R = 6371; // km
+  const R = 6371;
   const dLat = deg2rad(lat2 - lat1);
   const dLng = deg2rad(lng2 - lng1);
   const a =
@@ -336,7 +331,7 @@ function createCardElement(item) {
   title.className = "card-title";
   title.textContent = item.title || "이름 미제공";
 
-  // 오른쪽 초록 배지 제거
+  // 오른쪽 배지 제거 → 타이틀만
   titleRow.appendChild(title);
 
   const meta = document.createElement("div");
@@ -514,6 +509,54 @@ async function openDetail(contentId, contentTypeId) {
   }
 }
 
+// ========================
+//  지역 / 분류 select 로딩
+// ========================
+async function loadAreas() {
+  selArea.innerHTML = "";
+
+  const optAll = document.createElement("option");
+  optAll.value = "";
+  optAll.textContent = "전국 전체";
+  selArea.appendChild(optAll);
+
+  try {
+    const { items } = await fetchTour("areaCode", {
+      numOfRows: 50,
+      pageNo: 1,
+    });
+
+    items.forEach((area) => {
+      const opt = document.createElement("option");
+      opt.value = area.code;
+      opt.textContent = area.name;
+      selArea.appendChild(opt);
+    });
+  } catch {}
+}
+
+async function loadCategories() {
+  selCategory.innerHTML = "";
+
+  const optAll = document.createElement("option");
+  optAll.value = "";
+  optAll.textContent = "전체 분류";
+  selCategory.appendChild(optAll);
+
+  try {
+    const { items } = await fetchTour("categoryCode", {
+      numOfRows: 50,
+      pageNo: 1,
+    });
+
+    items.forEach((cat) => {
+      const opt = document.createElement("option");
+      opt.value = cat.code;
+      opt.textContent = cat.name;
+      selCategory.appendChild(opt);
+    });
+  } catch {}
+}
 
 // ========================
 //  현재 위치
@@ -554,7 +597,6 @@ async function runSearch() {
     let items = [];
 
     if (STATE.mode === "nearby") {
-      // 내 주변 검색: 위치 + 거리 계산 + 가까운 순 정렬
       const pos = await getCurrentPositionPromise();
       if (requestId !== currentRequestId) return;
 
@@ -584,15 +626,12 @@ async function runSearch() {
 
       items = withDist;
     } else {
-      // 지역/분류 검색
       const isNationWideKeywordOnly =
         !STATE.areaCode && !STATE.categoryCode && STATE.keyword;
 
       if (isNationWideKeywordOnly) {
-        // 전국 전체 + 전체 분류 + 키워드 → searchKeyword로 전국 전체 검색
         items = await fetchAllSearchKeyword(STATE.keyword, requestId);
       } else {
-        // 일반 케이스 → areaBasedList 1페이지
         const { items: resItems = [] } = await fetchTour("areaBasedList", {
           arrange: "E",
           areaCode: STATE.areaCode || "",
@@ -622,54 +661,6 @@ async function runSearch() {
 }
 
 // ========================
-//  초기 서울 20개 로딩
-// ========================
-async function runInitialSeoul() {
-  const requestId = ++currentRequestId;
-
-  STATE.mode = "area";
-  STATE.keyword = "";
-  iptKeyword.value = "";
-
-  txtQueryState.textContent = "서울 기준 주요 여행지 로딩 중…";
-  listContainer.innerHTML = "";
-  txtCount.textContent = "0곳";
-
-  let seoulCode = SEOUL_FALLBACK_CODE;
-  const options = Array.from(selArea.options);
-  const seoulOption = options.find((opt) => opt.textContent.includes("서울"));
-
-  if (seoulOption) {
-    seoulCode = seoulOption.value || SEOUL_FALLBACK_CODE;
-    selArea.value = seoulCode;
-  } else {
-    selArea.value = "";
-  }
-
-  STATE.areaCode = seoulCode;
-
-  try {
-    const { items } = await fetchTour("areaBasedList", {
-      arrange: "E",
-      areaCode: STATE.areaCode,
-      numOfRows: 20,
-      pageNo: 1,
-    });
-
-    if (requestId !== currentRequestId) return;
-
-    STATE.items = items || [];
-    renderList(STATE.items);
-    renderMarkers(STATE.items);
-    setLoading(false);
-  } catch {
-    if (requestId !== currentRequestId) return;
-    setLoading(false);
-    txtQueryState.textContent = "서울 기본 데이터 로딩 실패";
-  }
-}
-
-// ========================
 //  이벤트 바인딩
 // ========================
 function bindEvents() {
@@ -695,10 +686,10 @@ function bindEvents() {
     runSearch();
   });
 
-  // 내 주변 찾기: 반경 20km 고정
+  // 내 주변 찾기: 20km 고정
   btnNearby.addEventListener("click", () => {
     STATE.mode = "nearby";
-    STATE.radiusKm = DEFAULT_RADIUS_KM; // 항상 20km
+    STATE.radiusKm = DEFAULT_RADIUS_KM;
     runSearch();
   });
 
@@ -733,9 +724,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   bindEvents();
   await Promise.all([loadAreas(), loadCategories()]);
 
-  // 처음 시작할 때부터 내 주변 20km 검색 모드
+  // 처음 시작할 때부터 내 주변 20km 검색
   STATE.mode = "nearby";
-  STATE.radiusKm = DEFAULT_RADIUS_KM; // 20km 고정
+  STATE.radiusKm = DEFAULT_RADIUS_KM;
   runSearch();
 });
-

@@ -739,10 +739,6 @@ body {
   border-radius: 10px;
   object-fit: cover;
 }
-.modal-body h2 {
-  font-size: 1.05rem;
-  margin-bottom: 8px;
-}
 
 /* 반응형 */
 
