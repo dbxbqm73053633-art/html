@@ -422,56 +422,89 @@ async function openDetail(contentId, contentTypeId) {
       .slice(0, 5);
 
     const mainImg = common.firstimage || common.firstimage2 || "";
+    const overviewText =
+      common.overview || "이 장소에 대한 상세 설명은 제공되지 않습니다.";
+
+    const addrLine = common.addr1
+      ? `${common.addr1}${common.addr2 ? " " + common.addr2 : ""}`
+      : "";
 
     modalBody.innerHTML = `
-      <h2>${common.title || "상세 정보"}</h2>
+      <div class="detail-header">
+        <h2 class="detail-title">${common.title || "상세 정보"}</h2>
+        <p class="detail-sub">반려동물과 함께 방문 가능한 장소 정보</p>
+      </div>
+
       ${
         mainImg
-          ? `<div style="margin-bottom:8px;">
-              <img src="${mainImg}" style="width:100%;max-height:230px;border-radius:16px;object-fit:cover;" />
+          ? `<div class="detail-main-image">
+              <img src="${mainImg}" alt="${common.title || ""}" />
             </div>`
           : ""
       }
-      <p style="font-size:0.86rem;color:#4b5563;line-height:1.6;margin-bottom:10px;">
-        ${common.overview || "상세 설명이 제공되지 않았습니다."}
-      </p>
-      <div style="font-size:0.8rem;color:#6b7280;margin-bottom:8px;">
-        ${
-          common.addr1
-            ? `<div><strong>주소</strong> : ${common.addr1} ${
-                common.addr2 || ""
-              }</div>`
-            : ""
-        }
-        ${
-          intro.usetime
-            ? `<div><strong>이용시간</strong> : ${intro.usetime}</div>`
-            : ""
-        }
-        ${
-          intro.restdate
-            ? `<div><strong>휴무일</strong> : ${intro.restdate}</div>`
-            : ""
-        }
-        ${
-          intro.parking
-            ? `<div><strong>주차</strong> : ${intro.parking}</div>`
-            : ""
-        }
-      </div>
+
+      <section class="detail-section">
+        <h3 class="detail-section-title">OVERVIEW</h3>
+        <p class="detail-overview">
+          ${overviewText}
+        </p>
+      </section>
+
+      ${
+        addrLine || intro.usetime || intro.restdate || intro.parking
+          ? `<section class="detail-section">
+              <h3 class="detail-section-title">INFO</h3>
+              <dl class="detail-kv">
+                ${
+                  addrLine
+                    ? `<div class="detail-kv-row">
+                         <dt>주소</dt>
+                         <dd>${addrLine}</dd>
+                       </div>`
+                    : ""
+                }
+                ${
+                  intro.usetime
+                    ? `<div class="detail-kv-row">
+                         <dt>시간</dt>
+                         <dd>${intro.usetime}</dd>
+                       </div>`
+                    : ""
+                }
+                ${
+                  intro.restdate
+                    ? `<div class="detail-kv-row">
+                         <dt>휴무</dt>
+                         <dd>${intro.restdate}</dd>
+                       </div>`
+                    : ""
+                }
+                ${
+                  intro.parking
+                    ? `<div class="detail-kv-row">
+                         <dt>주차</dt>
+                         <dd>${intro.parking}</dd>
+                       </div>`
+                    : ""
+                }
+              </dl>
+            </section>`
+          : ""
+      }
+
       ${
         images.length
-          ? `<div style="margin-top:4px;">
-              <strong style="font-size:0.8rem;color:#111827;">추가 이미지</strong>
-              <div style="display:flex;gap:6px;margin-top:4px;overflow-x:auto;">
+          ? `<section class="detail-section">
+              <h3 class="detail-section-title">GALLERY</h3>
+              <div class="detail-gallery">
                 ${images
                   .map(
                     (src) =>
-                      `<img src="${src}" style="width:90px;height:70px;border-radius:10px;object-fit:cover;flex-shrink:0;" />`
+                      `<img src="${src}" alt="추가 이미지" />`
                   )
                   .join("")}
               </div>
-            </div>`
+            </section>`
           : ""
       }
     `;
@@ -481,54 +514,6 @@ async function openDetail(contentId, contentTypeId) {
   }
 }
 
-// ========================
-//  지역 / 분류 select 로딩
-// ========================
-async function loadAreas() {
-  selArea.innerHTML = "";
-
-  const optAll = document.createElement("option");
-  optAll.value = "";
-  optAll.textContent = "전국 전체";
-  selArea.appendChild(optAll);
-
-  try {
-    const { items } = await fetchTour("areaCode", {
-      numOfRows: 50,
-      pageNo: 1,
-    });
-
-    items.forEach((area) => {
-      const opt = document.createElement("option");
-      opt.value = area.code;
-      opt.textContent = area.name;
-      selArea.appendChild(opt);
-    });
-  } catch {}
-}
-
-async function loadCategories() {
-  selCategory.innerHTML = "";
-
-  const optAll = document.createElement("option");
-  optAll.value = "";
-  optAll.textContent = "전체 분류";
-  selCategory.appendChild(optAll);
-
-  try {
-    const { items } = await fetchTour("categoryCode", {
-      numOfRows: 50,
-      pageNo: 1,
-    });
-
-    items.forEach((cat) => {
-      const opt = document.createElement("option");
-      opt.value = cat.code;
-      opt.textContent = cat.name;
-      selCategory.appendChild(opt);
-    });
-  } catch {}
-}
 
 // ========================
 //  현재 위치

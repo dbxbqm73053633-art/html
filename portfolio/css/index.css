@@ -647,6 +647,98 @@ body {
   color: var(--text-main);
 }
 
+/* 상세 모달 전용 스타일 */
+
+.detail-header {
+  margin-bottom: 10px;
+}
+
+.detail-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-main);
+}
+
+.detail-sub {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--text-sub);
+}
+
+.detail-main-image {
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #f3f4f6;
+}
+
+.detail-main-image img {
+  width: 100%;
+  max-height: 230px;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.detail-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.detail-overview {
+  font-size: 0.86rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.detail-kv {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--text-main);
+}
+
+.detail-kv-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.detail-kv-row dt {
+  flex: 0 0 54px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.detail-kv-row dd {
+  flex: 1;
+}
+
+.detail-gallery {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-x: auto;
+}
+
+.detail-gallery img {
+  width: 90px;
+  height: 70px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+}
 .modal-body h2 {
   font-size: 1.05rem;
   margin-bottom: 8px;
