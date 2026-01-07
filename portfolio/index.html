@@ -3,160 +3,208 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>실거래가 통합 플랫폼</title>
+  <title>실거래 지도 플랫폼</title>
   <link rel="stylesheet" href="./css/index.css" />
 </head>
 <body>
   <div class="app">
-    <!-- 상단 헤더 -->
-    <header class="app-header">
-      <div class="brand">
-        <div class="brand-logo">R</div>
-        <div class="brand-text">
-          <div class="brand-title">Real Price</div>
-          <div class="brand-sub">전국 부동산 실거래가</div>
+
+    <!-- 상단 글로벌 헤더 -->
+    <header class="global-header">
+      <div class="gh-inner">
+        <div class="gh-left">
+          <div class="logo">
+            <div class="logo-icon">🏙</div>
+            <div class="logo-text">
+              <span class="logo-title">RealMap</span>
+              <span class="logo-sub">실거래 데이터</span>
+            </div>
+          </div>
+        </div>
+        <nav class="gh-nav">
+          <a href="#" class="nav-item active">HOME</a>
+          <a href="#" class="nav-item">매물HOME</a>
+          <a href="#" class="nav-item">순위분석</a>
+          <a href="#" class="nav-item">가격분석</a>
+          <a href="#" class="nav-item">인구변화</a>
+          <a href="#" class="nav-item">입주물량</a>
+          <div class="nav-more">
+            <button class="nav-more-btn">분양 ▾</button>
+          </div>
+        </nav>
+        <div class="gh-right">
+          <button class="gh-login">로그인</button>
         </div>
       </div>
-      <button class="header-icon" id="btnOpenFilter">
-        <span class="material-icon">tune</span>
-      </button>
     </header>
 
-    <!-- 검색 필터 영역 -->
-    <section class="filter-section" id="filterSection">
-      <!-- 거래유형 탭 -->
-      <div class="chip-tabs" id="dealTypeTabs">
-        <button class="chip-tab active" data-deal-type="aptTrade">아파트 매매</button>
-        <button class="chip-tab" data-deal-type="aptRent">아파트 전월세</button>
-        <button class="chip-tab" data-deal-type="offiTrade">오피스텔 매매</button>
-        <button class="chip-tab" data-deal-type="offiRent">오피스텔 전월세</button>
-        <button class="chip-tab" data-deal-type="rhTrade">연립다세대 매매</button>
-        <button class="chip-tab" data-deal-type="nrgTrade">상업업무용 매매</button>
-        <button class="chip-tab" data-deal-type="induTrade">공장·창고 매매</button>
-        <button class="chip-tab" data-deal-type="landTrade">토지 매매</button>
-        <button class="chip-tab" data-deal-type="silvTrade">분양권 전매</button>
-      </div>
+    <!-- 메인 레이아웃 -->
+    <div class="layout">
 
-      <!-- 검색 입력폼 -->
-      <div class="filter-form">
-        <div class="filter-row">
-          <label class="filter-label">지역 (법정동)</label>
-          <div class="filter-input-group">
-            <input
-              type="text"
-              id="inputDong"
-              placeholder="예) 서초구 서초동"
-              autocomplete="off"
-            />
-            <button class="btn-secondary" id="btnCurrentLocation">
-              현위치
+      <!-- 왼쪽 사이드바 -->
+      <aside class="sidebar">
+        <!-- 상단 탭 (분양 / 아파트·오피스텔) -->
+        <div class="sb-top-tabs">
+          <button class="sb-tab active">분양</button>
+          <button class="sb-tab">아파트/오피스텔</button>
+        </div>
+
+        <!-- 검색창 -->
+        <div class="sb-search">
+          <input
+            type="text"
+            id="searchComplex"
+            placeholder="아파트명을 검색해보세요."
+          />
+        </div>
+
+        <!-- 지역 선택 -->
+        <section class="sb-section">
+          <div class="sb-section-header">
+            <span class="sb-section-title">지역 선택</span>
+          </div>
+
+          <!-- 단계 버튼 -->
+          <div class="sb-step-buttons">
+            <button class="sb-step-btn active" data-step="sido">시도 선택</button>
+            <button class="sb-step-btn" data-step="sigungu">시군구 선택</button>
+            <button class="sb-step-btn" data-step="dong">읍면동 선택</button>
+          </div>
+
+          <!-- 시도 그리드 -->
+          <div class="sb-grid" id="sidoGrid">
+            <button class="sb-grid-item" data-sido="서울시">서울시</button>
+            <button class="sb-grid-item" data-sido="경기도">경기도</button>
+            <button class="sb-grid-item" data-sido="부산시">부산시</button>
+            <button class="sb-grid-item" data-sido="대구시">대구시</button>
+            <button class="sb-grid-item" data-sido="인천시">인천시</button>
+            <button class="sb-grid-item" data-sido="광주시">광주시</button>
+            <button class="sb-grid-item" data-sido="대전시">대전시</button>
+            <button class="sb-grid-item" data-sido="울산시">울산시</button>
+            <button class="sb-grid-item" data-sido="세종시">세종시</button>
+            <button class="sb-grid-item" data-sido="강원도">강원도</button>
+            <button class="sb-grid-item" data-sido="충청북도">충청북도</button>
+            <button class="sb-grid-item" data-sido="충청남도">충청남도</button>
+            <button class="sb-grid-item" data-sido="전라북도">전라북도</button>
+            <button class="sb-grid-item" data-sido="전라남도">전라남도</button>
+            <button class="sb-grid-item" data-sido="경상북도">경상북도</button>
+            <button class="sb-grid-item" data-sido="경상남도">경상남도</button>
+            <button class="sb-grid-item" data-sido="제주도">제주도</button>
+          </div>
+
+          <!-- 선택 결과 -->
+          <div class="sb-selected">
+            <span id="selectedRegionLabel">전체 전국 데이터</span>
+          </div>
+        </section>
+
+        <!-- 부동산 스터디 아이콘 그리드 -->
+        <section class="sb-section">
+          <div class="sb-section-header">
+            <span class="sb-section-title">부동산 스터디</span>
+          </div>
+          <div class="sb-study-grid">
+            <button class="study-item">
+              <div class="study-icon">📈</div>
+              <span>최근급락</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">💰</div>
+              <span>최고가</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">📊</div>
+              <span>최고상승</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">⚔</div>
+              <span>거래쟁탈</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">🧮</div>
+              <span>가격비교</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">🏢</div>
+              <span>매물공급</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">📦</div>
+              <span>입주물량</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">👥</div>
+              <span>인구변화</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">🏠</div>
+              <span>미분양</span>
+            </button>
+            <button class="study-item">
+              <div class="study-icon">📚</div>
+              <span>공급공급량</span>
             </button>
           </div>
-          <small class="filter-hint">
-            시/군/구 + 동 입력 또는 코드 선택 기능은 추후 확장
-          </small>
-        </div>
+        </section>
+      </aside>
 
-        <div class="filter-row filter-row-inline">
-          <div class="filter-col">
-            <label class="filter-label">거래월</label>
-            <input
-              type="month"
-              id="inputMonth"
-              class="filter-control"
-            />
-          </div>
-          <div class="filter-col">
-            <label class="filter-label">정렬</label>
-            <select id="selectSort" class="filter-control">
-              <option value="recent">최신 실거래 순</option>
-              <option value="priceDesc">가격 높은 순</option>
-              <option value="priceAsc">가격 낮은 순</option>
-              <option value="areaDesc">면적 큰 순</option>
-              <option value="areaAsc">면적 작은 순</option>
-            </select>
+      <!-- 오른쪽 지도 영역 -->
+      <main class="main">
+
+        <!-- 상단 필터 칩 (가로) -->
+        <div class="map-top-filters">
+          <div class="chip-group">
+            <button class="chip active" data-filter="매평">매평</button>
+            <button class="chip" data-filter="50세대이상">50세대이상</button>
+            <button class="chip" data-filter="입주년차">입주년차</button>
+            <button class="chip" data-filter="매매실거래가">매매실거래가</button>
+            <button class="chip" data-filter="평당가격">평당가격</button>
+            <button class="chip" data-filter="매매가매물">매매가매물</button>
+            <button class="chip" data-filter="전세가매물">전세가매물</button>
+            <button class="chip" data-filter="매매전세갭">매매전세갭</button>
+            <button class="chip" data-filter="전세가율">전세가율</button>
+            <button class="chip" data-filter="거래회전율">거래회전율</button>
+            <button class="chip" data-filter="용적률">용적률</button>
           </div>
         </div>
 
-        <div class="filter-row filter-row-inline">
-          <div class="filter-col">
-            <label class="filter-label">전용면적 (이상)</label>
-            <input
-              type="number"
-              id="inputMinArea"
-              class="filter-control"
-              placeholder="m²"
-              min="0"
-            />
+        <!-- 지도 컨테이너 -->
+        <div class="map-wrapper">
+          <!-- 왼쪽 수직 카테고리 칩 -->
+          <div class="map-left-filters">
+            <button class="v-chip active">명당</button>
+            <button class="v-chip">공급</button>
+            <button class="v-chip">인구</button>
+            <button class="v-chip">가격</button>
+            <button class="v-chip">거래</button>
+            <button class="v-chip">비교</button>
+            <button class="v-chip">정책</button>
+            <button class="v-chip">학교</button>
+            <button class="v-chip">랭킹</button>
           </div>
-          <div class="filter-col">
-            <label class="filter-label">금액 (최대)</label>
-            <input
-              type="number"
-              id="inputMaxPrice"
-              class="filter-control"
-              placeholder="억 단위"
-              min="0"
-            />
+
+          <!-- 지도 -->
+          <div id="map"></div>
+
+          <!-- 지도 상단 우측 작은 탭 -->
+          <div class="map-legend-tabs">
+            <button class="legend-tab active">시도</button>
+            <button class="legend-tab">시군구</button>
+            <button class="legend-tab">읍면동</button>
           </div>
         </div>
 
-        <button class="btn-primary w-100" id="btnSearch">
-          실거래가 조회
-        </button>
-      </div>
-    </section>
-
-    <!-- 내용 영역: 리스트 + 지도 -->
-    <main class="content">
-      <!-- 리스트 영역 -->
-      <section class="list-section">
-        <div class="list-header">
-          <div class="list-title">검색 결과</div>
-          <div class="list-meta" id="resultMeta">검색 조건을 설정하세요.</div>
+        <!-- 하단 설명 영역 -->
+        <div class="map-footer">
+          <span class="map-footer-text">
+            전국 주요 시도별 아파트/오피스텔 실거래·가격지표를 지도에서 한눈에 확인하세요.
+          </span>
         </div>
-
-        <div class="list-container" id="resultList">
-          <!-- JS로 결과 카드 추가 -->
-        </div>
-
-        <div class="list-footer">
-          <button class="btn-outline" id="btnMore" disabled>더 불러오기</button>
-        </div>
-      </section>
-
-      <!-- 지도 영역 -->
-      <section class="map-section">
-        <div class="map-header">
-          <div class="map-title">지도에서 보기</div>
-          <div class="map-meta">매물을 선택하면 위치가 표시됩니다.</div>
-        </div>
-        <div id="map" class="map-container"></div>
-      </section>
-    </main>
-
-    <!-- 하단 탭바 -->
-    <nav class="bottom-nav">
-      <button class="bottom-nav-item active">
-        <span class="material-icon">search</span>
-        <span>실거래 검색</span>
-      </button>
-      <button class="bottom-nav-item">
-        <span class="material-icon">map</span>
-        <span>지도 탐색</span>
-      </button>
-      <button class="bottom-nav-item">
-        <span class="material-icon">bar_chart</span>
-        <span>시세 트렌드</span>
-      </button>
-      <button class="bottom-nav-item">
-        <span class="material-icon">person</span>
-        <span>마이페이지</span>
-      </button>
-    </nav>
+      </main>
+    </div>
   </div>
 
-  <!-- Kakao Map SDK -->
+  <!-- 카카오맵 SDK -->
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services"></script>
   <script src="./js/index.js"></script>
 </body>
