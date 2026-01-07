@@ -18,6 +18,10 @@ body {
   background-color: #f5f5f7;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .app {
   min-height: 100vh;
   display: flex;
@@ -233,7 +237,7 @@ body {
   border-color: #0760ff;
 }
 
-/* 시도 그리드 */
+/* 그리드들 */
 
 .sb-grid {
   display: grid;
@@ -245,7 +249,7 @@ body {
   border-radius: 6px;
   border: 1px solid #e5e7eb;
   background-color: #f9fafb;
-  padding: 7px 0;
+  padding: 7px 4px;
   font-size: 12px;
   cursor: pointer;
   text-align: center;
@@ -264,12 +268,36 @@ body {
   background-color: #0760ff;
 }
 
+/* 선택 결과 */
+
 .sb-selected {
   font-size: 12px;
   color: #4b5563;
   background-color: #f3f4f6;
   border-radius: 6px;
   padding: 6px 8px;
+}
+
+/* 거래월 인풋 */
+
+.sb-inline-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sb-inline-filter label {
+  font-size: 12px;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.sb-inline-filter input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 /* 부동산 스터디 */
@@ -422,7 +450,16 @@ body {
   color: #ffffff;
 }
 
-/* 지도 하단 설명 */
+/* 지도 하단 상세 / 설명 */
+
+.map-detail-box {
+  font-size: 12px;
+  color: #374151;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+}
 
 .map-footer {
   font-size: 12px;
@@ -456,7 +493,7 @@ body {
   }
 
   .gh-nav {
-    display: none; /* 모바일에서는 메뉴 생략(필요하면 햄버거로 확장 가능) */
+    display: none; /* 모바일에서는 상단 메뉴 숨김 */
   }
 
   .layout {
@@ -469,10 +506,6 @@ body {
 
   #map {
     height: 380px;
-  }
-
-  .sb-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .sb-study-grid {

@@ -17,7 +17,7 @@
             <div class="logo-icon">🏙</div>
             <div class="logo-text">
               <span class="logo-title">RealMap</span>
-              <span class="logo-sub">실거래 데이터</span>
+              <span class="logo-sub">아파트 매매 실거래</span>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@
           />
         </div>
 
-        <!-- 지역 선택 -->
+        <!-- 지역 + 거래월 선택 -->
         <section class="sb-section">
           <div class="sb-section-header">
             <span class="sb-section-title">지역 선택</span>
@@ -68,44 +68,56 @@
           <div class="sb-step-buttons">
             <button class="sb-step-btn active" data-step="sido">시도 선택</button>
             <button class="sb-step-btn" data-step="sigungu">시군구 선택</button>
-            <button class="sb-step-btn" data-step="dong">읍면동 선택</button>
+            <button class="sb-step-btn" data-step="dong">동 선택</button>
           </div>
 
           <!-- 시도 그리드 -->
           <div class="sb-grid" id="sidoGrid">
-            <button class="sb-grid-item" data-sido="서울시">서울시</button>
-            <button class="sb-grid-item" data-sido="경기도">경기도</button>
-            <button class="sb-grid-item" data-sido="부산시">부산시</button>
-            <button class="sb-grid-item" data-sido="대구시">대구시</button>
-            <button class="sb-grid-item" data-sido="인천시">인천시</button>
-            <button class="sb-grid-item" data-sido="광주시">광주시</button>
-            <button class="sb-grid-item" data-sido="대전시">대전시</button>
-            <button class="sb-grid-item" data-sido="울산시">울산시</button>
-            <button class="sb-grid-item" data-sido="세종시">세종시</button>
-            <button class="sb-grid-item" data-sido="강원도">강원도</button>
-            <button class="sb-grid-item" data-sido="충청북도">충청북도</button>
-            <button class="sb-grid-item" data-sido="충청남도">충청남도</button>
-            <button class="sb-grid-item" data-sido="전라북도">전라북도</button>
-            <button class="sb-grid-item" data-sido="전라남도">전라남도</button>
-            <button class="sb-grid-item" data-sido="경상북도">경상북도</button>
-            <button class="sb-grid-item" data-sido="경상남도">경상남도</button>
-            <button class="sb-grid-item" data-sido="제주도">제주도</button>
+            <button class="sb-grid-item" data-sido-ui="서울시">서울시</button>
+            <button class="sb-grid-item" data-sido-ui="경기도">경기도</button>
+            <button class="sb-grid-item" data-sido-ui="부산시">부산시</button>
+            <button class="sb-grid-item" data-sido-ui="대구시">대구시</button>
+            <button class="sb-grid-item" data-sido-ui="인천시">인천시</button>
+            <button class="sb-grid-item" data-sido-ui="광주시">광주시</button>
+            <button class="sb-grid-item" data-sido-ui="대전시">대전시</button>
+            <button class="sb-grid-item" data-sido-ui="울산시">울산시</button>
+            <button class="sb-grid-item" data-sido-ui="세종시">세종시</button>
+            <button class="sb-grid-item" data-sido-ui="강원도">강원도</button>
+            <button class="sb-grid-item" data-sido-ui="충청북도">충청북도</button>
+            <button class="sb-grid-item" data-sido-ui="충청남도">충청남도</button>
+            <button class="sb-grid-item" data-sido-ui="전라북도">전라북도</button>
+            <button class="sb-grid-item" data-sido-ui="전라남도">전라남도</button>
+            <button class="sb-grid-item" data-sido-ui="경상북도">경상북도</button>
+            <button class="sb-grid-item" data-sido-ui="경상남도">경상남도</button>
+            <button class="sb-grid-item" data-sido-ui="제주도">제주도</button>
           </div>
+
+          <!-- 시군구 그리드 (동적으로 채움) -->
+          <div class="sb-grid hidden" id="sigunguGrid"></div>
+
+          <!-- 동 그리드 (동적으로 채움) -->
+          <div class="sb-grid hidden" id="dongGrid"></div>
 
           <!-- 선택 결과 -->
           <div class="sb-selected">
-            <span id="selectedRegionLabel">전체 전국 데이터</span>
+            <span id="selectedRegionLabel">전국 기준 데이터 (시군구별 평균 매매가)</span>
+          </div>
+
+          <!-- 거래월 선택 -->
+          <div class="sb-inline-filter">
+            <label for="tradeMonth">거래월</label>
+            <input type="month" id="tradeMonth" />
           </div>
         </section>
 
-        <!-- 부동산 스터디 아이콘 그리드 -->
+        <!-- 부동산 스터디 아이콘 그리드 (디자인용) -->
         <section class="sb-section">
           <div class="sb-section-header">
             <span class="sb-section-title">부동산 스터디</span>
           </div>
           <div class="sb-study-grid">
             <button class="study-item">
-              <div class="study-icon">📈</div>
+              <div class="study-icon">📉</div>
               <span>최근급락</span>
             </button>
             <button class="study-item">
@@ -113,7 +125,7 @@
               <span>최고가</span>
             </button>
             <button class="study-item">
-              <div class="study-icon">📊</div>
+              <div class="study-icon">📈</div>
               <span>최고상승</span>
             </button>
             <button class="study-item">
@@ -136,14 +148,6 @@
               <div class="study-icon">👥</div>
               <span>인구변화</span>
             </button>
-            <button class="study-item">
-              <div class="study-icon">🏠</div>
-              <span>미분양</span>
-            </button>
-            <button class="study-item">
-              <div class="study-icon">📚</div>
-              <span>공급공급량</span>
-            </button>
           </div>
         </section>
       </aside>
@@ -151,20 +155,15 @@
       <!-- 오른쪽 지도 영역 -->
       <main class="main">
 
-        <!-- 상단 필터 칩 (가로) -->
+        <!-- 상단 필터 칩 (지표 선택) -->
         <div class="map-top-filters">
           <div class="chip-group">
-            <button class="chip active" data-filter="매평">매평</button>
-            <button class="chip" data-filter="50세대이상">50세대이상</button>
-            <button class="chip" data-filter="입주년차">입주년차</button>
-            <button class="chip" data-filter="매매실거래가">매매실거래가</button>
-            <button class="chip" data-filter="평당가격">평당가격</button>
-            <button class="chip" data-filter="매매가매물">매매가매물</button>
-            <button class="chip" data-filter="전세가매물">전세가매물</button>
-            <button class="chip" data-filter="매매전세갭">매매전세갭</button>
-            <button class="chip" data-filter="전세가율">전세가율</button>
-            <button class="chip" data-filter="거래회전율">거래회전율</button>
-            <button class="chip" data-filter="용적률">용적률</button>
+            <button class="chip active" data-metric="avgPrice">
+              시군구별 평균 매매가
+            </button>
+            <button class="chip" data-metric="count">
+              거래 건수
+            </button>
           </div>
         </div>
 
@@ -172,15 +171,9 @@
         <div class="map-wrapper">
           <!-- 왼쪽 수직 카테고리 칩 -->
           <div class="map-left-filters">
-            <button class="v-chip active">명당</button>
-            <button class="v-chip">공급</button>
-            <button class="v-chip">인구</button>
-            <button class="v-chip">가격</button>
+            <button class="v-chip active">가격</button>
             <button class="v-chip">거래</button>
             <button class="v-chip">비교</button>
-            <button class="v-chip">정책</button>
-            <button class="v-chip">학교</button>
-            <button class="v-chip">랭킹</button>
           </div>
 
           <!-- 지도 -->
@@ -188,16 +181,21 @@
 
           <!-- 지도 상단 우측 작은 탭 -->
           <div class="map-legend-tabs">
-            <button class="legend-tab active">시도</button>
-            <button class="legend-tab">시군구</button>
-            <button class="legend-tab">읍면동</button>
+            <button class="legend-tab active" data-level="sido">시도</button>
+            <button class="legend-tab" data-level="sigungu">시군구</button>
+            <button class="legend-tab" data-level="dong">동</button>
           </div>
         </div>
 
-        <!-- 하단 설명 영역 -->
+        <!-- 상세 설명 박스 -->
+        <div id="detailInfo" class="map-detail-box">
+          왼쪽에서 시도 → 시군구를 선택하면, 선택한 지역의 시군구별 평균 매매가가 지도에 표시됩니다.
+        </div>
+
+        <!-- 하단 설명 -->
         <div class="map-footer">
           <span class="map-footer-text">
-            전국 주요 시도별 아파트/오피스텔 실거래·가격지표를 지도에서 한눈에 확인하세요.
+            공공데이터포털 아파트 매매 실거래가 API를 이용해, 시군구·동별 평균 매매가격과 거래건수를 요약해서 보여주는 데모입니다.
           </span>
         </div>
       </main>
