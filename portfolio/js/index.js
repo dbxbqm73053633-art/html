@@ -10,16 +10,16 @@ const COMMON_PARAMS = {
   _type: "json",
 };
 
+const PAGE_SIZE = 100; // 전국 전체 다 가져오기 위해 페이지당 최대치로
+
 // 상태
 const STATE = {
   items: [],
-  pageNo: 1,
-  hasMore: true,
   areaCode: "",
   categoryCode: "",
   keyword: "",
   tabType: "all",
-  mode: "area", // "area" | "nearby"
+  mode: "area", // area | nearby
 };
 
 let currentRequestId = 0;
@@ -31,7 +31,6 @@ const iptKeyword = document.getElementById("iptKeyword");
 const btnSearch = document.getElementById("btnSearch");
 const btnNearby = document.getElementById("btnNearby");
 const btnReset = document.getElementById("btnReset");
-const btnLoadMore = document.getElementById("btnLoadMore");
 const listSkeleton = document.getElementById("listSkeleton");
 const listContainer = document.getElementById("listContainer");
 const txtCount = document.getElementById("txtCount");
@@ -73,8 +72,8 @@ async function fetchTour(path, params = {}) {
     throw new Error(`API 오류 (${res.status})`);
   }
   const data = await res.json();
-
   const body = data.response && data.response.body;
+
   if (!body || !body.items || !body.items.item) {
     return {
       items: [],
@@ -84,10 +83,41 @@ async function fetchTour(path, params = {}) {
 
   const item = body.items.item;
   const itemsArray = Array.isArray(item) ? item : [item];
+
   return {
     items: itemsArray,
     totalCount: body.totalCount || itemsArray.length,
   };
+}
+
+// ===== 전국 전체 페이지 한 번에 가져오기 =====
+async function fetchAllPages(path, baseParams, requestId) {
+  const all = [];
+
+  // 1페이지
+  const first = await fetchTour(path, {
+    ...baseParams,
+    numOfRows: PAGE_SIZE,
+    pageNo: 1,
+  });
+  if (requestId !== currentRequestId) return [];
+
+  all.push(...first.items);
+  const totalCount = first.totalCount || first.items.length;
+  const maxPage = Math.ceil(totalCount / PAGE_SIZE);
+
+  // 2페이지 이후
+  for (let page = 2; page <= maxPage; page++) {
+    if (requestId !== currentRequestId) break;
+    const res = await fetchTour(path, {
+      ...baseParams,
+      numOfRows: PAGE_SIZE,
+      pageNo: page,
+    });
+    all.push(...res.items);
+  }
+
+  return all;
 }
 
 // ===== 로딩 표시 =====
@@ -109,7 +139,7 @@ function setLoading(isLoading, message = "") {
 function initMap() {
   const container = document.getElementById("map");
   const options = {
-    center: new kakao.maps.LatLng(36.5, 127.8), // 대한민국 중간쯤
+    center: new kakao.maps.LatLng(36.5, 127.8),
     level: 13,
   };
   map = new kakao.maps.Map(container, options);
@@ -123,9 +153,7 @@ function initMap() {
 }
 
 function clearMarkers() {
-  if (clusterer) {
-    clusterer.clear();
-  }
+  if (clusterer) clusterer.clear();
   markers.forEach((m) => m.setMap(null));
   markers = [];
 }
@@ -139,34 +167,30 @@ function setActiveCard(contentId) {
 
 function renderMarkers(items) {
   clearMarkers();
-
   if (!items.length) return;
 
-  const kakaoBounds = new kakao.maps.LatLngBounds();
+  const bounds = new kakao.maps.LatLngBounds();
 
   items.forEach((item) => {
     const mapx = parseFloat(item.mapx);
     const mapy = parseFloat(item.mapy);
     if (!mapx || !mapy) return;
 
-    const position = new kakao.maps.LatLng(mapy, mapx);
-    kakaoBounds.extend(position);
+    const pos = new kakao.maps.LatLng(mapy, mapx);
+    bounds.extend(pos);
 
-    const marker = new kakao.maps.Marker({
-      position,
-    });
-
+    const marker = new kakao.maps.Marker({ position: pos });
     marker.contentId = item.contentid;
 
     kakao.maps.event.addListener(marker, "click", () => {
       setActiveCard(marker.contentId);
       focusOnMarker(marker);
       if (item.title) {
-        const info = new kakao.maps.InfoWindow({
+        const iw = new kakao.maps.InfoWindow({
           content: `<div style="padding:6px 10px;font-size:12px;">${item.title}</div>`,
           removable: true,
         });
-        info.open(map, marker);
+        iw.open(map, marker);
       }
     });
 
@@ -174,10 +198,7 @@ function renderMarkers(items) {
   });
 
   clusterer.addMarkers(markers);
-
-  if (!kakaoBounds.isEmpty()) {
-    map.setBounds(kakaoBounds);
-  }
+  if (!bounds.isEmpty()) map.setBounds(bounds);
 }
 
 function focusOnMarker(marker) {
@@ -186,17 +207,12 @@ function focusOnMarker(marker) {
 
 function focusMarkerByContentId(contentId) {
   const marker = markers.find((m) => String(m.contentId) === String(contentId));
-  if (marker) {
-    focusOnMarker(marker);
-  }
+  if (marker) focusOnMarker(marker);
 }
 
-// ===== 리스트 렌더링 (Chunk 단위로 성능 최적화) =====
-function renderList(items, append = false) {
-  if (!append) {
-    listContainer.innerHTML = "";
-  }
-
+// ===== 리스트 렌더링 (chunk) =====
+function renderList(items) {
+  listContainer.innerHTML = "";
   txtCount.textContent = `${items.length}곳`;
 
   if (!items.length) {
@@ -205,8 +221,8 @@ function renderList(items, append = false) {
     return;
   }
 
-  const chunkSize = 20;
-  let index = append ? listContainer.childElementCount : 0;
+  const chunkSize = 30;
+  let index = 0;
 
   function renderChunk() {
     const fragment = document.createDocumentFragment();
@@ -216,8 +232,8 @@ function renderList(items, append = false) {
       const item = items[index];
       const card = createCardElement(item);
       fragment.appendChild(card);
-      index += 1;
-      rendered += 1;
+      index++;
+      rendered++;
     }
 
     listContainer.appendChild(fragment);
@@ -238,9 +254,7 @@ function createCardElement(item) {
   const thumb = document.createElement("div");
   thumb.className = "card-thumb";
   const thumbUrl = item.firstimage || item.firstimage2 || "";
-  if (thumbUrl) {
-    thumb.style.backgroundImage = `url('${thumbUrl}')`;
-  }
+  if (thumbUrl) thumb.style.backgroundImage = `url('${thumbUrl}')`;
 
   const body = document.createElement("div");
   body.className = "card-body";
@@ -299,7 +313,6 @@ function createCardElement(item) {
   card.appendChild(thumb);
   card.appendChild(body);
 
-  // 카드 클릭 -> 마커 포커스 + 상세 모달
   card.addEventListener("click", () => {
     setActiveCard(item.contentid);
     focusMarkerByContentId(item.contentid);
@@ -398,13 +411,32 @@ async function openDetail(contentId, contentTypeId) {
           : ""
       }
     `;
-  } catch (err) {
+  } catch {
     modalBody.innerHTML =
       '<p style="font-size:0.82rem;color:#9ca3af;">상세 정보를 불러오지 못했습니다.</p>';
   }
 }
 
-// ===== 필터 로딩 (지역/분류) =====
+// ===== 카테고리(숙소/카페/공원산책) 파라미터 =====
+function buildCategoryParamsByTab(tabType) {
+  const params = {};
+  switch (tabType) {
+    case "stay":
+      params.contentTypeId = 32; // 숙박
+      break;
+    case "cafe":
+      params.cat3 = "A05020900"; // 카페
+      break;
+    case "park":
+      params.cat2 = "A0202"; // 공원/자연
+      break;
+    default:
+      break;
+  }
+  return params;
+}
+
+// ===== 지역/분류 코드 로딩 =====
 async function loadAreas() {
   try {
     const { items } = await fetchTour("areaCode", {
@@ -417,9 +449,7 @@ async function loadAreas() {
       opt.textContent = area.name;
       selArea.appendChild(opt);
     });
-  } catch {
-    // 무시
-  }
+  } catch {}
 }
 
 async function loadCategories() {
@@ -434,109 +464,10 @@ async function loadCategories() {
       opt.textContent = cat.name;
       selCategory.appendChild(opt);
     });
-  } catch {
-    // 무시
-  }
+  } catch {}
 }
 
-// ===== 검색 실행 (전국/필터 검색) =====
-async function runSearch(isLoadMore = false) {
-  const requestId = ++currentRequestId;
-
-  if (!isLoadMore) {
-    // 새 검색 시작
-    STATE.pageNo = 1;
-    STATE.items = [];
-    STATE.hasMore = true;
-  }
-
-  STATE.areaCode = selArea.value;
-  STATE.categoryCode = selCategory.value;
-  STATE.keyword = iptKeyword.value.trim();
-
-  setLoading(true, STATE.mode === "nearby" ? "내 주변 검색 중…" : "검색 중…");
-  if (!isLoadMore) {
-    listContainer.innerHTML = "";
-    txtCount.textContent = "0곳";
-  }
-  btnLoadMore.classList.add("hidden");
-
-  try {
-    let path;
-    let params;
-
-    if (STATE.mode === "nearby") {
-      // 위치기반 관광정보조회
-      const pos = await getCurrentPositionPromise();
-      path = "locationBasedList";
-      params = {
-        numOfRows: 30,
-        pageNo: STATE.pageNo,
-        arrange: "E",
-        mapX: pos.coords.longitude,
-        mapY: pos.coords.latitude,
-        radius: 20000, // 20km
-      };
-    } else {
-      // 전국/지역 기반 관광정보조회 (반려동물 동반)
-      path = "areaBasedList";
-      params = {
-        numOfRows: 50,
-        pageNo: STATE.pageNo,
-        arrange: "E",
-        areaCode: STATE.areaCode || "",
-        cat1: STATE.categoryCode || "",
-        keyword: STATE.keyword || "",
-      };
-    }
-
-    const { items, totalCount } = await fetchTour(path, params);
-
-    // 이전 요청이면 버림
-    if (requestId !== currentRequestId) return;
-
-    // 탭 필터 (숙소/카페/공원…) – 실제 cat2/3 기준으로 조정 가능
-    let filtered = items;
-    if (STATE.tabType === "stay") {
-      filtered = filtered.filter((i) => (i.cat2name || "").includes("숙박"));
-    } else if (STATE.tabType === "cafe") {
-      filtered = filtered.filter((i) => (i.cat3name || "").includes("카페"));
-    } else if (STATE.tabType === "park") {
-      filtered = filtered.filter((i) => (i.cat2name || "").includes("공원"));
-    }
-
-    if (isLoadMore) {
-      STATE.items = STATE.items.concat(filtered);
-    } else {
-      STATE.items = filtered;
-    }
-
-    // 전체 개수/페이지 여부 판단
-    const pageSize = params.numOfRows;
-    const maxPage = Math.ceil(totalCount / pageSize);
-    STATE.hasMore = STATE.pageNo < maxPage;
-
-    renderList(STATE.items, !isLoadMore);
-    renderMarkers(STATE.items);
-
-    if (STATE.hasMore) {
-      btnLoadMore.classList.remove("hidden");
-    } else {
-      btnLoadMore.classList.add("hidden");
-    }
-
-    setLoading(false);
-  } catch (err) {
-    if (requestId !== currentRequestId) return;
-    setLoading(false);
-    listContainer.innerHTML =
-      '<p style="font-size:0.82rem;color:#f97373;padding:6px;">데이터 조회 중 문제가 발생했습니다.</p>';
-    txtCount.textContent = "0곳";
-    btnLoadMore.classList.add("hidden");
-  }
-}
-
-// 현재 위치 Promise 래핑
+// ===== 현재 위치 =====
 function getCurrentPositionPromise() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -550,58 +481,106 @@ function getCurrentPositionPromise() {
   });
 }
 
-// ===== 이벤트 바인딩 =====
+// ===== 검색 실행 =====
+async function runSearch() {
+  const requestId = ++currentRequestId;
+
+  STATE.areaCode = selArea.value;
+  STATE.categoryCode = selCategory.value;
+  STATE.keyword = iptKeyword.value.trim();
+
+  setLoading(
+    true,
+    STATE.mode === "nearby" ? "내 주변 여행지 검색 중…" : "검색 중…"
+  );
+  listContainer.innerHTML = "";
+  txtCount.textContent = "0곳";
+
+  try {
+    let items = [];
+
+    if (STATE.mode === "nearby") {
+      const pos = await getCurrentPositionPromise();
+      if (requestId !== currentRequestId) return;
+
+      const baseParams = {
+        arrange: "E",
+        mapX: pos.coords.longitude,
+        mapY: pos.coords.latitude,
+        radius: 20000,
+      };
+      items = await fetchAllPages("locationBasedList", baseParams, requestId);
+    } else {
+      const catParams = buildCategoryParamsByTab(STATE.tabType);
+      const baseParams = {
+        arrange: "E",
+        areaCode: STATE.areaCode || "",
+        keyword: STATE.keyword || "",
+        ...catParams,
+      };
+      items = await fetchAllPages("areaBasedList", baseParams, requestId);
+    }
+
+    if (requestId !== currentRequestId) return;
+
+    STATE.items = items;
+    renderList(STATE.items);
+    renderMarkers(STATE.items);
+    setLoading(false);
+  } catch (err) {
+    if (requestId !== currentRequestId) return;
+    setLoading(false);
+    listContainer.innerHTML =
+      '<p style="font-size:0.82rem;color:#f97373;padding:6px;">데이터 조회 중 문제가 발생했습니다.</p>';
+    txtCount.textContent = "0곳";
+  }
+}
+
+// ===== 이벤트 =====
+function setChipActive(type) {
+  chipRow.querySelectorAll(".chip").forEach((chip) => {
+    chip.classList.toggle("chip-active", chip.dataset.type === type);
+  });
+}
+
 function bindEvents() {
-  // 검색 버튼
   btnSearch.addEventListener("click", () => {
     STATE.mode = "area";
-    runSearch(false);
+    runSearch();
   });
 
-  // Enter 검색
   iptKeyword.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       STATE.mode = "area";
-      runSearch(false);
+      runSearch();
     }
   });
 
-  // 내 주변 버튼
   btnNearby.addEventListener("click", () => {
     STATE.mode = "nearby";
-    runSearch(false);
+    runSearch();
   });
 
-  // 필터 초기화
   btnReset.addEventListener("click", () => {
     selArea.value = "";
     selCategory.value = "";
     iptKeyword.value = "";
-    setChipActive("all");
     STATE.tabType = "all";
     STATE.mode = "area";
-    runSearch(false);
+    setChipActive("all");
+    runSearch();
   });
 
-  // 더 보기
-  btnLoadMore.addEventListener("click", () => {
-    if (!STATE.hasMore) return;
-    STATE.pageNo += 1;
-    runSearch(true);
-  });
-
-  // 칩 클릭
   chipRow.querySelectorAll(".chip").forEach((chip) => {
     chip.addEventListener("click", () => {
       const type = chip.dataset.type;
-      setChipActive(type);
       STATE.tabType = type;
       STATE.mode = "area";
-      runSearch(false);
+      setChipActive(type);
+      runSearch();
     });
   });
 
-  // 모달 닫기
   btnModalClose.addEventListener("click", () => {
     detailModal.classList.add("hidden");
   });
@@ -612,18 +591,11 @@ function bindEvents() {
   });
 }
 
-function setChipActive(type) {
-  chipRow.querySelectorAll(".chip").forEach((chip) => {
-    chip.classList.toggle("chip-active", chip.dataset.type === type);
-  });
-}
-
 // ===== 초기화 =====
 window.addEventListener("DOMContentLoaded", async () => {
   initMap();
   bindEvents();
   await Promise.all([loadAreas(), loadCategories()]);
-  // 첫 로딩: 전국 + 전체
   STATE.mode = "area";
-  runSearch(false);
+  runSearch();
 });
