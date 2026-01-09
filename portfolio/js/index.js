@@ -101,4 +101,20 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
   });
+
+  // Panorama: 애니메이션이 멈춘 느낌이 들지 않게, 탭 비활성/활성 시 재시작 트릭
+  const tracks = document.querySelectorAll("[data-panorama-track]");
+  const restartAnimation = () => {
+    tracks.forEach((t) => {
+      // 강제 reflow로 애니메이션 재시작
+      t.style.animation = "none";
+      // eslint-disable-next-line no-unused-expressions
+      t.offsetHeight;
+      t.style.animation = "";
+    });
+  };
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) restartAnimation();
+  });
 })();

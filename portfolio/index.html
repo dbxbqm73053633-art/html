@@ -40,7 +40,137 @@
 
   <main>
     <!-- Hero -->
-    <section class="hero">
+    <section class="hero" aria-label="메인 소개">
+      <!-- 파노라마 장식 -->
+      <div class="panorama" aria-hidden="true">
+        <div class="panorama__mask"></div>
+
+        <!-- 트랙 1 -->
+        <div class="panorama__row panorama__row--a">
+          <div class="panorama__track" data-panorama-track>
+            <!-- 세트 1 -->
+            <figure class="pitem">
+              <img src="./images/avatatq.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Megabox Cinema UI</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/hells.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Fitness Hub App</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/bbang.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Bakery Promotion</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/Avatar.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Cinema Curation</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/hells2.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Brand Board</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/pure.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Pure Water Ad</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/Subway.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Subway Board</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/super.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Mobile Ticket UI</span>
+            </figure>
+
+            <!-- 세트 2 (무한 루프용 복제) -->
+            <figure class="pitem">
+              <img src="./images/avatatq.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Megabox Cinema UI</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/hells.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Fitness Hub App</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/bbang.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Bakery Promotion</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/Avatar.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Cinema Curation</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/hells2.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Brand Board</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/pure.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Pure Water Ad</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/Subway.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Subway Board</span>
+            </figure>
+            <figure class="pitem">
+              <img src="./images/super.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Mobile Ticket UI</span>
+            </figure>
+          </div>
+        </div>
+
+        <!-- 트랙 2 (반대 방향 + 살짝 다르게) -->
+        <div class="panorama__row panorama__row--b">
+          <div class="panorama__track panorama__track--rev" data-panorama-track>
+            <!-- 세트 1 -->
+            <figure class="pitem pitem--tall">
+              <img src="./images/any.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Pet Travel UI</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/busan.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Busan Food App</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/hub.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Fitness Hub (Web)</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/mo.png" alt="" loading="lazy" />
+              <span class="pitem__cap">OTTMOVI</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/today.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Weather Today</span>
+            </figure>
+
+            <!-- 세트 2 (무한 루프용 복제) -->
+            <figure class="pitem pitem--tall">
+              <img src="./images/any.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Pet Travel UI</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/busan.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Busan Food App</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/hub.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Fitness Hub (Web)</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/mo.png" alt="" loading="lazy" />
+              <span class="pitem__cap">OTTMOVI</span>
+            </figure>
+            <figure class="pitem pitem--tall">
+              <img src="./images/today.png" alt="" loading="lazy" />
+              <span class="pitem__cap">Weather Today</span>
+            </figure>
+          </div>
+        </div>
+
+        <div class="panorama__glow" aria-hidden="true"></div>
+      </div>
+
+      <!-- 실제 컨텐츠 -->
       <div class="container hero__inner">
         <div class="hero__copy reveal">
           <p class="pill">
@@ -77,22 +207,12 @@
               <span class="meta-card__v">HTML · CSS · JS</span>
             </div>
           </div>
-        </div>
 
-        <!-- 대표 목업 2장 -->
-        <div class="hero__showcase">
-          <figure class="mock mock--primary reveal">
-            <img src="./images/avatatq.png" alt="Megabox Cinema UI 목업" loading="lazy" />
-            <figcaption>Megabox Cinema UI</figcaption>
-          </figure>
-
-          <figure class="mock mock--secondary reveal">
-            <img src="./images/hells.png" alt="Fitness Hub App 목업" loading="lazy" />
-            <figcaption>Fitness Hub App</figcaption>
-          </figure>
+          <div class="hero__hint muted">
+            * 파노라마 영역은 장식입니다. 마우스 올리면 잠시 멈춥니다.
+          </div>
         </div>
       </div>
-      <div class="hero__bg" aria-hidden="true"></div>
     </section>
 
     <!-- About (간결) -->
@@ -126,7 +246,7 @@
       </div>
     </section>
 
-    <!-- Design Portfolio (기존 유지) -->
+    <!-- Design Portfolio -->
     <section class="section" id="design">
       <div class="container">
         <div class="section__head reveal">
@@ -242,7 +362,7 @@
       </div>
     </section>
 
-    <!-- Web Projects (5개로 축소 + 썸네일 교체) -->
+    <!-- Web Projects -->
     <section class="section" id="web">
       <div class="container">
         <div class="section__head reveal">
@@ -251,7 +371,6 @@
         </div>
 
         <div class="webgrid reveal">
-          <!-- 반려동물 -->
           <article class="wcard">
             <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/app2" target="_blank" rel="noopener">
               <img src="./images/any.png" alt="반려동물 동반여행 서비스 썸네일" loading="lazy">
@@ -269,7 +388,6 @@
             </div>
           </article>
 
-          <!-- 부산 맛집 -->
           <article class="wcard">
             <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/10_app/index.html" target="_blank" rel="noopener">
               <img src="./images/busan.png" alt="부산 맛집 어플 썸네일" loading="lazy">
@@ -287,7 +405,6 @@
             </div>
           </article>
 
-          <!-- Fitness Hub -->
           <article class="wcard">
             <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/kim/index.html" target="_blank" rel="noopener">
               <img src="./images/hub.png" alt="Fitness Hub 헬스장 어플 썸네일" loading="lazy">
@@ -305,7 +422,6 @@
             </div>
           </article>
 
-          <!-- OTTMOVI -->
           <article class="wcard">
             <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/ott/index.html" target="_blank" rel="noopener">
               <img src="./images/mo.png" alt="OTTMOVI 영화관 썸네일" loading="lazy">
@@ -323,7 +439,6 @@
             </div>
           </article>
 
-          <!-- 오늘의 날씨 -->
           <article class="wcard">
             <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/2.weather/index.html" target="_blank" rel="noopener">
               <img src="./images/today.png" alt="전세계 오늘의 날씨 썸네일" loading="lazy">
@@ -344,7 +459,7 @@
       </div>
     </section>
 
-    <!-- Skills (로고만, 아주 간결) -->
+    <!-- Skills -->
     <section class="section" id="skills">
       <div class="container">
         <div class="section__head reveal">
@@ -353,39 +468,24 @@
         </div>
 
         <div class="skills-icons reveal" aria-label="Skills icons">
-          <!-- Design -->
           <div class="skills-icons__group">
             <h3 class="skills-icons__title">Design</h3>
             <ul class="skills-icons__list">
-              <li class="sicon" title="Figma" aria-label="Figma">
-                <span class="sicon__svg sicon--figma" aria-hidden="true"></span>
-              </li>
-              <li class="sicon" title="Photoshop" aria-label="Photoshop">
-                <span class="sicon__svg sicon--ps" aria-hidden="true"></span>
-              </li>
-              <li class="sicon" title="Illustrator" aria-label="Illustrator">
-                <span class="sicon__svg sicon--ai" aria-hidden="true"></span>
-              </li>
+              <li class="sicon" title="Figma" aria-label="Figma"><span class="sicon__svg sicon--figma" aria-hidden="true"></span></li>
+              <li class="sicon" title="Photoshop" aria-label="Photoshop"><span class="sicon__svg sicon--ps" aria-hidden="true"></span></li>
+              <li class="sicon" title="Illustrator" aria-label="Illustrator"><span class="sicon__svg sicon--ai" aria-hidden="true"></span></li>
             </ul>
           </div>
 
-          <!-- Frontend -->
           <div class="skills-icons__group">
             <h3 class="skills-icons__title">Frontend</h3>
             <ul class="skills-icons__list">
-              <li class="sicon" title="HTML" aria-label="HTML">
-                <span class="sicon__svg sicon--html" aria-hidden="true"></span>
-              </li>
-              <li class="sicon" title="CSS" aria-label="CSS">
-                <span class="sicon__svg sicon--css" aria-hidden="true"></span>
-              </li>
-              <li class="sicon" title="JavaScript" aria-label="JavaScript">
-                <span class="sicon__svg sicon--js" aria-hidden="true"></span>
-              </li>
+              <li class="sicon" title="HTML" aria-label="HTML"><span class="sicon__svg sicon--html" aria-hidden="true"></span></li>
+              <li class="sicon" title="CSS" aria-label="CSS"><span class="sicon__svg sicon--css" aria-hidden="true"></span></li>
+              <li class="sicon" title="JavaScript" aria-label="JavaScript"><span class="sicon__svg sicon--js" aria-hidden="true"></span></li>
             </ul>
           </div>
 
-          <!-- AI -->
           <div class="skills-icons__group">
             <h3 class="skills-icons__title">AI</h3>
             <ul class="skills-icons__list">
@@ -398,7 +498,7 @@
       </div>
     </section>
 
-    <!-- Contact (필수 정보만) -->
+    <!-- Contact -->
     <section class="section section--contact" id="contact">
       <div class="container contact reveal">
         <h2>Contact</h2>
@@ -409,12 +509,10 @@
             <span class="contact__k">이메일</span>
             <a class="contact__v link" href="mailto:sunaide@naver.com">sunaide@naver.com</a>
           </div>
-
           <div class="contact__card">
             <span class="contact__k">연락처</span>
             <a class="contact__v link" href="tel:01080992842">010-8099-2842</a>
           </div>
-
           <div class="contact__card">
             <span class="contact__k">사는 곳</span>
             <span class="contact__v">경기도 김포시</span>
@@ -432,7 +530,7 @@
     </div>
   </footer>
 
-  <!-- Modal (Design 이미지 크게 보기 + 내부 스크롤) -->
+  <!-- Modal -->
   <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="이미지 크게 보기">
     <div class="modal__overlay" data-close></div>
     <div class="modal__panel" role="document">
