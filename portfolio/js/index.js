@@ -1,731 +1,104 @@
-// ========================
-//  기본 설정 & 전역 상태
-// ========================
-const END_POINT = "https://apis.data.go.kr/B551011/KorPetTourService";
-const SERVICE_KEY_RAW =
-  "37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a";
-const SERVICE_KEY = encodeURIComponent(SERVICE_KEY_RAW);
+(() => {
+  // year
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-const COMMON_PARAMS = {
-  MobileOS: "ETC",
-  MobileApp: "PetTourWeb",
-  _type: "json",
-};
+  // Mobile nav
+  const toggle = document.querySelector(".nav__toggle");
+  const navList = document.getElementById("navList");
 
-const KEYWORD_PAGE_SIZE = 80; // searchKeyword 페이지 크기
-const KEYWORD_MAX_PAGES = 8; // 최대 8페이지(640개)까지
-const DEFAULT_RADIUS_KM = 20; // 내 주변 기본 반경 20km
-
-const STATE = {
-  items: [],
-  areaCode: "",
-  categoryCode: "",
-  keyword: "",
-  mode: "area", // "area" | "nearby"
-  userLat: null,
-  userLng: null,
-  radiusKm: DEFAULT_RADIUS_KM,
-};
-
-let currentRequestId = 0;
-
-// ========================
-//  DOM 요소
-// ========================
-const selArea = document.getElementById("selArea");
-const selCategory = document.getElementById("selCategory");
-const iptKeyword = document.getElementById("iptKeyword");
-const btnSearch = document.getElementById("btnSearch");
-const btnNearby = document.getElementById("btnNearby");
-const btnReset = document.getElementById("btnReset");
-const listSkeleton = document.getElementById("listSkeleton");
-const listContainer = document.getElementById("listContainer");
-const txtCount = document.getElementById("txtCount");
-const txtQueryState = document.getElementById("txtQueryState");
-
-const detailModal = document.getElementById("detailModal");
-const btnModalClose = document.getElementById("btnModalClose");
-const modalBody = document.getElementById("modalBody");
-
-// ========================
-//  Kakao 지도 / 클러스터러
-// ========================
-let map;
-let markers = [];
-let clusterer;
-let activeContentId = null;
-
-function initMap() {
-  const container = document.getElementById("map");
-  const options = {
-    center: new kakao.maps.LatLng(37.5665, 126.978),
-    level: 8,
-  };
-  map = new kakao.maps.Map(container, options);
-
-  clusterer = new kakao.maps.MarkerClusterer({
-    map,
-    averageCenter: true,
-    minLevel: 7,
-    disableClickZoom: false,
-  });
-}
-
-function clearMarkers() {
-  if (clusterer) clusterer.clear();
-  markers.forEach((m) => m.setMap(null));
-  markers = [];
-}
-
-function setActiveCard(contentId) {
-  activeContentId = String(contentId);
-  document.querySelectorAll(".card").forEach((card) => {
-    card.classList.toggle("card-active", card.dataset.id === activeContentId);
-  });
-}
-
-function renderMarkers(items) {
-  clearMarkers();
-  if (!items.length) return;
-
-  const bounds = new kakao.maps.LatLngBounds();
-
-  items.forEach((item) => {
-    const mapx = parseFloat(item.mapx);
-    const mapy = parseFloat(item.mapy);
-    if (!mapx || !mapy) return;
-
-    const pos = new kakao.maps.LatLng(mapy, mapx);
-    bounds.extend(pos);
-
-    const marker = new kakao.maps.Marker({ position: pos });
-    marker.contentId = item.contentid;
-    marker.contentTypeId = item.contenttypeid;
-
-    kakao.maps.event.addListener(marker, "click", () => {
-      setActiveCard(marker.contentId);
-      map.panTo(marker.getPosition());
-      openDetail(marker.contentId, marker.contentTypeId);
+  if (toggle && navList) {
+    toggle.addEventListener("click", () => {
+      const isOpen = navList.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
     });
 
-    markers.push(marker);
-  });
-
-  clusterer.addMarkers(markers);
-  if (!bounds.isEmpty()) map.setBounds(bounds);
-}
-
-function focusMarkerByContentId(contentId) {
-  const marker = markers.find((m) => String(m.contentId) === String(contentId));
-  if (marker) map.panTo(marker.getPosition());
-}
-
-// ========================
-//  공통 API 헬퍼
-// ========================
-function buildUrl(path, extraParams = {}) {
-  const url = new URL(`${END_POINT}/${path}`);
-  url.searchParams.set("serviceKey", SERVICE_KEY);
-
-  Object.entries(COMMON_PARAMS).forEach(([k, v]) =>
-    url.searchParams.set(k, v)
-  );
-  Object.entries(extraParams).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "") {
-      url.searchParams.set(k, v);
-    }
-  });
-
-  return url.toString();
-}
-
-async function fetchTour(path, params = {}) {
-  const url = buildUrl(path, params);
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`API 오류 (${res.status})`);
-
-  const data = await res.json();
-  const body = data.response && data.response.body;
-
-  if (!body || !body.items || !body.items.item) {
-    return {
-      items: [],
-      totalCount: body ? body.totalCount || 0 : 0,
-    };
-  }
-
-  const item = body.items.item;
-  const itemsArray = Array.isArray(item) ? item : [item];
-
-  return {
-    items: itemsArray,
-    totalCount: body.totalCount || itemsArray.length,
-  };
-}
-
-// ========================
-//  전국 키워드 검색 (searchKeyword 사용)
-// ========================
-async function fetchAllSearchKeyword(keyword, requestId) {
-  const all = [];
-
-  const first = await fetchTour("searchKeyword", {
-    arrange: "E",
-    keyword,
-    numOfRows: KEYWORD_PAGE_SIZE,
-    pageNo: 1,
-  });
-
-  if (requestId !== currentRequestId) return [];
-
-  all.push(...first.items);
-  const totalCount = first.totalCount || first.items.length;
-  const maxPage = Math.min(
-    Math.ceil(totalCount / KEYWORD_PAGE_SIZE),
-    KEYWORD_MAX_PAGES
-  );
-
-  for (let page = 2; page <= maxPage; page++) {
-    if (requestId !== currentRequestId) break;
-
-    const res = await fetchTour("searchKeyword", {
-      arrange: "E",
-      keyword,
-      numOfRows: KEYWORD_PAGE_SIZE,
-      pageNo: page,
+    navList.addEventListener("click", (e) => {
+      const a = e.target.closest("a");
+      if (!a) return;
+      navList.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
     });
 
-    all.push(...res.items);
-  }
-
-  return all;
-}
-
-// ========================
-//  거리 계산 (Haversine)
-// ========================
-function deg2rad(d) {
-  return (d * Math.PI) / 180;
-}
-
-function calcDistanceKm(lat1, lng1, lat2, lng2) {
-  const R = 6371;
-  const dLat = deg2rad(lat2 - lat1);
-  const dLng = deg2rad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) *
-      Math.cos(deg2rad(lat2)) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
-function addDistanceToItems(items, userLat, userLng) {
-  return items.map((item) => {
-    const x = parseFloat(item.mapx);
-    const y = parseFloat(item.mapy);
-    if (!x || !y) return { ...item };
-
-    const d = calcDistanceKm(userLat, userLng, y, x);
-    return { ...item, distance: d.toFixed(1), _distance: d };
-  });
-}
-
-// ========================
-//  키워드 필터
-// ========================
-function filterItemsByKeyword(items, keyword) {
-  if (!keyword) return items;
-
-  const kw = keyword.toLowerCase();
-  return items.filter((item) => {
-    const title = (item.title || "").toLowerCase();
-    const addr1 = (item.addr1 || "").toLowerCase();
-    const addr2 = (item.addr2 || "").toLowerCase();
-    const cat =
-      (item.cat3name || item.cat2name || item.cat1name || "").toLowerCase();
-
-    return (
-      title.includes(kw) ||
-      addr1.includes(kw) ||
-      addr2.includes(kw) ||
-      cat.includes(kw)
-    );
-  });
-}
-
-// ========================
-//  로딩 표시
-// ========================
-function setLoading(isLoading, message = "") {
-  if (isLoading) {
-    listSkeleton.style.display = "block";
-    txtQueryState.textContent = message || "검색 중…";
-  } else {
-    listSkeleton.style.display = "none";
-
-    if (STATE.mode === "nearby") {
-      txtQueryState.textContent = STATE.items.length
-        ? `현재 위치 기준 반경 ${STATE.radiusKm}km 내 ${STATE.items.length}곳`
-        : `현재 위치 기준 반경 ${STATE.radiusKm}km 내 결과 없음`;
-    } else {
-      txtQueryState.textContent = STATE.items.length ? "완료" : "결과 없음";
-    }
-  }
-}
-
-// ========================
-//  리스트 렌더링
-// ========================
-function renderList(items) {
-  listContainer.innerHTML = "";
-  txtCount.textContent = `${items.length}곳`;
-
-  if (!items.length) {
-    listContainer.innerHTML =
-      '<p style="font-size:0.82rem;color:#9ca3af;padding:6px;">조건에 맞는 여행지가 없습니다.</p>';
-    return;
-  }
-
-  const chunkSize = 30;
-  let index = 0;
-
-  function renderChunk() {
-    const fragment = document.createDocumentFragment();
-    let rendered = 0;
-
-    while (index < items.length && rendered < chunkSize) {
-      const item = items[index];
-      fragment.appendChild(createCardElement(item));
-      index++;
-      rendered++;
-    }
-
-    listContainer.appendChild(fragment);
-
-    if (index < items.length) requestAnimationFrame(renderChunk);
-  }
-
-  requestAnimationFrame(renderChunk);
-}
-
-function createCardElement(item) {
-  const card = document.createElement("article");
-  card.className = "card";
-  card.dataset.id = item.contentid;
-
-  const thumb = document.createElement("div");
-  thumb.className = "card-thumb";
-  const thumbUrl = item.firstimage || item.firstimage2 || "";
-  if (thumbUrl) thumb.style.backgroundImage = `url('${thumbUrl}')`;
-
-  const body = document.createElement("div");
-  body.className = "card-body";
-
-  const titleRow = document.createElement("div");
-  titleRow.className = "card-title-row";
-
-  const title = document.createElement("h3");
-  title.className = "card-title";
-  title.textContent = item.title || "이름 미제공";
-
-  // 오른쪽 배지 제거 → 타이틀만
-  titleRow.appendChild(title);
-
-  const meta = document.createElement("div");
-  meta.className = "card-meta";
-
-  const addr = item.addr1 || item.addr2 || "";
-  if (addr) {
-    const spanAddr = document.createElement("span");
-    spanAddr.textContent = addr;
-    meta.appendChild(spanAddr);
-  }
-
-  const petInfo = item.petinfony || item.petInfo || "";
-  if (petInfo) {
-    const spanPet = document.createElement("span");
-    spanPet.textContent = `동반 조건: ${petInfo}`;
-    meta.appendChild(spanPet);
-  }
-
-  const tags = document.createElement("div");
-  tags.className = "card-tags";
-
-  const tagPet = document.createElement("span");
-  tagPet.className = "tag";
-  tagPet.textContent = "반려동물 동반";
-  tags.appendChild(tagPet);
-
-  if (item.distance) {
-    const t = document.createElement("span");
-    t.className = "tag";
-    t.textContent = `${item.distance}km`;
-    tags.appendChild(t);
-  }
-
-  body.appendChild(titleRow);
-  body.appendChild(meta);
-  body.appendChild(tags);
-
-  card.appendChild(thumb);
-  card.appendChild(body);
-
-  card.addEventListener("click", () => {
-    setActiveCard(item.contentid);
-    focusMarkerByContentId(item.contentid);
-    openDetail(item.contentid, item.contenttypeid);
-  });
-
-  return card;
-}
-
-// ========================
-//  상세 모달
-// ========================
-async function openDetail(contentId, contentTypeId) {
-  try {
-    modalBody.innerHTML =
-      '<p style="font-size:0.82rem;color:#6b7280;">상세 정보 로딩 중…</p>';
-    detailModal.classList.remove("hidden");
-
-    const [commonRes, introRes, imageRes] = await Promise.all([
-      fetchTour("detailCommon", {
-        contentId,
-        contentTypeId,
-        defaultYN: "Y",
-        firstImageYN: "Y",
-        addrinfoYN: "Y",
-        mapinfoYN: "Y",
-        overviewYN: "Y",
-      }),
-      fetchTour("detailIntro", { contentId, contentTypeId }),
-      fetchTour("detailImage", {
-        contentId,
-        imageYN: "Y",
-        subImageYN: "Y",
-      }),
-    ]);
-
-    const common = commonRes.items[0] || {};
-    const intro = introRes.items[0] || {};
-    const images = (imageRes.items || [])
-      .map((i) => i.originimgurl || i.smallimageurl)
-      .filter(Boolean)
-      .slice(0, 5);
-
-    const mainImg = common.firstimage || common.firstimage2 || "";
-    const overviewText =
-      common.overview || "이 장소에 대한 상세 설명은 제공되지 않습니다.";
-
-    const addrLine = common.addr1
-      ? `${common.addr1}${common.addr2 ? " " + common.addr2 : ""}`
-      : "";
-
-    modalBody.innerHTML = `
-      <div class="detail-header">
-        <h2 class="detail-title">${common.title || "상세 정보"}</h2>
-        <p class="detail-sub">반려동물과 함께 방문 가능한 장소 정보</p>
-      </div>
-
-      ${
-        mainImg
-          ? `<div class="detail-main-image">
-              <img src="${mainImg}" alt="${common.title || ""}" />
-            </div>`
-          : ""
-      }
-
-      <section class="detail-section">
-        <h3 class="detail-section-title">OVERVIEW</h3>
-        <p class="detail-overview">
-          ${overviewText}
-        </p>
-      </section>
-
-      ${
-        addrLine || intro.usetime || intro.restdate || intro.parking
-          ? `<section class="detail-section">
-              <h3 class="detail-section-title">INFO</h3>
-              <dl class="detail-kv">
-                ${
-                  addrLine
-                    ? `<div class="detail-kv-row">
-                         <dt>주소</dt>
-                         <dd>${addrLine}</dd>
-                       </div>`
-                    : ""
-                }
-                ${
-                  intro.usetime
-                    ? `<div class="detail-kv-row">
-                         <dt>시간</dt>
-                         <dd>${intro.usetime}</dd>
-                       </div>`
-                    : ""
-                }
-                ${
-                  intro.restdate
-                    ? `<div class="detail-kv-row">
-                         <dt>휴무</dt>
-                         <dd>${intro.restdate}</dd>
-                       </div>`
-                    : ""
-                }
-                ${
-                  intro.parking
-                    ? `<div class="detail-kv-row">
-                         <dt>주차</dt>
-                         <dd>${intro.parking}</dd>
-                       </div>`
-                    : ""
-                }
-              </dl>
-            </section>`
-          : ""
-      }
-
-      ${
-        images.length
-          ? `<section class="detail-section">
-              <h3 class="detail-section-title">GALLERY</h3>
-              <div class="detail-gallery">
-                ${images
-                  .map(
-                    (src) =>
-                      `<img src="${src}" alt="추가 이미지" />`
-                  )
-                  .join("")}
-              </div>
-            </section>`
-          : ""
-      }
-    `;
-  } catch {
-    modalBody.innerHTML =
-      '<p style="font-size:0.82rem;color:#6b7280;">상세 정보를 불러오지 못했습니다.</p>';
-  }
-}
-
-// ========================
-//  지역 / 분류 select 로딩
-// ========================
-async function loadAreas() {
-  selArea.innerHTML = "";
-
-  const optAll = document.createElement("option");
-  optAll.value = "";
-  optAll.textContent = "전국 전체";
-  selArea.appendChild(optAll);
-
-  try {
-    const { items } = await fetchTour("areaCode", {
-      numOfRows: 50,
-      pageNo: 1,
+    document.addEventListener("click", (e) => {
+      if (window.innerWidth > 720) return;
+      if (e.target.closest(".nav")) return;
+      navList.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
     });
+  }
 
-    items.forEach((area) => {
-      const opt = document.createElement("option");
-      opt.value = area.code;
-      opt.textContent = area.name;
-      selArea.appendChild(opt);
-    });
-  } catch {}
-}
-
-async function loadCategories() {
-  selCategory.innerHTML = "";
-
-  const optAll = document.createElement("option");
-  optAll.value = "";
-  optAll.textContent = "전체 분류";
-  selCategory.appendChild(optAll);
-
-  try {
-    const { items } = await fetchTour("categoryCode", {
-      numOfRows: 50,
-      pageNo: 1,
-    });
-
-    items.forEach((cat) => {
-      const opt = document.createElement("option");
-      opt.value = cat.code;
-      opt.textContent = cat.name;
-      selCategory.appendChild(opt);
-    });
-  } catch {}
-}
-
-// ========================
-//  현재 위치
-// ========================
-function getCurrentPositionPromise() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject("지원 안함");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: true,
-      timeout: 8000,
-    });
-  });
-}
-
-// ========================
-//  검색 실행
-// ========================
-async function runSearch() {
-  const requestId = ++currentRequestId;
-
-  STATE.keyword = iptKeyword.value.trim();
-  STATE.areaCode = selArea.value || "";
-  STATE.categoryCode = selCategory.value || "";
-
-  setLoading(
-    true,
-    STATE.mode === "nearby"
-      ? `현재 위치 기준 반경 ${STATE.radiusKm}km 내 검색 중…`
-      : "검색 중…"
-  );
-  listContainer.innerHTML = "";
-  txtCount.textContent = "0곳";
-
-  try {
-    let items = [];
-
-    if (STATE.mode === "nearby") {
-      const pos = await getCurrentPositionPromise();
-      if (requestId !== currentRequestId) return;
-
-      STATE.userLat = pos.coords.latitude;
-      STATE.userLng = pos.coords.longitude;
-
-      const radiusMeters = STATE.radiusKm * 1000;
-
-      const { items: resItems = [] } = await fetchTour("locationBasedList", {
-        arrange: "E",
-        mapX: STATE.userLng,
-        mapY: STATE.userLat,
-        radius: radiusMeters,
-        numOfRows: 80,
-        pageNo: 1,
+  // Reveal on scroll
+  const revealEls = Array.from(document.querySelectorAll(".reveal"));
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((ent) => {
+        if (ent.isIntersecting) {
+          ent.target.classList.add("is-in");
+          io.unobserve(ent.target);
+        }
       });
+    },
+    { threshold: 0.12 }
+  );
+  revealEls.forEach((el) => io.observe(el));
 
-      const withDist = addDistanceToItems(
-        resItems,
-        STATE.userLat,
-        STATE.userLng
-      ).sort((a, b) => {
-        if (a._distance == null) return 1;
-        if (b._distance == null) return -1;
-        return a._distance - b._distance;
-      });
+  // Modal (Design 이미지 크게 보기 + 내부 스크롤)
+  const modal = document.getElementById("modal");
+  const modalImg = document.getElementById("modalImg");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalTools = document.getElementById("modalTools");
+  const modalOpeners = document.querySelectorAll("[data-modal]");
+  const closeTargets = modal ? modal.querySelectorAll("[data-close]") : [];
 
-      items = withDist;
-    } else {
-      const isNationWideKeywordOnly =
-        !STATE.areaCode && !STATE.categoryCode && STATE.keyword;
+  let lastFocus = null;
 
-      if (isNationWideKeywordOnly) {
-        items = await fetchAllSearchKeyword(STATE.keyword, requestId);
-      } else {
-        const { items: resItems = [] } = await fetchTour("areaBasedList", {
-          arrange: "E",
-          areaCode: STATE.areaCode || "",
-          cat1: STATE.categoryCode || "",
-          numOfRows: 60,
-          pageNo: 1,
-        });
-        items = resItems;
+  const openModal = (card) => {
+    if (!modal || !modalImg || !modalTitle || !modalTools) return;
+
+    const img = card.querySelector("img");
+    if (!img) return;
+
+    lastFocus = document.activeElement;
+
+    modalImg.src = img.getAttribute("src");
+    modalImg.alt = img.getAttribute("alt") || "Project image";
+    modalTitle.textContent = card.dataset.title || "Project";
+    modalTools.textContent = card.dataset.tools ? `Tools: ${card.dataset.tools}` : "";
+
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+
+    const btn = modal.querySelector(".modal__close");
+    if (btn) btn.focus();
+  };
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (modalImg) modalImg.src = "";
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+  };
+
+  modalOpeners.forEach((card) => {
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", "프로젝트 크게 보기");
+
+    card.addEventListener("click", () => openModal(card));
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openModal(card);
       }
-    }
-
-    if (requestId !== currentRequestId) return;
-
-    const filtered = filterItemsByKeyword(items, STATE.keyword);
-    STATE.items = filtered;
-
-    renderList(STATE.items);
-    renderMarkers(STATE.items);
-    setLoading(false);
-  } catch {
-    if (requestId !== currentRequestId) return;
-    setLoading(false);
-    listContainer.innerHTML =
-      '<p style="font-size:0.82rem;color:#ef4444;padding:6px;">데이터 조회 중 문제가 발생했습니다.</p>';
-    txtCount.textContent = "0곳";
-  }
-}
-
-// ========================
-//  이벤트 바인딩
-// ========================
-function bindEvents() {
-  btnSearch.addEventListener("click", () => {
-    STATE.mode = "area";
-    runSearch();
+    });
   });
 
-  iptKeyword.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      STATE.mode = "area";
-      runSearch();
-    }
+  closeTargets.forEach((el) => el.addEventListener("click", closeModal));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
   });
-
-  selArea.addEventListener("change", () => {
-    STATE.mode = "area";
-    runSearch();
-  });
-
-  selCategory.addEventListener("change", () => {
-    STATE.mode = "area";
-    runSearch();
-  });
-
-  // 내 주변 찾기: 20km 고정
-  btnNearby.addEventListener("click", () => {
-    STATE.mode = "nearby";
-    STATE.radiusKm = DEFAULT_RADIUS_KM;
-    runSearch();
-  });
-
-  btnReset.addEventListener("click", () => {
-    selArea.value = "";
-    selCategory.value = "";
-    iptKeyword.value = "";
-    STATE.keyword = "";
-    STATE.areaCode = "";
-    STATE.categoryCode = "";
-    STATE.radiusKm = DEFAULT_RADIUS_KM;
-    STATE.mode = "area";
-    runSearch();
-  });
-
-  btnModalClose.addEventListener("click", () => {
-    detailModal.classList.add("hidden");
-  });
-
-  detailModal.addEventListener("click", (e) => {
-    if (e.target.classList.contains("modal-backdrop")) {
-      detailModal.classList.add("hidden");
-    }
-  });
-}
-
-// ========================
-//  초기화
-// ========================
-window.addEventListener("DOMContentLoaded", async () => {
-  initMap();
-  bindEvents();
-  await Promise.all([loadAreas(), loadCategories()]);
-
-  // 처음 시작할 때부터 내 주변 20km 검색
-  STATE.mode = "nearby";
-  STATE.radiusKm = DEFAULT_RADIUS_KM;
-  runSearch();
-});
+})();
