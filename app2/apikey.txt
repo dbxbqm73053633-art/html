@@ -1,0 +1,41 @@
+오피스텔 매매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcOffiTrade 
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+오피스텔 전월세 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcOffiRent
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+연립다세대 매매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcRHTrade
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+아파트 매매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+아파트 전월세 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcAptRent
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+공장 및 창고 등 부동산 매매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcInduTrade
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+상업업무용 부동산 매매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcNrgTrade
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+토지 매매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcLandTrade
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+아파트 분양권전매 실거래가
+End Point : https://apis.data.go.kr/1613000/RTMSDataSvcSilvTrade
+apikey : 37441f86a6fdf7eed59e7a176e50c990c64d651d3fb878215ba1972265e1028a
+
+
+
+https://dbxbqm73053633-art.github.io/html/portfolio/index.html
+
+mkmk0402

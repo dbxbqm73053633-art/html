@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetTour - 전국 반려동물 동반 여행</title>
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- 상단 헤더 -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-logo">
+          <div class="brand-pet-ears"></div>
+          <div class="brand-pet-face">
+            <span class="brand-pet-eye left"></span>
+            <span class="brand-pet-eye right"></span>
+            <span class="brand-pet-nose"></span>
+          </div>
+        </div>
+        <div class="brand-text-block">
+          <span class="brand-name">PetTour</span>
+          <span class="brand-sub">전국 반려동물 동반 여행 가이드</span>
+        </div>
+      </div>
+      <nav class="top-actions">
+        <button id="btnNearby" class="btn btn-ghost">내 주변 찾기</button>
+        <button id="btnReset" class="btn btn-outline">조건 초기화</button>
+      </nav>
+    </header>
+
+    <!-- 히어로 영역 -->
+    <section class="hero-strip">
+      <div class="hero-text">
+        <h1>반려동물과 함께, 가볍게 떠나는 여행</h1>
+        <p>지역과 분류를 고르고, 키워드만 입력하면 동반 가능한 여행지를 바로 확인할 수 있어요.</p>
+      </div>
+      <div class="hero-pets">
+        <div class="hero-paw hero-paw-1"></div>
+        <div class="hero-paw hero-paw-2"></div>
+        <div class="hero-pet-dog">🐶</div>
+        <div class="hero-pet-cat">🐱</div>
+      </div>
+    </section>
+
+    <!-- 검색/필터 바 -->
+    <section class="search-bar">
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label for="selArea" class="filter-label">지역</label>
+          <select id="selArea" class="select-input">
+            <!-- JS로 옵션 생성 -->
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="selCategory" class="filter-label">분류</label>
+          <select id="selCategory" class="select-input">
+            <!-- JS로 옵션 생성 -->
+          </select>
+        </div>
+
+        <div class="filter-field filter-field-full">
+          <label for="iptKeyword" class="filter-label">키워드</label>
+          <div class="search-row">
+            <input
+              id="iptKeyword"
+              type="text"
+              class="keyword-input"
+              placeholder="장소 이름 · 특징 · 동네명으로 검색 (예: 애견카페, 여의도공원)"
+            />
+            <button id="btnSearch" type="button" class="btn btn-primary">
+              검색
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 검색 상태 텍스트 -->
+      <div class="search-toolbar">
+        <span id="txtQueryState" class="query-state">
+          현재 위치 기준 반경 20km 내 검색 중…
+        </span>
+      </div>
+    </section>
+
+    <!-- 메인 레이아웃 -->
+    <main class="main-layout">
+      <!-- 리스트 패널 -->
+      <section class="panel panel-list">
+        <header class="panel-header">
+          <div>
+            <h2>반려동물 동반 여행지</h2>
+            <p class="panel-sub">
+              리스트에서 장소를 선택하면 오른쪽 지도에서 위치를 바로 확인할 수 있습니다.
+            </p>
+          </div>
+          <div class="panel-meta">
+            <span id="txtCount" class="badge-count">0곳</span>
+          </div>
+        </header>
+
+        <div id="listSkeleton" class="list-skeleton">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+
+        <div id="listContainer" class="list-container">
+          <!-- JS 렌더링 -->
+        </div>
+      </section>
+
+      <!-- 지도 패널 -->
+      <section class="panel panel-map">
+        <header class="panel-header panel-header-map">
+          <div>
+            <h2>지도에서 보기</h2>
+            <p class="panel-sub">
+              마커 또는 리스트를 클릭하면 상세 정보를 확인할 수 있습니다.
+            </p>
+          </div>
+        </header>
+        <div id="map" class="map"></div>
+      </section>
+    </main>
+
+    <!-- 상세 모달 -->
+    <div id="detailModal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <button id="btnModalClose" class="modal-close">×</button>
+        <div id="modalBody" class="modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 카카오맵 SDK + 클러스터러 -->
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9b97656fc9c3545b5bc488be86d6e900&libraries=services,clusterer"></script>
+  <script src="./js/index.js"></script>
+</body>
+</html>
