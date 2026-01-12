@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>운동계획</title>
+  <link rel="stylesheet" href="./css/plan.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- 상단 헤더 -->
+    <header class="top-bar">
+      <!-- 왼쪽: 마이핏으로 돌아가기 -->
+      <button class="icon-btn" type="button" onclick="goPage('myfit.html')" aria-label="마이핏으로 이동">
+        <svg class="arrow-icon-left" viewBox="0 0 24 24">
+          <path
+            d="M15 4l-8 8 8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+
+      <h1>운동계획</h1>
+
+      <!-- 오른쪽: 헬스케어로 이동 -->
+      <button class="icon-btn" type="button" onclick="goPage('healthcare.html')" aria-label="헬스케어로 이동">
+        <svg class="arrow-icon-right" viewBox="0 0 24 24">
+          <path
+            d="M9 4l8 8-8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+      <!-- 인사 & 목표 선택 -->
+      <section class="greeting-section">
+        <p class="hello">
+          <span id="planUserName">회원님</span>의
+        </p>
+        <h2 class="title">맞춤 운동 계획을 만들어봤어요.</h2>
+        <p class="subtitle">목표를 선택하면 이번 주 루틴이 자동으로 바뀝니다.</p>
+
+        <div class="goal-chip-row" id="goalChips">
+          <button type="button" class="goal-chip active" data-goal="diet">다이어트</button>
+          <button type="button" class="goal-chip" data-goal="bulk">벌크업</button>
+          <button type="button" class="goal-chip" data-goal="posture">체형 교정</button>
+          <button type="button" class="goal-chip" data-goal="health">건강 유지</button>
+        </div>
+      </section>
+
+      <!-- 이번 주 요약 -->
+      <section class="week-summary">
+        <div class="summary-header">
+          <h3>이번 주 계획 요약</h3>
+          <span class="summary-sub" id="summaryLabel">다이어트 · 주 4회</span>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span class="label">총 세션</span>
+            <span class="value" id="statTotal">4</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">완료</span>
+            <span class="value accent" id="statDone">1</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">남은 세션</span>
+            <span class="value" id="statRemain">3</span>
+          </div>
+          <div class="summary-card">
+            <span class="label">예상 주간 시간</span>
+            <span class="value" id="statTime">4h 20m</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 오늘의 루틴 -->
+      <section class="today-routine">
+        <div class="routine-header">
+          <div>
+            <h3>오늘의 루틴</h3>
+            <p class="routine-sub" id="todayFocusLabel">하체 + 유산소</p>
+          </div>
+          <span class="badge-today" id="todayBadge">D-3 / 4세션</span>
+        </div>
+
+        <article class="routine-card">
+          <ul class="exercise-list" id="exerciseList">
+            <!-- JS에서 채움 -->
+          </ul>
+
+          <div class="routine-footer">
+            <div class="routine-meta">
+              <span class="meta-item">
+                🔥 <span id="routineIntensity">난이도 중상</span>
+              </span>
+              <span class="meta-item">
+                ⏱ <span id="routineDuration">예상 60분</span>
+              </span>
+            </div>
+            <button type="button" class="start-btn" onclick="goPage('today-routine.html')">
+              오늘 루틴 시작하기
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <!-- 요일별 계획 -->
+      <section class="week-plan">
+        <div class="week-plan-header">
+          <h3>요일별 계획</h3>
+          <span class="week-plan-sub">요일마다 어떤 부위를 집중할지 한눈에 볼 수 있어요.</span>
+        </div>
+
+        <ul class="day-plan-list" id="dayPlanList">
+          <!-- JS에서 채움 -->
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <!-- 하단 탭바 (앱 전체와 통일) -->
+  <nav class="tabbar" aria-label="하단 탭">
+    <button class="tab" data-tab="home" type="button" onclick="goPage('main.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico"><path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/></svg>
+      <span>홈</span>
+    </button>
+
+    <button class="tab" data-tab="reserve" type="button" onclick="goPage('reserve.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico"><path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z"/></svg>
+      <span>예약</span>
+    </button>
+
+    <button class="tab" data-tab="community" type="button" onclick="goPage('community.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+      </svg>
+      <span>커뮤니티</span>
+    </button>
+
+    <button class="tab active" data-tab="myfit" type="button" onclick="goPage('myfit.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z"/>
+      </svg>
+      <span>마이핏</span>
+    </button>
+  </nav>
+
+  <script src="./js/plan.js"></script>
+</body>
+</html>

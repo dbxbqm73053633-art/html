@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>마이핏</title>
+  <link rel="stylesheet" href="./css/myfit.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- 상단 헤더: 왼쪽 화살표만 -->
+    <header class="top-bar">
+  <!-- 왼쪽: 마이핏으로 뒤로가기 -->
+  <button class="icon-btn" type="button" onclick="goPage('community.html')" aria-label="뒤로가기">
+    <svg class="arrow-icon" viewBox="0 0 24 24">
+      <path d="M15 4l-8 8 8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
+  </button>
+
+  <h1>마이핏</h1>
+
+  <!-- 오른쪽: 다음 페이지(헬스케어)로 이동 -->
+  <button class="icon-btn" type="button" onclick="goPage('healthcare.html')" aria-label="헬스케어로 이동">
+    <svg class="arrow-icon-right" viewBox="0 0 24 24">
+      <path d="M9 4l8 8-8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
+  </button>
+</header>
+
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-area">
+
+      <!-- 프로필 카드 -->
+      <section class="profile-card">
+        <div class="profile-main">
+          <div class="avatar">
+            <img src="./images/마이1.png" alt="프로필 이미지" />
+          </div>
+          <div class="profile-text">
+            <div class="profile-name-row">
+              <h2 id="myfitUserName">맨시</h2>
+              <span class="badge-type">정기회원</span>
+            </div>
+            <p class="profile-sub">
+              1백만명이 믿고 이용하는 <strong>FITNESS HUB</strong>
+            </p>
+          </div>
+          <button class="chevron-btn" type="button" aria-label="프로필 상세">
+            ›
+          </button>
+        </div>
+
+        <!-- 회원권 등록 -> 모바일 회원권 이동 -->
+        <button class="cta-btn" type="button" onclick="goPage('membership.html')">
+          지금 바로 회원권 등록하기
+        </button>
+      </section>
+
+      <!-- 서비스 메뉴 -->
+      <section class="service-section">
+        <h3 class="section-title">서비스</h3>
+        <div class="service-grid">
+          <!-- 운동계획 -->
+          <button class="service-item service-plan" type="button" onclick="goPage('plan.html')">
+            <span class="service-icon">
+              <!-- 클립보드 아이콘 -->
+              <svg viewBox="0 0 24 24" class="service-svg" aria-hidden="true">
+                <path
+                  d="M9 4h6a2 2 0 0 1 2 2v1h1a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a2 2 0 0 1 2-2Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10 3.5h4a1 1 0 0 1 1 1V6H9V4.5a1 1 0 0 1 1-1Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span class="service-label">운동계획</span>
+          </button>
+
+          <!-- 헬스케어 -->
+          <button class="service-item service-healthcare" type="button" onclick="goPage('healthcare.html')">
+            <span class="service-icon">
+              <!-- 하트 아이콘 -->
+              <svg viewBox="0 0 24 24" class="service-svg" aria-hidden="true">
+                <path
+                  d="M12 20s-4.8-2.7-7.2-5.6C3.7 13.1 3 11.9 3 10.5A4.5 4.5 0 0 1 7.5 6 4.7 4.7 0 0 1 12 8a4.7 4.7 0 0 1 4.5-2A4.5 4.5 0 0 1 21 10.5c0 1.4-.7 2.6-1.8 3.9C16.8 17.3 12 20 12 20Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span class="service-label">헬스케어</span>
+          </button>
+
+          <!-- 시설이용 -->
+          <button class="service-item service-facility" type="button" onclick="goPage('facility.html')">
+            <span class="service-icon">
+              <!-- 덤벨 아이콘 -->
+              <svg viewBox="0 0 24 24" class="service-svg" aria-hidden="true">
+                <path
+                  d="M5 6 3 8m0 8 2 2m14-12 2 2m-2 10 2-2M7 7l10 10M8 5 6 7m10 10-2 2M16 5l2 2M8 19l-2-2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span class="service-label">시설이용</span>
+          </button>
+
+          <!-- 운동 가이드 영상 -->
+          <button class="service-item service-guide" type="button" onclick="goPage('guide.html')">
+            <span class="service-icon">
+              <!-- 플레이 아이콘 -->
+              <svg viewBox="0 0 24 24" class="service-svg" aria-hidden="true">
+                <rect
+                  x="3"
+                  y="5"
+                  width="18"
+                  height="14"
+                  rx="2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+                <path d="M11 9.5v5l4-2.5-4-2.5Z" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="service-label">운동가이드영상</span>
+          </button>
+
+          <!-- 신체 변화 데이터 시각화 -->
+          <button class="service-item service-bodydata" type="button" onclick="goPage('bodydata.html')">
+            <span class="service-icon">
+              <!-- 차트 아이콘 -->
+              <svg viewBox="0 0 24 24" class="service-svg" aria-hidden="true">
+                <path
+                  d="M4 19h16M7 17V9M12 17V5M17 17v-7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            <span class="service-label">신체 변화 데이터 시각화</span>
+          </button>
+
+          <!-- 오시는 길 -->
+          <button class="service-item service-map" type="button" onclick="goPage('location.html')">
+            <span class="service-icon">
+              <!-- 위치/지도 아이콘 -->
+              <svg viewBox="0 0 24 24" class="service-svg" aria-hidden="true">
+                <path
+                  d="M12 3a6 6 0 0 0-6 6c0 4.3 6 10 6 10s6-5.7 6-10a6 6 0 0 0-6-6Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle
+                  cx="12"
+                  cy="9"
+                  r="2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+              </svg>
+            </span>
+            <span class="service-label">오시는길</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 이달 통계 -->
+      <section class="month-section">
+        <div class="month-header">
+          <h3 class="section-title">이번 달 화이팅하셨나요? 😄</h3>
+        </div>
+        <div class="month-legend">
+          <span class="legend-dot in">입장 10</span>
+          <span class="legend-dot reserve">예약 2</span>
+          <span class="legend-dot attend">출석 0</span>
+          <span class="legend-dot absent">결석 0</span>
+        </div>
+      </section>
+
+      <!-- 날짜 요약 -->
+      <section class="day-summary">
+        <div class="day-nav">
+          <button class="day-arrow" type="button" aria-label="이전 날짜">‹</button>
+          <div class="day-center">
+            <span class="day-badge">요약</span>
+            <span class="day-label" id="myfitDateLabel">11월 21일 (금)</span>
+          </div>
+          <button class="day-arrow" type="button" aria-label="다음 날짜">›</button>
+        </div>
+      </section>
+
+      <!-- 오늘 운동 세션 & 타이머 -->
+      <section class="today-session">
+        <div class="today-card">
+          <div class="today-header">
+            <div>
+              <p class="today-label">오늘 운동 세션</p>
+              <p class="today-sub">버튼을 눌러 운동 시간을 기록해 보세요.</p>
+            </div>
+            <span class="today-status-dot" id="todayStatus"></span>
+          </div>
+
+          <div class="today-timer-row">
+            <span class="timer-label">경과 시간</span>
+            <span class="timer-value" id="todayTimer">00:00:00</span>
+          </div>
+
+          <div class="today-actions">
+            <button type="button" class="btn-primary" id="startTodayBtn">
+              오늘 운동 시작
+            </button>
+            <button type="button" class="btn-ghost" id="resetTodayBtn">
+              리셋
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 이번 주 운동 기록 리스트 -->
+      <section class="week-section">
+        <div class="week-header">
+          <h3 class="section-title">이번 주 운동 기록</h3>
+          <span class="week-sub">월요일부터 오늘까지 기록을 한눈에 확인해요.</span>
+        </div>
+
+        <ul class="workout-list" id="workoutList">
+          <!-- JS에서 렌더링 -->
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 하단 탭바 -->
+  <nav class="tabbar" aria-label="하단 탭">
+    <button class="tab" data-tab="home" type="button" onclick="goPage('main.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z" />
+      </svg>
+      <span>홈</span>
+    </button>
+
+    <button class="tab" data-tab="reserve" type="button" onclick="goPage('reserve.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z" />
+      </svg>
+      <span>예약</span>
+    </button>
+
+    <button class="tab" data-tab="community" type="button" onclick="goPage('community.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path
+          d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"
+        />
+      </svg>
+      <span>커뮤니티</span>
+    </button>
+
+    <button class="tab active" data-tab="myfit" type="button" onclick="goPage('myfit.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path
+          d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z"
+        />
+      </svg>
+      <span>마이핏</span>
+    </button>
+  </nav>
+
+  <script src="./js/myfit.js"></script>
+</body>
+</html>

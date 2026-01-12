@@ -1,0 +1,455 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: #0f172a;
+  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+.app-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #ffffff;
+  padding-bottom: 76px;
+}
+
+/* 상단바 */
+.top-bar {
+  height: 52px;
+  padding: 0 16px;
+  padding-top: env(safe-area-inset-top);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.top-bar h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.icon-btn {
+  border: none;
+  background: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #111827;
+}
+
+.arrow-icon-left,
+.arrow-icon-right {
+  width: 22px;
+  height: 22px;
+}
+
+/* 메인 영역 */
+.main-area {
+  padding: 16px 16px 28px;
+}
+
+/* 1. 지도 카드 */
+.map-card {
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  box-shadow: 0 6px 18px rgba(15, 163, 184, 0.4);
+  overflow: hidden;
+}
+
+.map-header {
+  padding: 10px 12px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.branch-label {
+  font-size: 11px;
+  color: #22c55e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.title {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.map-sub {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.landmark-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  font-size: 10px;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+/* 카카오맵 */
+.map-container {
+  width: 100%;
+  height: 260px;
+  background: #e5e7eb;
+}
+
+/* 지도 버튼 영역 */
+.map-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+}
+
+.map-btn {
+  flex: 1;
+  min-width: 0;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.map-btn.primary {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.map-btn.ghost {
+  flex-basis: 100%;
+  background: transparent;
+}
+
+/* 2. 상세 정보 섹션 */
+.info-section {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.info-card {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 10px 12px 12px;
+}
+
+.info-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.info-list {
+  font-size: 12px;
+  color: #4b5563;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-row {
+  display: flex;
+  gap: 6px;
+}
+
+.info-row dt {
+  width: 60px;
+  color: #6b7280;
+}
+
+.info-row dd {
+  flex: 1;
+}
+
+.copy-btn {
+  margin-top: 6px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.info-hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.link-phone {
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.link-phone:hover {
+  text-decoration: underline;
+}
+
+/* 3. 교통 안내 */
+.route-section {
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.section-header p {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.route-tabs {
+  margin-top: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+.route-tab {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.route-tab.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.route-card {
+  margin-top: 8px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.route-card strong {
+  color: #0f172a;
+}
+
+/* 4. 주차 & 편의 */
+.parking-section {
+  margin-bottom: 16px;
+}
+
+.parking-grid {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.parking-card {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: 10px 12px;
+}
+
+.parking-card h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.dot-list {
+  list-style: none;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.dot-list li {
+  position: relative;
+  padding-left: 10px;
+  margin-bottom: 2px;
+}
+
+.dot-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #9ca3af;
+}
+
+/* 5. 메인 전경 + 요약 테이블 */
+.extra-section {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.photo-card {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #020617;
+  padding: 10px 10px 8px;
+}
+
+.photo-box {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #020617;
+}
+
+.photo-box img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.photo-caption {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #e5e7eb;
+}
+
+.summary-table-card {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 10px 12px 12px;
+}
+
+.summary-table-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.summary-table th {
+  width: 70px;
+  text-align: left;
+  padding: 3px 0;
+  color: #6b7280;
+  vertical-align: top;
+}
+
+.summary-table td {
+  padding: 3px 0;
+}
+
+.muted {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* 탭바 */
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60px;
+  background: #020617;
+  border-top: 1px solid #111827;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 20;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.tab-ico {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.tab.active {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+/* 큰 화면에서 카드 느낌 */
+@media (min-width: 768px) {
+  .app-wrapper {
+    border-radius: 24px;
+    margin-top: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .main-area {
+    padding-inline: 40px;
+  }
+
+  .info-grid,
+  .parking-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

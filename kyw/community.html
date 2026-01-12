@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Fitness Hub 커뮤니티</title>
+  <link rel="stylesheet" href="./css/community.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단 헤더 -->
+    <!-- 상단 헤더 -->
+  <header class="top-bar">
+    <!-- 왼쪽 뒤로가기: 예약 페이지와 동일한 스타일 -->
+    <button class="icon-btn" type="button" onclick="goPage('reserve.html')" aria-label="뒤로가기">
+      <svg class="arrow-icon" viewBox="0 0 24 24">
+        <path d="M15 4l-8 8 8 8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+      </svg>
+    </button>
+
+    <h1>커뮤니티</h1>
+
+    <!-- 오른쪽 이동 버튼: 예약 페이지와 동일한 오른쪽 화살표 -->
+    <button class="icon-btn" type="button" onclick="goPage('myfit.html')" aria-label="다음">
+      <svg class="arrow-icon" viewBox="0 0 24 24">
+        <path d="M9 4l8 8-8 8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+      </svg>
+    </button>
+  </header>
+
+    <!-- 카테고리 탭 -->
+    <nav class="category-tabs" aria-label="커뮤니티 카테고리">
+      <button class="category-btn active" data-filter="all">전체</button>
+      <button class="category-btn" data-filter="post">게시물</button>
+      <button class="category-btn" data-filter="routine">운동루틴</button>
+      <button class="category-btn" data-filter="diet">식단</button>
+      <button class="category-btn" data-filter="proof">인증샷</button>
+    </nav>
+
+    <!-- 얇은 구분선 -->
+    <div class="divider"></div>
+
+    <!-- 피드 리스트 -->
+    <main class="feed" aria-label="커뮤니티 피드">
+      <ul class="post-list" id="postList">
+        <!-- JS에서 렌더링 -->
+      </ul>
+    </main>
+  </div>
+
+  <!-- 하단 탭바: 기존 구조 그대로 사용 -->
+  <nav class="tabbar" aria-label="하단 탭">
+    <button class="tab" data-tab="home" type="button" onclick="goPage('main.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/>
+      </svg>
+      <span>홈</span>
+    </button>
+
+    <button class="tab" data-tab="reserve" type="button" onclick="goPage('reserve.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z"/>
+      </svg>
+      <span>예약</span>
+    </button>
+
+    <button class="tab active" data-tab="community" type="button" onclick="goPage('community.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+      </svg>
+      <span>커뮤니티</span>
+    </button>
+
+    <button class="tab" data-tab="myfit" type="button" onclick="goPage('myfit.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z"/>
+      </svg>
+      <span>마이핏</span>
+    </button>
+  </nav>
+
+  <script src="./js/community.js"></script>
+</body>
+</html>

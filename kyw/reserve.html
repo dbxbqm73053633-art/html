@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>수업 예약</title>
+
+  <link rel="stylesheet" href="./css/reserve.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- 상단 헤더 -->
+ <header class="top-bar">
+
+  <!-- 왼쪽 뒤로가기 -->
+  <button class="icon-btn" onclick="goPage('main.html')" aria-label="뒤로가기">
+    <svg class="arrow-icon" viewBox="0 0 24 24">
+      <path d="M15 4l-8 8 8 8" 
+        fill="none" stroke="currentColor" stroke-width="2" 
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <h1>예약</h1>
+
+  <!-- 오른쪽 이동버튼 -->
+  <button class="icon-btn" onclick="goPage('community.html')" aria-label="다음">
+    <svg class="arrow-icon" viewBox="0 0 24 24">
+      <path d="M9 4l8 8-8 8" 
+        fill="none" stroke="currentColor" stroke-width="2" 
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+</header>
+
+
+    <!-- 상단 탭 (그룹 수업 / 개인 레슨) -->
+    <section class="mode-tabs">
+      <button class="mode-tab active" data-mode="group">그룹 수업</button>
+      <button class="mode-tab" data-mode="pt">개인 레슨</button>
+    </section>
+
+    <!-- 날짜 선택 영역 -->
+    <section class="date-section">
+      <div class="month-row">
+        <button class="month-nav" type="button" disabled>〈</button>
+        <div class="month-label">
+          <span class="month">January</span>
+          <span class="year">2026</span>
+        </div>
+        <button class="month-nav" type="button" disabled>〉</button>
+      </div>
+
+      <!-- 2026-01-01 ~ 01-07 -->
+      <div class="date-chips" id="dateChips">
+        <button class="date-chip active" data-date="2026-01-01">
+          <span class="dow">Thu</span>
+          <span class="day">1</span>
+        </button>
+        <button class="date-chip" data-date="2026-01-02">
+          <span class="dow">Fri</span>
+          <span class="day">2</span>
+        </button>
+        <button class="date-chip" data-date="2026-01-03">
+          <span class="dow">Sat</span>
+          <span class="day">3</span>
+        </button>
+        <button class="date-chip" data-date="2026-01-04">
+          <span class="dow">Sun</span>
+          <span class="day">4</span>
+        </button>
+        <button class="date-chip" data-date="2026-01-05">
+          <span class="dow">Mon</span>
+          <span class="day">5</span>
+        </button>
+        <button class="date-chip" data-date="2026-01-06">
+          <span class="dow">Tue</span>
+          <span class="day">6</span>
+        </button>
+        <button class="date-chip" data-date="2026-01-07">
+          <span class="dow">Wed</span>
+          <span class="day">7</span>
+        </button>
+      </div>
+
+      <div class="selected-bar">
+        <span id="selectedDateText">2026.01.01 목요일</span>
+        <button type="button" class="today-btn" id="todayBtn">오늘</button>
+      </div>
+    </section>
+
+    <!-- 예약 가능 트레이너 리스트 -->
+    <main class="content">
+      <div class="section-header">
+        <h2>예약 가능 선생님 목록</h2>
+        <p>날짜와 수업 유형에 따라 가능한 선생님이 달라집니다.</p>
+      </div>
+
+      <ul class="trainer-list" id="trainerList">
+        <!-- JS에서 동적으로 렌더링 -->
+      </ul>
+    </main>
+  </div>
+
+  <!-- 하단 탭바: 홈 / 예약 / 커뮤니티 / 마이핏 -->
+  <nav class="tabbar" aria-label="하단 탭">
+    <button class="tab" data-tab="home" type="button" onclick="goPage('main.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico"><path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z"/></svg>
+      <span>홈</span>
+    </button>
+
+    <button class="tab active" data-tab="reserve" type="button" onclick="goPage('reserve.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico"><path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z"/></svg>
+      <span>예약</span>
+    </button>
+
+    <button class="tab" data-tab="community" type="button" onclick="goPage('community.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm10 2a4 4 0 1 0-3.4-6.1A6.9 6.9 0 0 1 14 11c0 .7-.1 1.4-.3 2H17ZM2 21c0-4-3-7 7-7s7 3 7 7H2Zm14.5 0c-.1-1.7-.7-3.2-1.6-4.4.7-.4 1.6-.6 2.6-.6 2.8 0 5 2 5 5h-6Z"/>
+      </svg>
+      <span>커뮤니티</span>
+    </button>
+
+    <button class="tab" data-tab="myfit" type="button" onclick="goPage('myfit.html')">
+      <svg viewBox="0 0 24 24" class="tab-ico">
+        <path d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z"/>
+      </svg>
+      <span>마이핏</span>
+    </button>
+  </nav>
+
+  <script src="./js/reserve.js"></script>
+</body>
+</html>

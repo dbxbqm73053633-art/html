@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitness Hub 로그인</title>
+  <link rel="stylesheet" href="./css/login.css" />
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-card">
+      <!-- 로고 -->
+      <div class="logo-wrap">
+        <img src="./images/로고.png" alt="Fitness Hub Logo" class="logo-img" />
+      </div>
+
+      <!-- 타이틀 -->
+      <header class="login-header">
+        <h1>Login</h1>
+        <p>회원 서비스 이용을 위해 로그인해 주세요.</p>
+      </header>
+
+      <!-- 폼 -->
+      <form class="login-form" id="loginForm">
+        <div class="form-field">
+          <label for="email">아이디</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="이메일 주소"
+            autocomplete="email"
+          />
+          <span class="field-underline"></span>
+          <p class="field-help">등록된 이메일 주소를 입력해 주세요.</p>
+        </div>
+
+        <div class="form-field">
+          <label for="password">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="영문, 숫자, 특수문자 조합 8자 이상"
+            autocomplete="current-password"
+          />
+          <span class="field-underline"></span>
+        </div>
+
+        <!-- 🔥 자동 로그인 / 로그인 상태 유지 -->
+        <div class="option-row">
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="keepLogin" />
+            <span class="checkbox-custom"></span>
+            <span class="checkbox-label">로그인 상태 유지 (자동 로그인)</span>
+          </label>
+        </div>
+
+        <p class="error-msg" id="errorMsg"></p>
+
+        <button type="submit" class="btn-primary" id="loginBtn" disabled>
+          로그인
+        </button>
+      </form>
+
+      <!-- 서브 링크 -->
+      <div class="sub-links">
+        <button type="button">아이디 찾기</button>
+        <span class="divider">|</span>
+        <button type="button">비밀번호 찾기</button>
+        <span class="divider">|</span>
+        <button type="button" id="goSignupBtn">회원가입</button>
+      </div>
+
+      <!-- SNS 로그인 -->
+      <section class="sns-login">
+        <p>SNS 계정으로 로그인하기</p>
+        <div class="sns-icons">
+          <button class="sns-btn kakao" aria-label="카카오 로그인">K</button>
+          <button class="sns-btn naver" aria-label="네이버 로그인">N</button>
+          <button class="sns-btn google" aria-label="구글 로그인">G</button>
+          <button class="sns-btn facebook" aria-label="페이스북 로그인">f</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="./js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>신체 변화 데이터 | MyFit</title>
+  <link rel="stylesheet" href="./css/bodydata.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단 바 -->
+    <header class="top-bar">
+      <button class="icon-btn" type="button" onclick="goPage('guide.html')" aria-label="운동 가이드로 이동">
+        <svg class="arrow-icon-left" viewBox="0 0 24 24">
+          <path
+            d="M15 4l-8 8 8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+
+      <h1>신체 변화 데이터</h1>
+
+      <button class="icon-btn" type="button" onclick="goPage('location.html')" aria-label="마이핏으로 이동">
+        <svg class="arrow-icon-right" viewBox="0 0 24 24">
+          <path
+            d="M9 4l8 8-8 8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+      <!-- 인사 / 설명 -->
+      <section class="greeting-section">
+        <p class="hello">
+          <span id="bodyUserName">회원님,</span>
+        </p>
+        <h2 class="title">체중·체지방부터 눈바디까지 한눈에.</h2>
+        <p class="subtitle">
+          기본 지표, 눈바디, 자세, 웨어러블 데이터를 모아서
+          실제 변화와 컨디션을 함께 볼 수 있도록 구성했어요.
+        </p>
+      </section>
+
+      <!-- 상단 요약 카드 -->
+      <section class="summary-section">
+        <div class="summary-card">
+          <p class="summary-label">현재 체중</p>
+          <p class="summary-value" id="currentWeight">- kg</p>
+          <p class="summary-sub" id="weightDiff">지난 달 대비 - kg</p>
+        </div>
+        <div class="summary-card">
+          <p class="summary-label">현재 체지방률</p>
+          <p class="summary-value" id="currentBodyFat">- %</p>
+          <p class="summary-sub" id="bodyFatDiff">지난 달 대비 - %p</p>
+        </div>
+      </section>
+
+      <!-- 기간 / 비교 옵션 -->
+      <section class="filter-section">
+        <div class="filter-row">
+          <div class="filter-chips">
+            <button class="filter-chip active" type="button" data-range="7">최근 7일</button>
+            <button class="filter-chip" type="button" data-range="30">최근 30일</button>
+            <button class="filter-chip" type="button" data-range="90">최근 90일</button>
+          </div>
+          <label class="toggle-compare">
+            <input type="checkbox" id="compareToggle" checked />
+            <span class="toggle-ui"></span>
+            <span class="toggle-text">체중 + 체지방 비교</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 변화 추세 그래프 -->
+      <section class="chart-section">
+        <div class="section-header">
+          <h3>변화 추세 그래프</h3>
+          <p id="chartCaption">최근 7일 기준 체중과 체지방률 변화</p>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header-row">
+            <div class="legend">
+              <span class="legend-dot weight"></span>
+              <span class="legend-label">체중 (kg)</span>
+              <span class="legend-dot bodyfat"></span>
+              <span class="legend-label">체지방률 (%)</span>
+            </div>
+            <p class="chart-range-label" id="chartRangeLabel">-</p>
+          </div>
+
+          <div class="chart-wrapper">
+            <svg id="bodyChart" viewBox="0 0 320 180" preserveAspectRatio="none">
+              <g id="chartGrid"></g>
+              <polyline id="weightLine" fill="none" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" />
+              <polyline id="bodyFatLine" fill="none" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" />
+              <g id="weightPoints"></g>
+              <g id="bodyFatPoints"></g>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1. 기본 신체 지표 -->
+      <section class="data-section">
+        <article class="data-card">
+          <div class="data-card-header">
+            <h3>기본 신체 지표 (필수)</h3>
+            <p class="data-desc">가장 대중적이고 직관적인 핵심 숫자들입니다.</p>
+          </div>
+          <dl class="metric-list">
+            <div class="metric-row">
+              <dt>체중 (Weight)</dt>
+              <dd id="metricWeight">- kg</dd>
+            </div>
+            <div class="metric-row">
+              <dt>골격근량 (SMM)</dt>
+              <dd id="metricSmm">- kg</dd>
+            </div>
+            <div class="metric-row">
+              <dt>체지방량 (Body Fat Mass)</dt>
+              <dd id="metricBfm">- kg</dd>
+            </div>
+            <div class="metric-row">
+              <dt>체지방률 (Body Fat %)</dt>
+              <dd id="metricBfp">- %</dd>
+            </div>
+            <div class="metric-row">
+              <dt>BMI (체질량지수)</dt>
+              <dd id="metricBmi">-</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- 2. 눈바디 및 신체 치수 -->
+        <article class="data-card">
+          <div class="data-card-header">
+            <h3>눈바디 & 신체 치수</h3>
+            <p class="data-desc">숫자보다 보이는 변화를 중시하는 항목입니다.</p>
+          </div>
+
+          <!-- 전면 / 측면 / 후면: 1장 이미지를 3등분 -->
+          <div class="photo-row">
+            <div class="photo-slot">
+              <div class="photo-box front"></div>
+              <p class="photo-label">전면</p>
+            </div>
+            <div class="photo-slot">
+              <div class="photo-box side"></div>
+              <p class="photo-label">측면</p>
+            </div>
+            <div class="photo-slot">
+              <div class="photo-box back"></div>
+              <p class="photo-label">후면</p>
+            </div>
+          </div>
+
+          <dl class="metric-list two-col">
+            <div class="metric-row">
+              <dt>가슴 둘레</dt>
+              <dd id="metricChest">- cm</dd>
+            </div>
+            <div class="metric-row">
+              <dt>허리 둘레</dt>
+              <dd id="metricWaist">- cm</dd>
+            </div>
+            <div class="metric-row">
+              <dt>엉덩이 둘레</dt>
+              <dd id="metricHip">- cm</dd>
+            </div>
+            <div class="metric-row">
+              <dt>허벅지 둘레</dt>
+              <dd id="metricThigh">- cm</dd>
+            </div>
+            <div class="metric-row">
+              <dt>팔 둘레</dt>
+              <dd id="metricArm">- cm</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- 3. 체형 및 자세 분석 -->
+        <article class="data-card">
+          <div class="data-card-header">
+            <h3>체형 & 자세 분석</h3>
+            <p class="data-desc">운동 전·후 자세 교정을 확인하는 고급 항목입니다.</p>
+          </div>
+          <dl class="metric-list">
+            <div class="metric-row">
+              <dt>어깨 좌우 밸런스</dt>
+              <dd id="metricShoulder">-</dd>
+            </div>
+            <div class="metric-row">
+              <dt>거북목 각도</dt>
+              <dd id="metricNeckAngle">-°</dd>
+            </div>
+            <div class="metric-row">
+              <dt>복부 비만율 (WHR)</dt>
+              <dd id="metricWhr">-</dd>
+            </div>
+            <div class="metric-row">
+              <dt>기초대사량 (BMR)</dt>
+              <dd id="metricBmr">- kcal</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- 4. 건강 지표 (웨어러블) -->
+        <article class="data-card">
+          <div class="data-card-header">
+            <h3>건강 지표 (웨어러블)</h3>
+            <p class="data-desc">스마트워치와 연동했을 때 시너지가 나는 지표들입니다.</p>
+          </div>
+          <dl class="metric-list two-col">
+            <div class="metric-row">
+              <dt>안정 시 심박수</dt>
+              <dd id="metricRhr">- bpm</dd>
+            </div>
+            <div class="metric-row">
+              <dt>VO₂ Max</dt>
+              <dd id="metricVo2">- ml/kg/min</dd>
+            </div>
+            <div class="metric-row">
+              <dt>총 수면 시간</dt>
+              <dd id="metricSleepTime">- h</dd>
+            </div>
+            <div class="metric-row">
+              <dt>수면 점수</dt>
+              <dd id="metricSleepScore">- /100</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <!-- 기록 리스트 -->
+      <section class="history-section">
+        <div class="section-header">
+          <h3>기록 상세</h3>
+          <p>선택한 기간 내 기록이 최신 순으로 정리됩니다.</p>
+        </div>
+        <ul class="history-list" id="historyList">
+          <!-- JS에서 렌더링 -->
+        </ul>
+      </section>
+    </main>
+
+    <!-- 하단 탭바 -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" type="button" onclick="goPage('main.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z" />
+        </svg>
+        <span>홈</span>
+      </button>
+      <button class="tab" type="button" onclick="goPage('reserve.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z" />
+        </svg>
+        <span>예약</span>
+      </button>
+      <button class="tab" type="button" onclick="goPage('community.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M7 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0 2c3.31 0 6 2.02 6 4.5V20H1v-2.5C1 15.02 3.69 13 7 13Zm10-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0 2c3.31 0 6 2.02 6 4.5V20h-6v-2.5c0-1-.25-1.94-.7-2.78A5.52 5.52 0 0 0 17 13Z" />
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+      <button class="tab active" type="button" onclick="goPage('myfit.html')">
+        <svg class="tab-ico" viewBox="0 0 24 24">
+          <path d="M12 3a4 4 0 0 1 4 4v1a4 4 0 1 1-8 0V7a4 4 0 0 1 4-4Zm0 10a6 6 0 0 1 6 6v2H6v-2a6 6 0 0 1 6-6Z" />
+        </svg>
+        <span>마이핏</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/bodydata.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>모바일 회원증</title>
+
+  <link rel="stylesheet" href="./css/membership.css" />
+</head>
+<body>
+  <div class="membership-app">
+
+    <!-- 상단 바 -->
+    <header class="top-bar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <h1>모바일 회원증</h1>
+      <div class="top-spacer"></div>
+    </header>
+
+    <!-- 메인 -->
+    <main class="main-area">
+
+      <!-- 회원증 카드 -->
+      <section class="card" id="membershipCard">
+
+        <div class="card-header">
+          <img src="./images/로고.png" class="logo" alt="로고" />
+          <div>
+            <p class="brand">FITNESS HUB</p>
+            <p class="sub">OFFICIAL MEMBERSHIP CARD</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+            <span>이름</span>
+            <strong id="memberName">김영우</strong>
+          </div>
+
+          <div class="row">
+            <span>회원번호</span>
+            <strong id="memberId">FH-2025-0007</strong>
+          </div>
+
+          <div class="row">
+            <span>회원유형</span>
+            <strong id="memberType">프리미엄</strong>
+          </div>
+
+          <div class="row">
+            <span>이용기간</span>
+            <strong id="periodText">2025.11.07 ~ 2026.02.06</strong>
+          </div>
+        </div>
+
+        <!-- QR -->
+        <div class="qr-box">
+          <div class="qr"></div>
+        </div>
+
+        <p class="qr-help">입장 시 리더기에 QR을 스캔하세요</p>
+
+        <div class="status">
+          <span class="light"></span>
+          <span id="statusText">이용 중 · 잔여 75일</span>
+        </div>
+      </section>
+
+            <!-- 최근 7일 히스토리 -->
+      <section class="history">
+        <h2>최근 7일 히스토리</h2>
+
+        <div class="history-calendar" id="historyCalendar"></div>
+
+        <p class="history-caption">
+          날짜를 선택하면 해당 날짜의 입·퇴장 기록을 볼 수 있어요.
+        </p>
+
+        <div class="history-header-row">
+          <span id="selectedDateLabel">오늘 입·퇴장 기록</span>
+        </div>
+
+        <ul id="historyList"></ul>
+      </section>
+
+      <!-- 🔹 하단 안내 배너 -->
+      <section class="notice-banner">
+        <div class="notice-pill">공지</div>
+        <div class="notice-text">
+          <p class="notice-title">오늘 PT 예약 10분 전까지 체크인 해주세요.</p>
+          <p class="notice-sub">
+            지각·노쇼가 반복될 경우 예약 제한이 적용될 수 있습니다.
+          </p>
+        </div>
+        <button class="notice-btn" type="button" onclick="openNotice()">
+          전체 공지
+        </button>
+      </section>
+
+
+    </main>
+
+  </div>
+
+  <script src="./js/membership.js"></script>
+</body>
+</html>

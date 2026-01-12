@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>오늘의 추천 루틴 | FITNESS HUB</title>
+  <link rel="stylesheet" href="./css/today-routine.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단바 -->
+    <header class="top-bar">
+      <button
+        type="button"
+        class="icon-btn back-btn"
+        onclick="goPage('main.html')"
+        aria-label="메인으로 돌아가기"
+      >
+        ←
+      </button>
+      <div class="top-title-wrap">
+        <h1 class="top-title">오늘의 추천 루틴</h1>
+        <p class="top-subtitle">몸 상태에 맞춘 45분 전신 리셋 프로그램</p>
+      </div>
+      <div class="top-right">
+        <span class="today-tag" id="todayLabel">오늘 · 전신</span>
+      </div>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+      <!-- 루틴 요약 카드 -->
+      <section class="section">
+        <article class="summary-card">
+          <div class="summary-main">
+            <p class="summary-label">추천 루틴</p>
+            <h2 class="summary-title" id="routineName">전신 리셋 45분 루틴</h2>
+            <p class="summary-goal" id="routineGoal">
+              전신 근육을 가볍게 깨우고, 다음 운동을 위한 베이스 만들기
+            </p>
+          </div>
+          <div class="summary-meta">
+            <div class="meta-chip">
+              ⏱ <span id="routineDuration">45분</span>
+            </div>
+            <div class="meta-chip level">
+              🔥 <span id="routineLevel">난이도 · 보통</span>
+            </div>
+            <div class="meta-chip kcal">
+              🔋 <span id="routineKcal">예상 소모 320kcal</span>
+            </div>
+          </div>
+          <div class="summary-tags" id="focusTags">
+            <!-- JS로 부위 태그 렌더링 -->
+          </div>
+        </article>
+      </section>
+
+      <!-- 진행 순서 (5단계) -->
+      <section class="section">
+        <div class="section-header">
+          <h3 class="section-title">진행 순서</h3>
+          <p class="section-subtitle">5단계로 전신을 안정적으로 깨우는 루틴</p>
+        </div>
+        <ol class="phase-list" id="phaseList">
+          <!-- JS로 단계별 렌더링 -->
+        </ol>
+      </section>
+
+      <!-- 팁 / 주의사항 -->
+      <section class="section">
+        <h3 class="section-title">오늘의 코칭 메모</h3>
+        <ul class="tip-list">
+          <li>첫 세트는 항상 가볍게, 몸 상태 체크용으로 시작하세요.</li>
+          <li>호흡은 ‘힘 쓸 때 내쉬고, 돌아올 때 들이마시기’를 기본으로 합니다.</li>
+          <li>통증이 아니라 “당기는 느낌” 정도에서 멈추는 게 안전합니다.</li>
+        </ul>
+      </section>
+
+      <!-- 시작 버튼 -->
+      <section class="section section-cta">
+        <button
+          type="button"
+          class="btn-primary-lg"
+          onclick="startRoutine()"
+        >
+          루틴 시작하고 MY FIT에 기록하기
+        </button>
+      </section>
+    </main>
+
+    <!-- ✅ 메인과 동일 / 하단 고정 탭바 -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab active" data-tab="home" type="button" aria-label="홈" onclick="goPage('main.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z" />
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" data-tab="reserve" type="button" aria-label="예약" onclick="goPage('reserve.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z" />
+        </svg>
+        <span>예약</span>
+      </button>
+
+      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티" onclick="goPage('community.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm10 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm-5 1a4 4 0 0 0-4 4v1h8v-1a4 4 0 0 0-4-4Zm-7.5 5v-1a4 4 0 0 1 2.4-3.65A4.5 4.5 0 0 0 3 8.5 4.5 4.5 0 0 0 1 12.5v1.5a2 2 0 0 0 2 2h1.5Zm13 0H19a2 2 0 0 0 2-2v-1.5a4.5 4.5 0 0 0-3.9-4.45 4 4 0 0 1 2.4 3.65v1a4 4 0 0 1-2.4 3.3Z" />
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab" data-tab="myfit" type="button" aria-label="마이핏" onclick="goPage('myfit.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z" />
+        </svg>
+        <span>마이핏</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/today-routine.js"></script>
+</body>
+</html>

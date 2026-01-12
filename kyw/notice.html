@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>공지사항 | Fitness Hub</title>
+  <link rel="stylesheet" href="./css/notice.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- 상단바 -->
+    <header class="top-bar">
+      <button
+        type="button"
+        class="icon-btn back-btn"
+        onclick="goPage('main.html')"
+        aria-label="메인 화면으로 돌아가기"
+      >
+        ←
+      </button>
+
+      <div class="top-title-wrap">
+        <h1 class="top-title">공지사항</h1>
+        <p class="top-subtitle">센터 운영 안내와 이벤트 소식을 한 곳에서</p>
+      </div>
+
+      <div class="top-right">
+        <span class="badge-new" id="noticeCountBadge">총 0건</span>
+      </div>
+    </header>
+
+    <!-- 메인 영역 -->
+    <main class="main-area">
+      <!-- 필터 탭 -->
+      <section class="section">
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">전체</button>
+          <button class="filter-tab" data-filter="operation">운영 안내</button>
+          <button class="filter-tab" data-filter="event">이벤트</button>
+          <button class="filter-tab" data-filter="system">시스템</button>
+        </div>
+      </section>
+
+      <!-- 공지 리스트 -->
+      <section class="section">
+        <ul class="notice-list" id="noticeList">
+          <!-- JS로 공지 카드 렌더링 -->
+        </ul>
+      </section>
+    </main>
+
+    <!-- ✅ 메인과 완전히 같은 구조의 탭바 -->
+    <nav class="tabbar" aria-label="하단 탭">
+      <button class="tab" data-tab="home" type="button" aria-label="홈" onclick="goPage('main.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M12 3 3 10v11h6v-6h6v6h6V10l-9-7Z" />
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="tab" data-tab="reserve" type="button" aria-label="예약" onclick="goPage('reserve.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M7 3h10v2H7V3Zm12 4H5v14h14V7Zm-2 4H7v2h10v-2Zm0 4H7v2h10v-2Z" />
+        </svg>
+        <span>예약</span>
+      </button>
+
+      <button class="tab" data-tab="community" type="button" aria-label="커뮤니티" onclick="goPage('community.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <!-- 심플한 커뮤니티 아이콘 (3명 실루엣) -->
+          <path d="M7 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm10 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm-5 1a4 4 0 0 0-4 4v1h8v-1a4 4 0 0 0-4-4Zm-7.5 5v-1a4 4 0 0 1 2.4-3.65A4.5 4.5 0 0 0 3 8.5 4.5 4.5 0 0 0 1 12.5v1.5a2 2 0 0 0 2 2h1.5Zm13 0H19a2 2 0 0 0 2-2v-1.5a4.5 4.5 0 0 0-3.9-4.45 4 4 0 0 1 2.4 3.65v1a4 4 0 0 1-2.4 3.3Z" />
+        </svg>
+        <span>커뮤니티</span>
+      </button>
+
+      <button class="tab" data-tab="myfit" type="button" aria-label="마이핏" onclick="goPage('myfit.html')">
+        <svg viewBox="0 0 24 24" class="tab-ico" aria-hidden="true">
+          <path d="M15 3H9v4H5v6h4v8h6v-8h4V7h-4V3Zm-2 2v2h2v2h2v2h-2v8h-2v-8h-2V9H9V7h2V5h2Z" />
+        </svg>
+        <span>마이핏</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="./js/notice.js"></script>
+</body>
+</html>
