@@ -1,79 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fitness Hub 온보딩</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fitness Hub · Onboarding</title>
   <link rel="stylesheet" href="./css/onboarding.css" />
 </head>
+
 <body>
-  <div class="onboard-wrapper">
-    <!-- 온보딩 슬라이드 영역 -->
-    <main class="onboard-main">
-      <!-- 1페이지 -->
-      <section class="onboard-slide active">
-        <div class="slide-img">
-          <img src="./images/워크스루1번사진.png" alt="운동 이미지 1" />
-          <div class="img-gradient"></div>
+  <div class="shell">
+    <!-- Ambient background -->
+    <div class="ambient" aria-hidden="true">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+      <div class="noise"></div>
+    </div>
+
+    <main class="app" role="main">
+      <header class="top">
+        <div class="brand">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="brand-name">FITNESS HUB</span>
         </div>
 
-        <div class="slide-content">
-          <h1>당신의 목표를 현실로!</h1>
-          <p>
-            막연했던 운동 목표를 구체적인 계획과<br />
-            체계적인 기록으로 달성해 보세요.
+        <button id="skipBtn" class="btn-ghost" type="button">건너뛰기</button>
+      </header>
+
+      <!-- Journey progress -->
+      <nav class="journey" aria-label="온보딩 진행">
+        <button class="step active" type="button" data-step="0" aria-current="step">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="label">웰컴</span>
+        </button>
+        <button class="step" type="button" data-step="1">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="label">컨디션</span>
+        </button>
+        <button class="step" type="button" data-step="2">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="label">맞춤루틴</span>
+        </button>
+        <button class="step" type="button" data-step="3">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="label">시작</span>
+        </button>
+      </nav>
+
+      <!-- Slides -->
+      <section class="slides" aria-live="polite">
+        <!-- Slide 1 -->
+        <article class="slide active" data-index="0">
+          <div class="kicker">WELCOME</div>
+          <h1 class="headline">
+            당신의 몸은<br />
+            <span class="accent">데이터로 관리</span>되어야 합니다
+          </h1>
+          <p class="desc">
+            오늘 컨디션 → 루틴 → 기록까지. Fitness Hub가 한 번에 설계합니다.
           </p>
-        </div>
+
+          <div class="card-grid">
+            <div class="metric-card">
+              <div class="metric-top">
+                <span class="pill">8주 평균</span>
+                <span class="pill ghost">체지방 변화</span>
+              </div>
+              <div class="metric-value">
+                <span class="num" data-count-to="3.1" data-decimals="1">0</span><span class="unit">%</span>
+              </div>
+              <div class="metric-sub">회원 평균 감량 지표(예시)</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-top">
+                <span class="pill">주간</span>
+                <span class="pill ghost">루틴 완수</span>
+              </div>
+              <div class="metric-value">
+                <span class="num" data-count-to="4" data-decimals="0">0</span><span class="unit">회</span>
+              </div>
+              <div class="metric-sub">목표를 ‘현실’로 만드는 빈도</div>
+            </div>
+          </div>
+
+          <div class="hero-figure" aria-hidden="true">
+            <!-- Minimal premium illustration (inline SVG) -->
+            <svg viewBox="0 0 360 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#0EA5E9" stop-opacity=".95"/>
+                  <stop offset="1" stop-color="#22C55E" stop-opacity=".85"/>
+                </linearGradient>
+                <linearGradient id="g2" x1="0" y1="1" x2="1" y2="0">
+                  <stop offset="0" stop-color="#A78BFA" stop-opacity=".85"/>
+                  <stop offset="1" stop-color="#06B6D4" stop-opacity=".75"/>
+                </linearGradient>
+              </defs>
+              <rect x="16" y="24" width="328" height="132" rx="18" fill="rgba(255,255,255,.06)" />
+              <path d="M36 122 C 78 80, 106 140, 148 92 C 190 44, 222 148, 264 86 C 306 24, 324 96, 340 70"
+                    stroke="url(#g1)" stroke-width="4" stroke-linecap="round"/>
+              <path d="M36 100 C 86 120, 112 72, 154 110 C 196 148, 226 60, 272 108 C 310 148, 332 92, 340 96"
+                    stroke="url(#g2)" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+              <circle cx="148" cy="92" r="5" fill="#0EA5E9"/>
+              <circle cx="264" cy="86" r="5" fill="#22C55E"/>
+            </svg>
+          </div>
+        </article>
+
+        <!-- Slide 2 -->
+        <article class="slide" data-index="1">
+          <div class="kicker">RECOVERY</div>
+          <h1 class="headline">
+            오늘은 <span class="accent">운동해도 되는 날</span>인가요?
+          </h1>
+          <p class="desc">
+            회복 점수, 수면, 스트레스 지표로 오늘 강도를 자동 추천합니다.
+          </p>
+
+          <div class="panel">
+            <div class="panel-row">
+              <div class="mini">
+                <div class="mini-label">회복 점수</div>
+                <div class="mini-value"><span class="num" data-count-to="82" data-decimals="0">0</span><span class="unit">점</span></div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">수면</div>
+                <div class="mini-value"><span class="num" data-count-to="7.4" data-decimals="1">0</span><span class="unit">h</span></div>
+              </div>
+            </div>
+
+            <div class="recommend">
+              <div class="recommend-left">
+                <div class="recommend-title">추천 강도</div>
+                <div class="recommend-main">중강도 근력 + 짧은 유산소</div>
+              </div>
+              <span class="badge">오늘 추천</span>
+            </div>
+
+            <div class="chips">
+              <span class="chip">워밍업 철저히</span>
+              <span class="chip">수분 보충</span>
+              <span class="chip">호흡/심박 체크</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 3 -->
+        <article class="slide" data-index="2">
+          <div class="kicker">PERSONALIZE</div>
+          <h1 class="headline">
+            목표에 맞춘 <span class="accent">루틴을 자동 설계</span>합니다
+          </h1>
+          <p class="desc">
+            다이어트·벌크업·체형교정·건강유지. 오늘 포커스를 바로 잡아줘요.
+          </p>
+
+          <div class="routine-cards">
+            <div class="routine-card">
+              <div class="routine-top">
+                <span class="pill">오늘 포커스</span>
+                <span class="pill ghost">60분</span>
+              </div>
+              <div class="routine-title">하체 + 유산소</div>
+              <div class="routine-sub">레그프레스 · 런지 · 인터벌</div>
+              <div class="routine-bar">
+                <div class="bar"></div>
+              </div>
+            </div>
+
+            <div class="routine-card">
+              <div class="routine-top">
+                <span class="pill">이번 주</span>
+                <span class="pill ghost">4회</span>
+              </div>
+              <div class="routine-title">주간 플랜</div>
+              <div class="routine-sub">월~일 루틴을 한눈에</div>
+              <div class="week">
+                <span class="w active">월</span><span class="w">화</span><span class="w">수</span>
+                <span class="w">목</span><span class="w">금</span><span class="w">토</span><span class="w">일</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Slide 4 -->
+        <article class="slide" data-index="3">
+          <div class="kicker">READY</div>
+          <h1 class="headline">
+            이제 <span class="accent">시작할 준비</span>가 됐습니다
+          </h1>
+          <p class="desc">
+            기록이 쌓일수록 추천은 정교해지고, 변화는 더 빨리 보입니다.
+          </p>
+
+          <div class="final-card">
+            <div class="final-row">
+              <div class="final-icon" aria-hidden="true">🏋️</div>
+              <div>
+                <div class="final-title">루틴 시작 → MY FIT 기록</div>
+                <div class="final-sub">타이머/주간기록/데이터 연동</div>
+              </div>
+            </div>
+            <div class="final-row">
+              <div class="final-icon" aria-hidden="true">📈</div>
+              <div>
+                <div class="final-title">Body Data로 변화 확인</div>
+                <div class="final-sub">체중·체지방·눈바디·자세</div>
+              </div>
+            </div>
+            <div class="final-row">
+              <div class="final-icon" aria-hidden="true">📅</div>
+              <div>
+                <div class="final-title">예약으로 루틴 고정</div>
+                <div class="final-sub">PT/그룹수업 일정 관리</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="secure-note">
+            <span class="lock" aria-hidden="true">🔒</span>
+            개인 데이터는 기기/계정 기준으로 안전하게 관리됩니다(데모 문구)
+          </div>
+        </article>
       </section>
 
-      <!-- 2페이지 -->
-      <section class="onboard-slide">
-        <div class="slide-img">
-          <img src="./images/워크스루2번사진.png" alt="운동 이미지 2" />
-          <div class="img-gradient"></div>
+      <!-- Bottom actions -->
+      <footer class="bottom">
+        <div class="page-indicator" aria-label="페이지 표시">
+          <span class="p-dot active" data-dot="0"></span>
+          <span class="p-dot" data-dot="1"></span>
+          <span class="p-dot" data-dot="2"></span>
+          <span class="p-dot" data-dot="3"></span>
         </div>
 
-        <div class="slide-content">
-          <h1>눈으로 확인하는 성장!</h1>
-          <p>
-            그날의 운동 기록은 물론,<br />
-            몸의 변화와 통계 분석으로 성장하는 모습을 확인하세요.
-          </p>
-        </div>
-      </section>
-
-      <!-- 3페이지 -->
-      <section class="onboard-slide">
-        <div class="slide-img">
-          <img src="./images/워크스루3번사진.png" alt="운동 이미지 3" />
-          <div class="img-gradient"></div>
-        </div>
-
-        <div class="slide-content">
-          <h1>앱에서 모든 정보를 한눈에!</h1>
-          <p>
-            헬스장 공지, 운영 시간, 이벤트 정보까지!<br />
-            놓치는 정보 없이 앱 알림으로 바로 확인하세요.
-          </p>
-        </div>
-      </section>
+        <button id="nextBtn" class="btn-primary" type="button">
+          내 몸을 분석하기
+        </button>
+      </footer>
     </main>
-
-    <!-- 하단 인디케이터 / 버튼 / 스킵 -->
-    <footer class="onboard-footer">
-      <div class="indicator">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
-
-      <button class="primary-btn" id="nextBtn">다음</button>
-
-      <button class="skip-btn" id="skipBtn">건너뛰기</button>
-    </footer>
   </div>
 
-  <!-- JS는 body 끝에서 불러와야 버튼이 정상 동작함 -->
   <script src="./js/onboarding.js"></script>
 </body>
 </html>
