@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>매일 밤 10시 이벤트</title>
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="hero__title">매일 밤 10시 이벤트가 시작됩니다!</p>
+
+      <div class="countdown" aria-label="카운트다운 타이머">
+        <div class="digit">1</div>
+        <div class="digit">0</div>
+        <div class="colon">:</div>
+        <div class="digit">0</div>
+        <div class="digit">0</div>
+        <div class="colon">:</div>
+        <div class="digit">0</div>
+        <div class="digit">2</div>
+      </div>
+
+      <p class="hint">숫자가 가운데 오도록 텍스트로 제작</p>
+
+      <div class="controls">
+        <span class="controls__label">이름/아이디 입력 후 눌러 당첨 확률을 높일 수 있어요.</span>
+        <select class="controls__select" aria-label="참여자 선택">
+          <option value="" selected>토호 연대당첨자 선택해주세요!</option>
+          <option value="user1">사용자 1</option>
+          <option value="user2">사용자 2</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="quiz">
+      <p class="quiz__q">
+        <strong>Q.</strong> 3월 13일 무죄 · 커넥스런에 당연을 처리한데 어디서 신청을 해야 할까요?
+        <span class="quiz__hint">(힌트 : 000신청 / 3글자)</span>
+      </p>
+
+      <div class="prizes">
+        <article class="card">
+          <div class="card__img img1" aria-hidden="true"></div>
+          <div class="card__name">소니 미러리스 A5100</div>
+          <div class="card__meta"><strong>3</strong>개 한정</div>
+          <div class="card__radio"></div>
+        </article>
+
+        <article class="card">
+          <div class="card__img img2" aria-hidden="true">
+            <span class="badge">마감</span>
+          </div>
+          <div class="card__name">신라호텔 더파크 뷔페식사권2인</div>
+          <div class="card__meta"><strong>0</strong>개 한정</div>
+          <div class="card__radio"></div>
+        </article>
+
+        <article class="card">
+          <div class="card__img img3" aria-hidden="true"></div>
+          <div class="card__name">외장하드 1TB</div>
+          <div class="card__meta"><strong>10</strong>개 한정</div>
+          <div class="card__radio"></div>
+        </article>
+
+        <article class="card">
+          <div class="card__img img4" aria-hidden="true"></div>
+          <div class="card__name">라이 만년필</div>
+          <div class="card__meta"><strong>3</strong>개 한정</div>
+          <div class="card__radio"></div>
+        </article>
+
+        <article class="card">
+          <div class="card__img img5" aria-hidden="true"></div>
+          <div class="card__name">백화점 상품권 2만원</div>
+          <div class="card__meta"><strong>20</strong>개 한정</div>
+          <div class="card__radio"></div>
+        </article>
+
+        <article class="card">
+          <div class="card__img img6" aria-hidden="true"></div>
+          <div class="card__name">바나나맛 우유</div>
+          <div class="card__meta"><strong>100</strong>개 한정</div>
+          <div class="card__radio"></div>
+        </article>
+      </div>
+
+      <div class="answer">
+        <label class="answer__label" for="answerInput">정답 :</label>
+        <input id="answerInput" class="answer__input" placeholder="정답(000신청)을 입력해 주세요." />
+      </div>
+
+      <button id="applyBtn" class="apply">응모하기</button>
+    </section>
+  </main>
+
+  <!-- 모달 -->
+  <div id="modalBackdrop" class="modal-backdrop" hidden></div>
+
+  <section id="applyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <header class="modal__header">
+      <h2 id="modalTitle" class="modal__title">응모 정보 입력</h2>
+      <button id="closeModalBtn" class="modal__close" type="button" aria-label="닫기">✕</button>
+    </header>
+
+    <form id="applyForm" class="modal__body" name="submit-to-google-sheet">
+      <div class="field">
+        <label for="name" class="field__label">이름</label>
+        <input id="name" name="name" class="field__input" placeholder="홍길동" required />
+      </div>
+
+      <div class="field">
+        <label for="phone" class="field__label">연락처</label>
+        <input
+          id="phone"
+          name="phone"
+          class="field__input"
+          placeholder="01012345678"
+          inputmode="numeric"
+          autocomplete="tel"
+          required
+        />
+        <p class="field__help">숫자만 입력해 주세요.</p>
+      </div>
+
+      <div class="field">
+        <label for="email" class="field__label">이메일</label>
+        <input
+          id="email"
+          name="email"
+          class="field__input"
+          placeholder="example@email.com"
+          type="email"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="cancelBtn" type="button">취소</button>
+        <button class="btn btn--primary" type="submit">제출</button>
+      </div>
+
+      <p id="formMsg" class="form-msg" aria-live="polite"></p>
+    </form>
+  </section>
+<script>
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzrQpYT0bEclK9KJjuQUUbTq2ptPHGUu1ZTMT54GP9PS-XbuVsK_CWHmNtHnVToQpKZ/exec' // add your own app script link here
+
+    const form = document.forms['submit-to-google-sheet']
+
+    const msg = document.getElementById("msg")
+
+  
+
+    form.addEventListener('submit', e => {
+
+      e.preventDefault()
+
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+
+        .then(response => {
+
+            msg.innerHTML = "Message sent successfully"
+
+            setTimeout(function(){
+
+                msg.innerHTML = ""
+
+            },5000)
+
+            form.reset()
+
+        })
+
+        .catch(error => console.error('Error!', error.message))
+
+    })
+
+  </script>
+  <script src="./js/index.js"></script>
+</body>
+</html>
