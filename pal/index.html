@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>영우과 지연의 이야기</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <!-- 🔒 Entrance Lock Screen -->
+  <div class="lock" id="lock" aria-hidden="true">
+    <div class="lock__card" role="dialog" aria-modal="true" aria-label="비밀번호 잠금">
+      <div class="lock__badge">♡</div>
+      <h1 class="lock__title">영우과 지연의 이야기</h1>
+      <p class="lock__desc">
+        이곳은 우리 둘만 들어오는 작은 공간이에요.<br />
+        비밀번호를 입력하면 페이지가 열려요.
+      </p>
+
+      <form id="lockForm" class="lock__form">
+        <label class="lock__label" for="lockPass">비밀번호</label>
+        <div class="lock__row">
+          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="8" placeholder="" autocomplete="off" />
+          <button class="btn btn--primary" type="submit">열기</button>
+        </div>
+        <p class="lock__hint" id="lockHint">비밀번호는 숫자 4자리예요.</p>
+      </form>
+
+      <div class="lock__foot">Made with ♡ for two</div>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <span class="brand__heart" aria-hidden="true">♡</span>
+        <span class="brand__name">영우과 지연의 이야기</span>
+      </div>
+
+      <nav class="nav" aria-label="상단 메뉴">
+        <a href="#counter">함께한시간</a>
+        <a href="#photos">추억사진</a>
+        <a href="#milestones">기념일</a>
+        <a href="#memo">메모</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO (Video) -->
+    <section class="hero" aria-label="메인">
+      <div class="hero__media">
+        <video
+          class="hero__video"
+          src="./images/영지.mp4"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="./images/지현영우.png"
+        ></video>
+
+        <div class="hero__shine" aria-hidden="true"></div>
+
+        <div class="hero__overlay">
+          <p class="hero__badge">우리 둘만의 기록함</p>
+          <h1 class="hero__title">
+            오늘도 우리는<br />
+            <span class="hero__titleGrad">서로를 더 사랑해</span>
+          </h1>
+          <p class="hero__sub">
+            함께한 날을 다정하게 세고,<br />
+            추억은 캡션과 날짜로 예쁘게 묶어둘게요.
+          </p>
+
+          <div class="hero__chips">
+            <div class="chip">
+              <div class="chip__label">우리 시작</div>
+              <div class="chip__value" id="startDateLabel">—</div>
+            </div>
+            <div class="chip">
+              <div class="chip__label">오늘</div>
+              <div class="chip__value" id="todayLabel">—</div>
+            </div>
+          </div>
+
+          <div class="hero__cta">
+            <a class="btn btn--primary" href="#counter">함께한 시간 보기</a>
+            <a class="btn btn--soft" href="#photos">추억사진 담기</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COUNTER -->
+    <section id="counter" class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">함께한 시간</h2>
+          <p class="section__desc">우리의 시작부터 지금 이 순간까지, 사랑스럽게 카운트해요.</p>
+        </div>
+      </div>
+
+      <div class="grid grid--2">
+        <article class="card card--counter">
+          <div class="counterTop">
+            <div>
+              <div class="kicker">TOGETHER</div>
+              <div class="dday" id="dDay">D+0</div>
+              <div class="muted" id="sinceText">—</div>
+            </div>
+
+            <div class="live">
+              <div class="live__label">LIVE</div>
+              <div class="live__time" id="hhmmss">00:00:00</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat__label">총 일수</div>
+              <div class="stat__value" id="days">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">총 시간</div>
+              <div class="stat__value" id="hours">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">총 분</div>
+              <div class="stat__value" id="minutes">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">총 초</div>
+              <div class="stat__value" id="seconds">0</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__title">다음 기념일</div>
+          <div class="nextBox">
+            <div class="nextBox__label" id="nextLabel">—</div>
+            <div class="nextBox__value" id="nextValue">—</div>
+          </div>
+          <p class="hint">
+            소소한 하루도 특별한 날이 되니까요. 기본 마일스톤은 자동으로 계산해요 ♡
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- PHOTOS (IndexedDB) -->
+    <section id="photos" class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">추억사진</h2>
+          <p class="section__desc">사진을 담고 · 캡션과 날짜를 달고 · 크게 보고 · 좌우로 넘겨요.</p>
+        </div>
+      </div>
+
+      <div class="grid grid--2">
+        <article class="card">
+          <div class="card__title">사진 추가</div>
+
+          <div class="upload">
+            <label class="label">
+              사진 날짜
+              <input id="photoDate" class="input" type="date" />
+            </label>
+
+            <label class="label">
+              짧은 캡션
+              <input id="photoCaption" class="input" type="text" maxlength="40" placeholder="예) 너랑 있으면, 그냥 행복해" />
+            </label>
+
+            <label class="upload__btn btn btn--primary" for="photoInput">사진 고르기 (여러 장 가능)</label>
+            <input id="photoInput" class="upload__input" type="file" accept="image/*" multiple />
+
+            <div class="upload__hint">
+              <span class="dot"></span>
+              <span>큰 사진은 자동으로 줄여 저장해요. (빠르고 가볍게)</span>
+            </div>
+
+            <div class="upload__row">
+              <button class="btn btn--soft" type="button" id="clearDB">갤러리 전체 삭제</button>
+              <button class="btn btn--ghost" type="button" id="exportDB">백업(JSON) 내보내기</button>
+              <button class="btn btn--ghost" type="button" id="importDB">백업(JSON) 가져오기</button>
+              <input id="importFile" type="file" accept="application/json" class="sr-only" />
+            </div>
+
+            <p class="hint">
+              * 여러 장 선택하면 위의 날짜/캡션이 동일하게 적용돼요.<br />
+              * 각 사진은 카드의 “✎”에서 언제든 수정할 수 있어요.
+            </p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card__title">
+            내 사진들
+            <span class="count" id="photoCount">0</span>
+          </div>
+
+          <div class="gallery" id="gallery" aria-label="추억사진 갤러리"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- MILESTONES -->
+    <section id="milestones" class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">기념일</h2>
+          <p class="section__desc">도착한 날은 더 반짝이게, 다가오는 날은 더 설레게.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="milestones" id="milestoneList"></div>
+      </div>
+    </section>
+
+    <!-- MEMO -->
+    <section id="memo" class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">다정한 메모</h2>
+          <p class="section__desc">서로에게 남기는 말은, 시간이 지나도 따뜻해요.</p>
+        </div>
+      </div>
+
+      <div class="grid grid--2">
+        <article class="card">
+          <div class="card__title">새 메모</div>
+
+          <form id="memoForm" class="form">
+            <label class="label">
+              제목
+              <input id="memoTitle" class="input" type="text" maxlength="40" placeholder="예) 오늘도 너라서 좋았어" />
+            </label>
+
+            <label class="label">
+              내용
+              <textarea id="memoBody" class="textarea" maxlength="500" placeholder="우리만 아는 말, 약속, 다짐, 추억…"></textarea>
+            </label>
+
+            <div class="row">
+              <button class="btn btn--primary" type="submit">저장</button>
+              <button class="btn btn--soft" type="button" id="clearMemos">메모 전체 삭제</button>
+            </div>
+
+            <p class="hint">※ 메모는 localStorage를 사용합니다.</p>
+          </form>
+        </article>
+
+        <article class="card">
+          <div class="card__title">저장된 메모</div>
+          <div class="memoList" id="memoList"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Edit Modal (caption/date) -->
+    <div class="modal" id="editModal" aria-hidden="true">
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="사진 정보 수정">
+        <div class="modal__head">
+          <div class="modal__title">사진 정보 수정</div>
+          <button class="iconBtn" type="button" data-close="1" aria-label="닫기">✕</button>
+        </div>
+
+        <div class="modal__body">
+          <label class="label">
+            날짜
+            <input id="editDate" class="input" type="date" />
+          </label>
+
+          <label class="label">
+            캡션(40자)
+            <input id="editCaption" class="input" type="text" maxlength="40" placeholder="짧게, 다정하게 ♡" />
+          </label>
+
+          <div class="row">
+            <button class="btn btn--primary" type="button" id="saveEdit">저장</button>
+            <button class="btn btn--ghost" type="button" data-close="1">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+      <div class="lightbox__backdrop" data-lb-close="1"></div>
+
+      <div class="lightbox__panel" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+        <button class="lightbox__close iconBtn" type="button" data-lb-close="1" aria-label="닫기">✕</button>
+
+        <button class="lightbox__nav lightbox__nav--prev" type="button" id="lbPrev" aria-label="이전">‹</button>
+        <button class="lightbox__nav lightbox__nav--next" type="button" id="lbNext" aria-label="다음">›</button>
+
+        <img class="lightbox__img" id="lbImg" alt="사진 크게 보기" />
+
+        <div class="lightbox__meta">
+          <div class="lightbox__cap" id="lbCaption">—</div>
+          <div class="lightbox__sub" id="lbSub">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Password Prompt Modal (for delete all) -->
+    <div class="pmodal" id="pmodal" aria-hidden="true">
+      <div class="pmodal__backdrop" data-pclose="1"></div>
+      <div class="pmodal__panel" role="dialog" aria-modal="true" aria-label="비밀번호 확인">
+        <div class="pmodal__head">
+          <div class="pmodal__title">비밀번호 확인</div>
+          <button class="iconBtn" type="button" data-pclose="1" aria-label="닫기">✕</button>
+        </div>
+
+        <p class="pmodal__desc" id="pmodalDesc">
+          안전을 위해 비밀번호가 필요해요.
+        </p>
+
+        <div class="pmodal__row">
+          <input id="pmodalPass" class="input" type="password" inputmode="numeric" maxlength="8" placeholder="0113" autocomplete="off" />
+          <button class="btn btn--primary" type="button" id="pmodalOk">확인</button>
+        </div>
+        <p class="hint" id="pmodalHint">비밀번호가 틀리면 실행되지 않아요.</p>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <span>Made with ♡</span>
+        <span>영우과 지연의 이야기</span>
+      </div>
+    </footer>
+  </main>
+
+  <script src="./js/index.js"></script>
+</body>
+</html>
