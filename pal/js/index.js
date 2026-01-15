@@ -2,13 +2,11 @@
 // 0) 설정
 // ===============================
 
-const PASSWORD = "0113"; // ✅ 공통 비밀번호
-const SESSION_KEY = "ywjy_unlocked_v1";
+const PASSWORD = "0113";               // ✅ 공통 비밀번호
+const SESSION_KEY = "ywjy_unlocked_v2";
 
-// ✅ 사귄 날짜: 1월 13일(화요일) (연도 필요하면 여기만 변경)
 const START = new Date(2026, 0, 13, 0, 0, 0);
 
-// 마일스톤
 const MILESTONES = [
   { days: 100, name: "100일 (우리, 꽤 멋지게 여기까지)" },
   { days: 200, name: "200일 (서로에게 더 편해진 날)" },
@@ -18,17 +16,17 @@ const MILESTONES = [
   { days: 1000, name: "1000일 (우리만의 전설)" },
 ];
 
-// 이미지 저장 크기/품질 (IndexedDB라도 리사이즈 저장 권장)
 const MAX_IMAGE_LONG_SIDE = 1600;
 const JPG_QUALITY = 0.86;
 
-// localStorage (메모)
-const LS_MEMO = "ourday_memos_v4";
+const LS_MEMO = "ourday_memos_v5";
 
-// IndexedDB (갤러리)
 const DB_NAME = "yw_jy_story_db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;                  // ✅ album 필드 추가로 버전 업
 const STORE = "photos";
+
+// 페이징
+const PAGE_SIZE = 12;
 
 // ===============================
 // 1) 유틸
@@ -92,22 +90,24 @@ function normalizePass(v) {
   return String(v || "").trim();
 }
 
+function normalizeAlbum(v) {
+  const t = String(v || "").trim();
+  return t ? t : "기본앨범";
+}
+
 // ===============================
-// 2) 잠금 화면(Entrance Gate)
+// 2) 잠금 화면
 // ===============================
 
 function showLock() {
-  const lock = $("lock");
-  lock.classList.add("show");
-  lock.setAttribute("aria-hidden", "false");
+  $("lock").classList.add("show");
+  $("lock").setAttribute("aria-hidden", "false");
   $("lockPass").value = "";
   $("lockPass").focus();
 }
-
 function hideLock() {
-  const lock = $("lock");
-  lock.classList.remove("show");
-  lock.setAttribute("aria-hidden", "true");
+  $("lock").classList.remove("show");
+  $("lock").setAttribute("aria-hidden", "true");
 }
 
 function initLock() {
@@ -131,7 +131,7 @@ function initLock() {
     hint.classList.add("error");
     hint.textContent = "앗, 비밀번호가 달라요. 우리만 아는 숫자 4자리 ♡";
     card.classList.remove("shake");
-    void card.offsetWidth; // reflow
+    void card.offsetWidth;
     card.classList.add("shake");
     $("lockPass").select();
   });
@@ -299,7 +299,7 @@ function initMemo() {
 }
 
 // ===============================
-// 6) IndexedDB 래퍼
+// 6) IndexedDB
 // ===============================
 
 let db = null;
@@ -310,17 +310,22 @@ function openDB() {
 
     req.onupgradeneeded = () => {
       const _db = req.result;
+
       if (!_db.objectStoreNames.contains(STORE)) {
         const store = _db.createObjectStore(STORE, { keyPath: "id" });
         store.createIndex("order", "order", { unique: false });
         store.createIndex("createdAt", "createdAt", { unique: false });
+        store.createIndex("album", "album", { unique: false });
+      } else {
+        // store exists, ensure index
+        const store = req.transaction.objectStore(STORE);
+        if (!store.indexNames.contains("album")) {
+          store.createIndex("album", "album", { unique: false });
+        }
       }
     };
 
-    req.onsuccess = () => {
-      db = req.result;
-      resolve(db);
-    };
+    req.onsuccess = () => { db = req.result; resolve(db); };
     req.onerror = () => reject(req.error || new Error("DB를 열 수 없어요."));
   });
 }
@@ -372,7 +377,7 @@ function idbClear() {
 }
 
 // ===============================
-// 7) 이미지 압축 → dataUrl
+// 7) 이미지 압축
 // ===============================
 
 function fileToDataUrlCompressed(file) {
@@ -407,20 +412,18 @@ function fileToDataUrlCompressed(file) {
 }
 
 // ===============================
-// 8) Edit Modal (caption/date)
+// 8) Edit Modal
 // ===============================
 
 let currentEditId = null;
 
 function openEditModal() {
-  const m = $("editModal");
-  m.classList.add("show");
-  m.setAttribute("aria-hidden", "false");
+  $("editModal").classList.add("show");
+  $("editModal").setAttribute("aria-hidden", "false");
 }
 function closeEditModal() {
-  const m = $("editModal");
-  m.classList.remove("show");
-  m.setAttribute("aria-hidden", "true");
+  $("editModal").classList.remove("show");
+  $("editModal").setAttribute("aria-hidden", "true");
   currentEditId = null;
 }
 
@@ -433,6 +436,7 @@ function initEditModal() {
   $("saveEdit").addEventListener("click", async () => {
     if (!currentEditId) return;
 
+    const album = normalizeAlbum($("editAlbum").value);
     const dateTs = fromISODateInputValue($("editDate").value);
     const caption = $("editCaption").value.trim();
 
@@ -440,10 +444,13 @@ function initEditModal() {
     const target = items.find(x => x.id === currentEditId);
     if (!target) return;
 
+    target.album = album;
     target.date = dateTs;
     target.caption = caption;
 
     await idbPut(target);
+    await rebuildAlbumOptions();
+    resetPagingState(true);
     await renderGallery();
     closeEditModal();
   });
@@ -455,23 +462,20 @@ function initEditModal() {
 
 let pmodalResolver = null;
 
-function openPasswordModal(descText = "안전을 위해 비밀번호가 필요해요.") {
-  $("pmodalDesc").textContent = descText;
+function openPasswordModal(descText) {
+  $("pmodalDesc").textContent = descText || "안전을 위해 비밀번호가 필요해요.";
   $("pmodalPass").value = "";
   $("pmodalHint").textContent = "비밀번호가 틀리면 실행되지 않아요.";
-  const m = $("pmodal");
-  m.classList.add("show");
-  m.setAttribute("aria-hidden", "false");
+  $("pmodal").classList.add("show");
+  $("pmodal").setAttribute("aria-hidden", "false");
   setTimeout(() => $("pmodalPass").focus(), 0);
 
-  return new Promise((resolve) => {
-    pmodalResolver = resolve;
-  });
+  return new Promise((resolve) => { pmodalResolver = resolve; });
 }
+
 function closePasswordModal(result) {
-  const m = $("pmodal");
-  m.classList.remove("show");
-  m.setAttribute("aria-hidden", "true");
+  $("pmodal").classList.remove("show");
+  $("pmodal").setAttribute("aria-hidden", "true");
   if (pmodalResolver) {
     pmodalResolver(result);
     pmodalResolver = null;
@@ -499,32 +503,78 @@ function initPasswordModal() {
 }
 
 // ===============================
-// 10) 갤러리 렌더/정렬/라이트박스
+// 10) 앨범 + 페이징 상태
 // ===============================
 
-let dragSrcId = null;
-let galleryCache = [];   // 라이트박스/넘김에 사용
+let galleryAll = [];
+let galleryView = [];         // 필터 적용 후
+let gallerySlice = [];        // 현재 페이지 표시 목록
+
+let currentAlbum = "__ALL__";
+let page = 0;
+
+function resetPagingState(resetPage = true) {
+  if (resetPage) page = 0;
+  gallerySlice = [];
+}
+
+function applyFilterAndPaging() {
+  if (currentAlbum === "__ALL__") {
+    galleryView = [...galleryAll];
+  } else {
+    galleryView = galleryAll.filter(x => (x.album || "기본앨범") === currentAlbum);
+  }
+
+  const total = galleryView.length;
+  const nextEnd = Math.min(total, (page + 1) * PAGE_SIZE);
+  gallerySlice = galleryView.slice(0, nextEnd);
+
+  $("pagingHint").textContent = `${gallerySlice.length} / ${total}장`;
+  $("loadMore").style.display = (gallerySlice.length < total) ? "inline-flex" : "none";
+}
+
+async function rebuildAlbumOptions() {
+  const items = await idbGetAllSorted();
+  const albums = new Set(items.map(x => x.album || "기본앨범"));
+  const list = [...albums].sort((a,b) => a.localeCompare(b, "ko"));
+
+  const sel = $("albumFilter");
+  const prev = sel.value || "__ALL__";
+
+  sel.innerHTML = `<option value="__ALL__">전체 앨범</option>` + list.map(a =>
+    `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`
+  ).join("");
+
+  // 가능한 경우 기존 선택 유지
+  if ([ "__ALL__", ...list ].includes(prev)) sel.value = prev;
+  else sel.value = "__ALL__";
+}
+
+// ===============================
+// 11) 라이트박스 + 좌우 넘기기 + 스와이프
+// ===============================
+
 let lbIndex = 0;
 
 function openLightbox() {
-  const lb = $("lightbox");
-  lb.classList.add("show");
-  lb.setAttribute("aria-hidden", "false");
+  $("lightbox").classList.add("show");
+  $("lightbox").setAttribute("aria-hidden", "false");
 }
 function closeLightbox() {
-  const lb = $("lightbox");
-  lb.classList.remove("show");
-  lb.setAttribute("aria-hidden", "true");
+  $("lightbox").classList.remove("show");
+  $("lightbox").setAttribute("aria-hidden", "true");
 }
 
 function setLightboxByIndex(i) {
-  if (!galleryCache.length) return;
-  lbIndex = (i + galleryCache.length) % galleryCache.length;
-  const it = galleryCache[lbIndex];
+  const arr = gallerySlice;
+  if (!arr.length) return;
+
+  lbIndex = (i + arr.length) % arr.length;
+  const it = arr[lbIndex];
 
   $("lbImg").src = it.dataUrl;
   $("lbCaption").textContent = it.caption?.trim() ? it.caption.trim() : "캡션 없음";
-  $("lbSub").textContent = `${it.date ? niceShortDate(it.date) : "날짜 없음"} · ${it.name || "photo"} (${lbIndex + 1}/${galleryCache.length})`;
+  $("lbSub").textContent = `${it.album || "기본앨범"} · ${it.date ? niceShortDate(it.date) : "날짜 없음"} · ${it.name || "photo"} (${lbIndex + 1}/${arr.length})`;
 }
 
 function initLightbox() {
@@ -544,19 +594,63 @@ function initLightbox() {
     if (e.key === "ArrowLeft") setLightboxByIndex(lbIndex - 1);
     if (e.key === "ArrowRight") setLightboxByIndex(lbIndex + 1);
   });
+
+  // ✅ 모바일 스와이프
+  const stage = $("lbStage");
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  stage.addEventListener("touchstart", (e) => {
+    if (!$("lightbox").classList.contains("show")) return;
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    tracking = true;
+  }, { passive: true });
+
+  stage.addEventListener("touchmove", (e) => {
+    // 세로 스크롤 방해하지 않도록 여기서는 막지 않음
+    // (touch-action: pan-y로 수평만 처리)
+  }, { passive: true });
+
+  stage.addEventListener("touchend", (e) => {
+    if (!tracking) return;
+    tracking = false;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    // 수평 스와이프만 인식 (세로로 많이 움직이면 무시)
+    if (Math.abs(dx) < 40) return;
+    if (Math.abs(dy) > 60) return;
+
+    if (dx < 0) setLightboxByIndex(lbIndex + 1); // 왼쪽으로 밀면 다음
+    else setLightboxByIndex(lbIndex - 1);        // 오른쪽으로 밀면 이전
+  }, { passive: true });
 }
+
+// ===============================
+// 12) 갤러리 렌더/드래그정렬(현재 앨범/뷰 기준)
+// ===============================
+
+let dragSrcId = null;
 
 async function renderGallery() {
   const wrap = $("gallery");
-  galleryCache = await idbGetAllSorted();
-  $("photoCount").textContent = String(galleryCache.length);
 
-  if (!galleryCache.length) {
+  galleryAll = await idbGetAllSorted();
+  $("photoCount").textContent = String(galleryAll.length);
+
+  applyFilterAndPaging();
+
+  if (!gallerySlice.length) {
     wrap.innerHTML = `<p class="hint">아직 사진이 없어요. 우리 첫 장을 담아볼까요?</p>`;
     return;
   }
 
-  wrap.innerHTML = galleryCache.map((it, idx) => {
+  wrap.innerHTML = gallerySlice.map((it, idx) => {
     const caption = it.caption?.trim() ? it.caption.trim() : "캡션 없음";
     const dateLabel = it.date ? niceShortDate(it.date) : "날짜 없음";
     const fileLabel = it.name ? it.name : "photo";
@@ -565,6 +659,7 @@ async function renderGallery() {
       <div class="photo" draggable="true" data-id="${escapeHtml(it.id)}" data-idx="${idx}">
         <img class="photo__img" src="${it.dataUrl}" alt="${escapeHtml(caption)}" loading="lazy" />
         <div class="photo__tags">
+          <span class="tag">${escapeHtml(it.album || "기본앨범")}</span>
           <span class="tag">${escapeHtml(dateLabel)}</span>
         </div>
 
@@ -583,7 +678,7 @@ async function renderGallery() {
     `;
   }).join("");
 
-  // 카드 클릭 → 라이트박스 (버튼 클릭은 제외)
+  // 카드 클릭 → 라이트박스 (버튼 클릭 제외)
   wrap.querySelectorAll(".photo").forEach((card) => {
     card.addEventListener("click", (e) => {
       const t = e.target;
@@ -602,6 +697,7 @@ async function renderGallery() {
       const id = btn.getAttribute("data-del");
       await idbDelete(id);
       await normalizeOrders();
+      await rebuildAlbumOptions();
       await renderGallery();
     });
   });
@@ -611,10 +707,11 @@ async function renderGallery() {
     btn.addEventListener("click", async (e) => {
       e.stopPropagation();
       const id = btn.getAttribute("data-edit");
-      const target = galleryCache.find(x => x.id === id);
+      const target = galleryAll.find(x => x.id === id);
       if (!target) return;
 
       currentEditId = id;
+      $("editAlbum").value = target.album || "기본앨범";
       $("editDate").value = target.date ? toISODateInputValue(target.date) : "";
       $("editCaption").value = target.caption || "";
       openEditModal();
@@ -656,18 +753,37 @@ function initDragAndDrop() {
   });
 }
 
+// ⚠️ 드래그 정렬은 "현재 보여지는 slice" 기준으로 바꾸고,
+// 실제 전체 order는 ALL 목록에서 반영 (필터/페이징에서도 자연스럽게 유지)
 async function reorderByDrop(srcId, targetId) {
-  const items = await idbGetAllSorted();
-  const srcIdx = items.findIndex(x => x.id === srcId);
-  const tgtIdx = items.findIndex(x => x.id === targetId);
+  const all = await idbGetAllSorted();
+
+  const srcItem = all.find(x => x.id === srcId);
+  const tgtItem = all.find(x => x.id === targetId);
+  if (!srcItem || !tgtItem) return;
+
+  // 같은 앨범 내에서만 정렬되게(기본)
+  const srcAlbum = srcItem.album || "기본앨범";
+  const tgtAlbum = tgtItem.album || "기본앨범";
+  if (srcAlbum !== tgtAlbum) return;
+
+  const albumItems = all.filter(x => (x.album || "기본앨범") === srcAlbum);
+  albumItems.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+
+  const srcIdx = albumItems.findIndex(x => x.id === srcId);
+  const tgtIdx = albumItems.findIndex(x => x.id === targetId);
   if (srcIdx < 0 || tgtIdx < 0) return;
 
-  const [moved] = items.splice(srcIdx, 1);
-  items.splice(tgtIdx, 0, moved);
+  const [moved] = albumItems.splice(srcIdx, 1);
+  albumItems.splice(tgtIdx, 0, moved);
 
-  for (let i = 0; i < items.length; i++) {
-    items[i].order = i;
-    await idbPut(items[i]);
+  // 앨범 아이템만 order 재할당
+  // 전체 order가 섞여 있어도 "앨범 단위"의 상대 순서를 유지하도록 재정규화
+  // (단순하고 안정적인 방식)
+  const base = Math.min(...albumItems.map(x => x.order ?? 0));
+  for (let i = 0; i < albumItems.length; i++) {
+    albumItems[i].order = base + i;
+    await idbPut(albumItems[i]);
   }
 }
 
@@ -682,10 +798,10 @@ async function normalizeOrders() {
 }
 
 // ===============================
-// 11) 갤러리 업로드/백업/복원 + 전체삭제 비번
+// 13) 업로드/백업/복원 + 전체삭제 비번
 // ===============================
 
-async function addPhotosFromFiles(files, dateTs, caption) {
+async function addPhotosFromFiles(files, album, dateTs, caption) {
   const current = await idbGetAllSorted();
   let orderStart = current.length;
 
@@ -695,6 +811,7 @@ async function addPhotosFromFiles(files, dateTs, caption) {
     const dataUrl = await fileToDataUrlCompressed(f);
     const item = {
       id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+      album,
       name: humanName(f.name),
       caption: caption?.trim() || "",
       date: dateTs || null,
@@ -709,14 +826,12 @@ async function addPhotosFromFiles(files, dateTs, caption) {
 function downloadJSON(filename, obj) {
   const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
-
   URL.revokeObjectURL(url);
 }
 
@@ -736,6 +851,7 @@ async function importDBFromFile(file) {
     .filter(x => x && typeof x.dataUrl === "string")
     .map((x, idx) => ({
       id: x.id || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+      album: normalizeAlbum(x.album),
       name: String(x.name || "photo"),
       caption: String(x.caption || ""),
       date: (typeof x.date === "number" ? x.date : null),
@@ -758,11 +874,14 @@ function initGalleryUI() {
     const files = [...(e.target.files || [])];
     if (!files.length) return;
 
+    const album = normalizeAlbum($("albumName").value);
     const dateTs = fromISODateInputValue($("photoDate").value);
     const caption = $("photoCaption").value.trim();
 
     try {
-      await addPhotosFromFiles(files, dateTs, caption);
+      await addPhotosFromFiles(files, album, dateTs, caption);
+      await rebuildAlbumOptions();
+      resetPagingState(true);
       await renderGallery();
       e.target.value = "";
     } catch (err) {
@@ -770,14 +889,32 @@ function initGalleryUI() {
     }
   });
 
+  $("albumFilter").addEventListener("change", async (e) => {
+    currentAlbum = e.target.value;
+    resetPagingState(true);
+    await renderGallery();
+  });
+
+  $("loadMore").addEventListener("click", async () => {
+    page += 1;
+    await renderGallery();
+  });
+
+  $("resetPaging").addEventListener("click", async () => {
+    resetPagingState(true);
+    await renderGallery();
+  });
+
   $("clearDB").addEventListener("click", async () => {
     const ok = confirm("갤러리를 전부 지울까요? (사진이 정말 다 사라져요)");
     if (!ok) return;
 
-    const passOk = await openPasswordModal("갤러리를 전부 삭제하려면 비밀번호가 필요해요.");
+    const passOk = await openPasswordModal("갤러리를 전부 삭제하려면 비밀번호(0113)가 필요해요.");
     if (!passOk) return;
 
     await idbClear();
+    resetPagingState(true);
+    await rebuildAlbumOptions();
     await renderGallery();
   });
 
@@ -791,50 +928,38 @@ function initGalleryUI() {
     try {
       await importDBFromFile(file);
       await normalizeOrders();
+      await rebuildAlbumOptions();
+      resetPagingState(true);
       await renderGallery();
       e.target.value = "";
     } catch (err) {
-      alert(err?.message || "가져오기에 실패했어요. 백업 파일을 확인해줘요.");
+      alert(err?.message || "복원에 실패했어요. 백업 파일을 확인해줘요.");
     }
   });
+
+  $("resetPaging").click(); // 초기 상태 힌트 세팅
 }
 
 // ===============================
-// 12) Password Modal init
-// ===============================
-
-function initPasswordModalUI() {
-  $("pmodal").addEventListener("click", (e) => {
-    const t = e.target;
-    if (t && t.getAttribute && t.getAttribute("data-pclose") === "1") closePasswordModal(false);
-  });
-  // close 버튼
-  $("pmodal").querySelectorAll("[data-pclose]").forEach((el) => {
-    el.addEventListener("click", () => closePasswordModal(false));
-  });
-}
-
-// ===============================
-// 13) Boot
+// 14) Boot
 // ===============================
 
 async function boot() {
   initLock();
-
-  // password modal + edit modal + lightbox
   initPasswordModal();
   initEditModal();
   initLightbox();
 
-  // counter/milestones/memos
   renderCounter();
   renderMilestones();
   renderMemos();
   initMemo();
 
-  // DB
   await openDB();
   await normalizeOrders();
+  await rebuildAlbumOptions();
+  currentAlbum = $("albumFilter").value || "__ALL__";
+  resetPagingState(true);
   await renderGallery();
   initGalleryUI();
 

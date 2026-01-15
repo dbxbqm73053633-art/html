@@ -68,6 +68,11 @@ body{
   font-weight:900;
   min-width: 0;
 }
+.brand__name{
+  font-size:14.5px;
+  letter-spacing:-.2px;
+  white-space: nowrap;
+}
 .brand__heart{
   width:26px;height:26px;
   border-radius:999px;
@@ -75,18 +80,32 @@ body{
   background: linear-gradient(135deg, rgba(255,94,168,.25), rgba(124,92,255,.18));
   border: 1px solid rgba(20,25,38,.08);
   flex: 0 0 auto;
+  font-weight: 900;
 }
-.brand__name{
-  font-size:14.5px;
-  letter-spacing:-.2px;
-  white-space: nowrap;
+
+/* ✅ 하트 두근 애니메이션 */
+.beat{
+  animation: beat 1.35s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes beat{
+  0%{ transform: scale(1); }
+  8%{ transform: scale(1.12); }
+  16%{ transform: scale(1.02); }
+  28%{ transform: scale(1.16); }
+  42%{ transform: scale(1); }
+  100%{ transform: scale(1); }
+}
+/* 모션 선호도 존중 */
+@media (prefers-reduced-motion: reduce){
+  .beat{ animation: none; }
 }
 
 .nav{
   display:flex;
   gap:10px;
-  flex-wrap: nowrap;          /* ✅ 줄바꿈 방지 */
-  white-space: nowrap;        /* ✅ 줄바꿈 방지 */
+  flex-wrap: nowrap;
+  white-space: nowrap;
   overflow: hidden;
   flex: 0 0 auto;
 }
@@ -98,7 +117,7 @@ body{
   padding:10px 12px;
   border-radius:999px;
   transition:.18s ease;
-  white-space: nowrap;        /* ✅ 링크 텍스트 한 줄 */
+  white-space: nowrap;
 }
 .nav a:hover{
   background: rgba(255,255,255,.70);
@@ -244,6 +263,28 @@ body{
   border: 1px solid rgba(20,25,38,.10);
   font-weight: 900;
   font-size: 12px;
+}
+
+.albumBar{
+  margin-top: 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.albumSelect{
+  flex:1;
+}
+.paging{
+  margin-top: 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.paging__hint{
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(18,23,38,.58);
 }
 
 .card--counter{
@@ -641,12 +682,21 @@ body{
   top:12px;
   z-index:2;
 }
+.lightbox__stage{
+  position: relative;
+  width: 100%;
+  height: min(62vh, 640px);
+  background: rgba(255,255,255,.65);
+  overflow:hidden;
+  touch-action: pan-y; /* ✅ 수평 스와이프 허용 + 세로 스크롤 유지 */
+}
 .lightbox__img{
   width:100%;
-  height: min(62vh, 640px);
+  height:100%;
   object-fit: contain;
   display:block;
-  background: rgba(255,255,255,.65);
+  user-select:none;
+  -webkit-user-drag:none;
 }
 .lightbox__meta{
   padding: 12px 14px 14px;
@@ -813,9 +863,7 @@ body{
   font-size: 12.5px;
 }
 .lock__hint.error{ color: rgba(220, 38, 38, .85); }
-.lock__card.shake{
-  animation: shake .26s ease-in-out 0s 1;
-}
+.lock__card.shake{ animation: shake .26s ease-in-out 0s 1; }
 @keyframes shake{
   0%{ transform: translateX(0); }
   25%{ transform: translateX(-6px); }
@@ -863,4 +911,6 @@ body{
   .gallery{ grid-template-columns: 1fr; }
   .nav{ gap:6px; }
   .nav a{ padding:10px 10px; }
+  .albumBar{ flex-direction: column; align-items: stretch; }
+  .paging{ flex-direction: column; align-items: stretch; }
 }
