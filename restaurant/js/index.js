@@ -1,478 +1,401 @@
-let map;
-let placesService;
-let infoWindow;
+// ===============================
+// 0) 설정값
+// ===============================
 
-let currentLocation = null;      // { lat, lng }
-let placeResults = [];           // 원본 검색 결과 + 내부 rating
-let visibleResults = [];         // 필터/정렬 적용된 결과
-let markers = [];
+// ✅ 앱 입장 비밀번호(화면 잠금용)
+const APP_PASSWORD = "0113";
 
-let sortMode = "distance";
-let categoryFilter = "all";
-let maxDistanceKm = 3;
+// ✅ 같은 ROOM을 쓰는 사람들은 모두 데이터를 공유합니다.
+const ROOM_ID = "shared-room-1";
 
-// 초기화
-window.addEventListener("load", () => {
-  initMap();
-  initUI();
+// ✅ 세션(브라우저 탭)에서만 잠금 해제 유지
+const SESSION_UNLOCK_KEY = "shared_unlocked_v1";
+
+// 이미지 압축 옵션
+const MAX_IMAGE_LONG_SIDE = 1600;
+const JPG_QUALITY = 0.86;
+
+
+// ===============================
+// 1) Firebase SDK (ESM)
+// ===============================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {
+  getStorage,
+  ref as sRef,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
+
+// 🔥 Firebase 콘솔에서 복사한 config로 교체하세요
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  appId: "YOUR_APP_ID",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+
+// ===============================
+// 2) DOM 유틸
+// ===============================
+const $ = (id) => document.getElementById(id);
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function fmtTime(dateObj) {
+  if (!dateObj) return "—";
+  const d = dateObj instanceof Date ? dateObj : new Date(dateObj);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${y}.${m}.${day} ${hh}:${mm}`;
+}
+
+
+// ===============================
+// 3) 잠금(비밀번호) + 익명 로그인
+// ===============================
+function showLock() {
+  $("lock").classList.remove("hide");
+  $("lock").setAttribute("aria-hidden", "false");
+  $("lockHint").classList.remove("error");
+  $("lockHint").textContent = "비밀번호를 입력해주세요.";
+  $("lockPass").value = "";
+  $("lockPass").focus();
+}
+
+function hideLock() {
+  $("lock").classList.add("hide");
+  $("lock").setAttribute("aria-hidden", "true");
+}
+
+async function ensureSignedIn() {
+  // 익명 로그인 (Firestore/Storage 규칙에서 request.auth != null 만족)
+  await signInAnonymously(auth);
+}
+
+function initLock() {
+  $("roomLabel").textContent = `ROOM: ${ROOM_ID}`;
+
+  const unlocked = sessionStorage.getItem(SESSION_UNLOCK_KEY) === "1";
+  if (!unlocked) showLock();
+  else hideLock();
+
+  $("lockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pass = String($("lockPass").value || "").trim();
+
+    if (pass !== APP_PASSWORD) {
+      $("lockHint").classList.add("error");
+      $("lockHint").textContent = "비밀번호가 틀렸어요.";
+      $("lockPass").select();
+      return;
+    }
+
+    try {
+      await ensureSignedIn();
+      sessionStorage.setItem(SESSION_UNLOCK_KEY, "1");
+      hideLock();
+    } catch (err) {
+      $("lockHint").classList.add("error");
+      $("lockHint").textContent = err?.message || "Firebase 연결에 실패했어요.";
+    }
+  });
+
+  $("lockBtn").addEventListener("click", async () => {
+    sessionStorage.removeItem(SESSION_UNLOCK_KEY);
+    try { await signOut(auth); } catch {}
+    showLock();
+  });
+}
+
+onAuthStateChanged(auth, (user) => {
+  $("connState").textContent = user ? "연결됨" : "연결 안됨";
 });
 
-function initMap() {
-  const container = document.getElementById("map");
-  const center = new kakao.maps.LatLng(37.5665, 126.9780); // 서울 시청
 
-  map = new kakao.maps.Map(container, {
-    center,
-    level: 5
-  });
-
-  placesService = new kakao.maps.services.Places(map);
-  infoWindow = new kakao.maps.InfoWindow({ zIndex: 10 });
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        currentLocation = { lat, lng };
-        const loc = new kakao.maps.LatLng(lat, lng);
-        map.setCenter(loc);
-
-        new kakao.maps.Marker({ map, position: loc });
-
-        document.getElementById("aroundMeLabel").textContent =
-          "현재 위치 기준 3km 내 맛집(음식점) 랭킹";
-
-        searchByCategory();
-      },
-      () => {
-        document.getElementById("aroundMeLabel").textContent =
-          "기본 지역(서울 시청) 기준 3km 내 맛집(음식점) 랭킹";
-        searchByCategory();
-      }
-    );
-  } else {
-    document.getElementById("aroundMeLabel").textContent =
-      "기본 지역(서울 시청) 기준 3km 내 맛집(음식점) 랭킹";
-    searchByCategory();
-  }
+// ===============================
+// 4) Firestore 경로 헬퍼
+// ===============================
+function memosCol() {
+  return collection(db, "shared", ROOM_ID, "memos");
+}
+function photosCol() {
+  return collection(db, "shared", ROOM_ID, "photos");
 }
 
-// UI 이벤트
-function initUI() {
-  const searchBtn = document.getElementById("searchBtn");
-  const keywordInput = document.getElementById("keywordInput");
-  const locateBtn = document.getElementById("locateBtn");
-  const categorySelect = document.getElementById("categoryFilter");
-  const distanceSelect = document.getElementById("distanceFilter");
 
-  searchBtn.addEventListener("click", handleKeywordSearch);
-  keywordInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") handleKeywordSearch();
-  });
-
-  locateBtn.addEventListener("click", () => {
-    if (!navigator.geolocation) return;
-
-    navigator.geolocation.getCurrentPosition(pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      currentLocation = { lat, lng };
-      const loc = new kakao.maps.LatLng(lat, lng);
-      map.setCenter(loc);
-
-      new kakao.maps.Marker({ map, position: loc });
-
-      document.getElementById("aroundMeLabel").textContent =
-        "현재 위치 기준 3km 내 맛집(음식점) 랭킹";
-
-      searchByCategory();
-    });
-  });
-
-  // 정렬 칩
-  document.querySelectorAll(".chip").forEach(chip => {
-    chip.addEventListener("click", () => {
-      document
-        .querySelectorAll(".chip")
-        .forEach(c => c.classList.remove("chip--active"));
-      chip.classList.add("chip--active");
-
-      sortMode = chip.dataset.sort || "distance";
-      updateVisibleResults();
-      clearMarkers();
-      renderMarkers();
-      renderPlaceList();
-    });
-  });
-
-  // 카테고리 필터
-  categorySelect.addEventListener("change", () => {
-    categoryFilter = categorySelect.value;
-    updateVisibleResults();
-    clearMarkers();
-    renderMarkers();
-    renderPlaceList();
-  });
-
-  // 거리 필터
-  distanceSelect.addEventListener("change", () => {
-    maxDistanceKm = parseFloat(distanceSelect.value);
-    if (Number.isNaN(maxDistanceKm)) maxDistanceKm = 0;
-    updateVisibleResults();
-    clearMarkers();
-    renderMarkers();
-    renderPlaceList();
+// ===============================
+// 5) 메모 (Firestore, 실시간)
+// ===============================
+async function addMemo(title, body) {
+  await addDoc(memosCol(), {
+    title: title || "",
+    body: body || "",
+    createdAt: serverTimestamp(),
+    authorUid: auth.currentUser?.uid || "",
   });
 }
 
-// FD6 카테고리(음식점) 검색
-function searchByCategory() {
-  if (!placesService) return;
-
-  const center = currentLocation
-    ? new kakao.maps.LatLng(currentLocation.lat, currentLocation.lng)
-    : map.getCenter();
-
-  const options = {
-    location: center,
-    radius: 3000 // 3km
-  };
-
-  placesService.categorySearch("FD6", handleSearchResult, options);
+async function deleteMemo(memoId) {
+  await deleteDoc(doc(db, "shared", ROOM_ID, "memos", memoId));
 }
 
-// 키워드 검색
-function handleKeywordSearch() {
-  const input = document.getElementById("keywordInput");
-  const keyword = input.value.trim();
+function renderMemos(rows) {
+  const wrap = $("memoList");
 
-  if (!keyword) {
-    document.getElementById("aroundMeLabel").textContent =
-      "현재 위치 기준 3km 내 맛집(음식점) 랭킹";
-    searchByCategory();
+  if (!rows.length) {
+    wrap.innerHTML = `<p class="hint">아직 메모가 없어요.</p>`;
     return;
   }
 
-  if (!placesService) return;
-
-  const center = currentLocation
-    ? new kakao.maps.LatLng(currentLocation.lat, currentLocation.lng)
-    : map.getCenter();
-
-  const options = {
-    location: center,
-    radius: 5000 // 5km
-  };
-
-  placesService.keywordSearch(keyword, handleSearchResult, options);
-
-  document.getElementById("aroundMeLabel").textContent =
-    `“${keyword}” 카카오맵 검색 결과 랭킹`;
-}
-
-// 검색 결과 처리
-function handleSearchResult(data, status, pagination) {
-  const Status = kakao.maps.services.Status;
-
-  if (status === Status.ERROR) {
-    console.log("카카오맵 검색 오류");
-    return;
-  }
-
-  clearMarkers();
-
-  if (status === Status.ZERO_RESULT) {
-    placeResults = [];
-    visibleResults = [];
-    renderPlaceList();
-    return;
-  }
-
-  placeResults = data.map(place => {
-    const lat = parseFloat(place.y);
-    const lng = parseFloat(place.x);
-
-    let distanceKm = null;
-    if (currentLocation) {
-      distanceKm = calcDistanceKm(currentLocation.lat, currentLocation.lng, lat, lng);
-    }
-
-    // ★ 실제 서비스에서는 여기서 서버에서 받은 별점/리뷰값을 매핑하면 됨
-    const internalRating = getDemoRating(place.id || place.place_name || "");
-
-    return {
-      place,
-      lat,
-      lng,
-      distanceKm,
-      rating: internalRating.rating,
-      reviewCount: internalRating.reviewCount
-    };
-  });
-
-  updateVisibleResults();
-  renderMarkers();
-  renderPlaceList();
-}
-
-// 필터 + 정렬 적용
-function updateVisibleResults() {
-  let list = [...placeResults];
-
-  // 카테고리 필터
-  if (categoryFilter !== "all") {
-    list = list.filter(item => {
-      const catName = item.place.category_name || "";
-      switch (categoryFilter) {
-        case "korean":
-          return catName.includes("한식");
-        case "japanese":
-          return catName.includes("일식") || catName.includes("초밥") || catName.includes("회");
-        case "chinese":
-          return catName.includes("중식") || catName.includes("중국요리");
-        case "western":
-          return catName.includes("양식") || catName.includes("스테이크") || catName.includes("파스타");
-        case "cafe":
-          return catName.includes("카페") || catName.includes("디저트");
-        case "pub":
-          return catName.includes("호프") || catName.includes("술집") || catName.includes("바");
-        default:
-          return true;
-      }
-    });
-  }
-
-  // 거리 필터 (0 = 제한 없음)
-  if (maxDistanceKm > 0 && currentLocation) {
-    list = list.filter(item => {
-      return item.distanceKm == null || item.distanceKm <= maxDistanceKm;
-    });
-  }
-
-  // 정렬
-  list.sort((a, b) => {
-    if (sortMode === "rating") {
-      const ra = a.rating ?? 0;
-      const rb = b.rating ?? 0;
-      if (rb !== ra) return rb - ra;
-
-      const rca = a.reviewCount ?? 0;
-      const rcb = b.reviewCount ?? 0;
-      if (rcb !== rca) return rcb - rca;
-    } else if (sortMode === "review") {
-      const rca = a.reviewCount ?? 0;
-      const rcb = b.reviewCount ?? 0;
-      if (rcb !== rca) return rcb - rca;
-    } else if (sortMode === "name") {
-      const na = a.place.place_name || "";
-      const nb = b.place.place_name || "";
-      const cmp = na.localeCompare(nb, "ko");
-      if (cmp !== 0) return cmp;
-    }
-
-    // 기본 또는 동점일 때: 거리순
-    const da = a.distanceKm ?? Number.MAX_VALUE;
-    const db = b.distanceKm ?? Number.MAX_VALUE;
-    return da - db;
-  });
-
-  visibleResults = list;
-}
-
-// 마커 렌더링
-function renderMarkers() {
-  markers = [];
-  const bounds = new kakao.maps.LatLngBounds();
-
-  visibleResults.forEach((item, idx) => {
-    const position = new kakao.maps.LatLng(item.lat, item.lng);
-    bounds.extend(position);
-
-    const marker = new kakao.maps.Marker({
-      map,
-      position
-    });
-
-    kakao.maps.event.addListener(marker, "click", () => {
-      openInfoWindow(item, marker);
-    });
-
-    markers.push(marker);
-  });
-
-  if (!bounds.isEmpty()) {
-    map.setBounds(bounds, 40, 40, 40, 40);
-  }
-}
-
-function clearMarkers() {
-  markers.forEach(m => m.setMap(null));
-  markers = [];
-}
-
-// 인포 윈도우
-function openInfoWindow(item, marker) {
-  const { place, distanceKm, rating, reviewCount } = item;
-  const distanceLabel = distanceKm ? `${distanceKm.toFixed(1)}km` : "";
-
-  const content = `
-    <div style="padding:8px 10px;min-width:190px;">
-      <div style="font-weight:600;font-size:13px;margin-bottom:2px;">
-        ${place.place_name}
-      </div>
-      <div style="font-size:11px;color:#6b7280;margin-bottom:2px;">
-        ${place.road_address_name || place.address_name || ""}
-      </div>
-      <div style="font-size:11px;color:#fbbf24;">
-        ⭐ <span style="color:#e5e7eb;">${rating.toFixed(1)}</span>
-        <span style="color:#6b7280;"> · 리뷰 ${reviewCount}개</span>
-      </div>
-      <div style="font-size:11px;color:#6b7280;margin-top:2px;">
-        ${place.phone || ""}
-        ${
-          distanceLabel
-            ? `<span style="margin-left:4px;">· ${distanceLabel}</span>`
-            : ""
-        }
-      </div>
-    </div>
-  `;
-
-  infoWindow.setContent(content);
-  infoWindow.open(map, marker);
-}
-
-// 리스트 렌더링
-function renderPlaceList() {
-  const container = document.getElementById("place-list");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  if (visibleResults.length === 0) {
-    container.innerHTML =
-      '<p class="section-caption">검색 결과가 없습니다.</p>';
-    return;
-  }
-
-  visibleResults.forEach((item, idx) => {
-    const { place, distanceKm, rating, reviewCount } = item;
-    const distanceLabel = distanceKm
-      ? `${distanceKm.toFixed(1)}km`
-      : "거리 계산 중";
-
-    const card = document.createElement("article");
-    card.className = "card";
-    card.dataset.index = idx;
-
-    card.innerHTML = `
-      <div class="card__rank">#${idx + 1}</div>
-      <div class="card__body">
-        <h3 class="card__title">${place.place_name}</h3>
-        <p class="card__meta">
-          ${place.road_address_name || place.address_name || ""}
-        </p>
-        <p class="rating-line">
-          ⭐ <span>${rating.toFixed(1)}</span>
-          <span class="dot">·</span>
-          <span>리뷰 ${reviewCount}개</span>
-        </p>
-        <p class="card__meta">
-          <strong>${place.category_group_name || "맛집"}</strong>
-          <span class="dot">·</span>
-          ${distanceLabel}
-          ${
-            place.phone
-              ? `<span class="dot">·</span>${place.phone}`
-              : ""
-          }
-        </p>
-        <div class="card-actions">
-          <button class="primary" data-action="focus">지도에서 보기</button>
-          <a href="${place.place_url}" target="_blank" data-action="detail">카카오맵 상세/리뷰</a>
-          <button data-action="route">길 안내</button>
+  wrap.innerHTML = rows.map((m) => {
+    const created = m.createdAt?.toDate ? m.createdAt.toDate() : null;
+    return `
+      <div class="item">
+        <div class="item__top">
+          <div class="item__title">${escapeHtml(m.title || "제목 없음")}</div>
+          <div class="item__meta">${fmtTime(created)}</div>
+        </div>
+        <div class="item__body">${escapeHtml(m.body || "")}</div>
+        <div class="item__actions">
+          <button class="btn btn--ghost" data-memo-del="${escapeHtml(m.id)}">삭제</button>
         </div>
       </div>
     `;
+  }).join("");
 
-    // 카드 전체 클릭 시 포커스
-    card.addEventListener("click", e => {
-      if (e.target.closest("button, a")) return;
-      focusPlace(idx);
+  wrap.querySelectorAll("[data-memo-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-memo-del");
+      await deleteMemo(id);
     });
-
-    // 버튼 액션
-    card.querySelectorAll("[data-action]").forEach(el => {
-      el.addEventListener("click", e => {
-        e.stopPropagation();
-        const action = el.dataset.action;
-
-        if (action === "focus") {
-          focusPlace(idx);
-        } else if (action === "route") {
-          openRoute(item);
-        }
-      });
-    });
-
-    container.appendChild(card);
   });
 }
 
-function focusPlace(idx) {
-  const item = visibleResults[idx];
-  if (!item) return;
+let unsubMemos = null;
+function listenMemos() {
+  if (unsubMemos) unsubMemos();
+  const q = query(memosCol(), orderBy("createdAt", "desc"));
+  unsubMemos = onSnapshot(q, (snap) => {
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderMemos(rows);
+  });
+}
 
-  const position = new kakao.maps.LatLng(item.lat, item.lng);
-  map.panTo(position);
+function initMemos() {
+  $("memoForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = $("memoTitle").value.trim();
+    const body = $("memoBody").value.trim();
+    if (!title && !body) return;
 
-  if (markers[idx]) {
-    openInfoWindow(item, markers[idx]);
+    await addMemo(title, body);
+    $("memoTitle").value = "";
+    $("memoBody").value = "";
+  });
+
+  $("memoRefresh").addEventListener("click", () => {
+    listenMemos();
+  });
+}
+
+
+// ===============================
+// 6) 사진 (Storage 업로드 + Firestore 메타, 실시간)
+// ===============================
+function fileToCompressedBlob(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("파일을 읽을 수 없어요."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("이미지를 불러올 수 없어요."));
+      img.onload = () => {
+        const { width, height } = img;
+        const longSide = Math.max(width, height);
+        const scale = longSide > MAX_IMAGE_LONG_SIDE ? (MAX_IMAGE_LONG_SIDE / longSide) : 1;
+
+        const w = Math.round(width * scale);
+        const h = Math.round(height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error("이미지 변환 실패")),
+          "image/jpeg",
+          JPG_QUALITY
+        );
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadPhotoFile(file, album, caption) {
+  const blob = await fileToCompressedBlob(file);
+  const photoId = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+  // Storage에 저장될 경로
+  const storagePath = `shared/${ROOM_ID}/photos/${photoId}.jpg`;
+  const r = sRef(storage, storagePath);
+
+  await uploadBytes(r, blob, { contentType: "image/jpeg" });
+  const url = await getDownloadURL(r);
+
+  // Firestore에 메타 저장
+  await addDoc(photosCol(), {
+    storagePath,
+    url,
+    album: album || "기본앨범",
+    caption: caption || "",
+    createdAt: serverTimestamp(),
+    authorUid: auth.currentUser?.uid || "",
+  });
+}
+
+async function deletePhoto(photoDocId, storagePath) {
+  await deleteDoc(doc(db, "shared", ROOM_ID, "photos", photoDocId));
+  try {
+    await deleteObject(sRef(storage, storagePath));
+  } catch {
+    // 파일 삭제가 실패해도 문서 삭제는 유지
   }
 }
 
-// 길 안내 (카카오 지도 링크)
-function openRoute(item) {
-  const { place, lat, lng } = item;
-  const name = encodeURIComponent(place.place_name || "목적지");
-  const url = `https://map.kakao.com/link/to/${name},${lat},${lng}`;
-  window.open(url, "_blank");
-}
+function renderPhotos(rows) {
+  const wrap = $("photoGrid");
 
-// ===== 별점/리뷰 데모 로직 =====
-// 실제 서비스에서는 이 부분을 서버에서 가져온 값으로 교체하면 됨
-function getDemoRating(key) {
-  const h = simpleHash(key);
-  const ratingRaw = 3.3 + (h % 16) / 10;      // 3.3 ~ 4.8
-  const rating = Math.min(4.9, ratingRaw);
-  const reviewCount = 8 + (h % 250);          // 8 ~ 257
-
-  return {
-    rating: Number(rating.toFixed(1)),
-    reviewCount
-  };
-}
-
-function simpleHash(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  if (!rows.length) {
+    wrap.innerHTML = `<p class="hint">아직 사진이 없어요.</p>`;
+    return;
   }
-  return hash;
+
+  wrap.innerHTML = rows.map((p) => {
+    const created = p.createdAt?.toDate ? p.createdAt.toDate() : null;
+    const cap = p.caption?.trim() ? p.caption.trim() : "캡션 없음";
+    const album = p.album || "기본앨범";
+    const url = p.url || "";
+    const storagePath = p.storagePath || "";
+
+    return `
+      <div class="photo">
+        <img src="${escapeHtml(url)}" alt="${escapeHtml(cap)}" loading="lazy" />
+        <div class="photo__cap">
+          <div class="photo__line1">${escapeHtml(cap)}</div>
+          <div class="photo__line2">${escapeHtml(album)} · ${fmtTime(created)}</div>
+        </div>
+        <div class="photo__bar">
+          <button class="btn btn--ghost"
+            data-photo-del="${escapeHtml(p.id)}"
+            data-photo-path="${escapeHtml(storagePath)}">삭제</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  wrap.querySelectorAll("[data-photo-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-photo-del");
+      const path = btn.getAttribute("data-photo-path");
+      await deletePhoto(id, path);
+    });
+  });
 }
 
-// 거리 계산 (Haversine)
-function calcDistanceKm(lat1, lon1, lat2, lon2) {
-  const R = 6371;
-  const toRad = deg => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+let unsubPhotos = null;
+function listenPhotos() {
+  if (unsubPhotos) unsubPhotos();
+  const q = query(photosCol(), orderBy("createdAt", "desc"));
+  unsubPhotos = onSnapshot(q, (snap) => {
+    const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderPhotos(rows);
+  });
 }
+
+function initPhotos() {
+  $("photoInput").addEventListener("change", async (e) => {
+    const files = [...(e.target.files || [])];
+    if (!files.length) return;
+
+    const album = $("photoAlbum").value.trim() || "기본앨범";
+    const caption = $("photoCaption").value.trim();
+
+    try {
+      for (const f of files) {
+        if (!f.type.startsWith("image/")) continue;
+        await uploadPhotoFile(f, album, caption);
+      }
+      e.target.value = "";
+    } catch (err) {
+      alert(err?.message || "사진 업로드에 실패했어요.");
+    }
+  });
+}
+
+
+// ===============================
+// 7) Boot
+// ===============================
+async function boot() {
+  initLock();
+  initMemos();
+  initPhotos();
+
+  // 이미 잠금 해제 상태면 자동 로그인 시도
+  if (sessionStorage.getItem(SESSION_UNLOCK_KEY) === "1") {
+    try {
+      await ensureSignedIn();
+      hideLock();
+    } catch {
+      showLock();
+    }
+  }
+
+  // 실시간 구독 시작
+  listenMemos();
+  listenPhotos();
+}
+
+boot();
