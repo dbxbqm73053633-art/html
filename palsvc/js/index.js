@@ -1,52 +1,53 @@
-// =====================================
-// Firebase (RTDB + Storage) - FIXED
-// - 핵심 수정: Storage 버킷을 명시적으로 지정
-// - 업로드 실패 시 에러코드/메시지 alert + console 출력
-// =====================================
+// =====================================================
+// Firestore + Storage + Anonymous Auth
+// - Photos: Storage(file) + Firestore(meta)
+// - Memos : Firestore
+// =====================================================
 
-const PASSWORD = "0113";
-const SESSION_KEY = "ywjy_unlocked_v2";
-
-// ✅ 너희 시작일(필요하면 바꿔)
-const START = new Date(2026, 0, 13, 0, 0, 0);
-
-const MILESTONES = [
-  { days: 100, name: "100일 (우리, 꽤 멋지게 여기까지)" },
-  { days: 200, name: "200일 (서로에게 더 편해진 날)" },
-  { days: 365, name: "1주년 (처음부터 지금까지, 너라서)" },
-  { days: 500, name: "500일 (사랑은 오늘도 진행 중)" },
-  { days: 730, name: "2주년 (익숙함 속 설렘)" },
-  { days: 1000, name: "1000일 (우리만의 전설)" },
-];
-
-const MAX_IMAGE_LONG_SIDE = 1600;
-const JPG_QUALITY = 0.86;
-const PAGE_SIZE = 12;
-
-// -------------------------------
-// Firebase imports
-// -------------------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
 
-import {
-  getDatabase, ref, onValue, set, update, remove, get
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 import {
-  getStorage, ref as sref, uploadBytes, getDownloadURL, deleteObject
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  addDoc,
+  deleteDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref as sref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
 
-// ✅✅✅ 여기 2개가 핵심!
-// 1) 실제 Storage bucket으로 바꿔주세요. (Firebase 콘솔 Project settings에 나옵니다)
-//    보통: "duddn730.appspot.com"
-const STORAGE_BUCKET = "duddn730.appspot.com"; // <- 이 값이 다르면 꼭 수정!
+// -----------------------
+// 1) Config
+// -----------------------
+const PASSWORD = "0113";
+const SESSION_KEY = "ywjy_unlocked_v3";
+
+// ✅ 우리 시작일(원하는 날짜로 수정 가능)
+const START = new Date(2026, 0, 13, 0, 0, 0);
+
+// ✅ 콘솔(Project settings)에서 본 Storage bucket 값으로!
+const STORAGE_BUCKET = "duddn730.appspot.com";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCbAWAchLN1IRitre_VW-drnSoPPBkVDSo",
   authDomain: "duddn730.firebaseapp.com",
   projectId: "duddn730",
-  storageBucket: STORAGE_BUCKET, // ✅ bucket 정확히!
+  storageBucket: STORAGE_BUCKET,
   messagingSenderId: "326941968662",
   appId: "1:326941968662:web:a1d756ce52e22a92fd2837",
   measurementId: "G-XJCZH9SJLS"
@@ -55,89 +56,81 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 getAnalytics(app);
 
-// ✅ RTDB 주소 명시
-const db = getDatabase(app, "https://duddn730-default-rtdb.asia-southeast1.firebasedatabase.app/");
-
-// ✅✅✅ Storage를 gs://로 명시 지정 (retry-limit 해결에 매우 중요)
+const auth = getAuth(app);
+const fs = getFirestore(app);
 const storage = getStorage(app, `gs://${STORAGE_BUCKET}`);
 
-// DB 경로
-const PHOTOS_PATH = "photos";
-const MEMOS_PATH = "memos";
+// Firestore collections
+const photosCol = collection(fs, "photos");
+const memosCol  = collection(fs, "memos");
 
-// -------------------------------
-// Utils
-// -------------------------------
+// -----------------------
+// 2) DOM helpers
+// -----------------------
 const $ = (id) => document.getElementById(id);
-const week = ["일","월","화","수","목","금","토"];
 const pad2 = (n) => String(n).padStart(2, "0");
 
 function fmtDate(d) {
-  const y = d.getFullYear();
-  const m = pad2(d.getMonth() + 1);
-  const day = pad2(d.getDate());
-  return `${y}.${m}.${day} (${week[d.getDay()]})`;
+  const week = ["일","월","화","수","목","금","토"];
+  return `${d.getFullYear()}.${pad2(d.getMonth()+1)}.${pad2(d.getDate())} (${week[d.getDay()]})`;
+}
+
+function toISODateInputValue(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}`;
+}
+function fromISODateInputValue(v) {
+  if (!v) return null;
+  const [y,m,d] = v.split("-").map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m-1, d, 0,0,0).getTime();
 }
 
 function escapeHtml(str) {
   return String(str ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-function addDays(date, days) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-function toISODateInputValue(tsOrDate) {
-  if (!tsOrDate) return "";
-  const d = (tsOrDate instanceof Date) ? tsOrDate : new Date(tsOrDate);
-  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-}
-
-function fromISODateInputValue(v) {
-  if (!v) return null;
-  const [y, m, d] = v.split("-").map(Number);
-  if (!y || !m || !d) return null;
-  return new Date(y, m - 1, d, 0, 0, 0).getTime();
-}
-
-function niceShortDate(ts) {
-  if (!ts) return "날짜 없음";
-  const d = new Date(ts);
-  return `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}`;
-}
-
-function humanName(filename) {
-  if (!filename) return "photo";
-  const base = filename.replace(/\.[^/.]+$/, "");
-  return base.length > 18 ? base.slice(0, 18) + "…" : base;
-}
-
-function normalizePass(v) { return String(v || "").trim(); }
 function normalizeAlbum(v) {
   const t = String(v || "").trim();
   return t ? t : "기본앨범";
 }
-function uid() { return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()); }
 
-function dataUrlToBlob(dataUrl) {
-  const [meta, b64] = dataUrl.split(",");
-  const mime = (meta.match(/data:(.*?);base64/) || [])[1] || "image/jpeg";
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return new Blob([arr], { type: mime });
+function uid() {
+  return crypto.randomUUID ? crypto.randomUUID() : (String(Date.now()) + Math.random());
 }
 
-// -------------------------------
-// Lock
-// -------------------------------
+// -----------------------
+// 3) Anonymous Auth
+// -----------------------
+async function ensureAnonAuth() {
+  const hint = $("authStateHint");
+  if (!hint) return;
+
+  if (auth.currentUser) {
+    hint.textContent = `인증 OK (uid: ${auth.currentUser.uid.slice(0,6)}…)`;
+    return auth.currentUser;
+  }
+
+  hint.textContent = "익명 로그인 중…";
+  try {
+    const cred = await signInAnonymously(auth);
+    hint.textContent = `인증 OK (uid: ${cred.user.uid.slice(0,6)}…)`;
+    return cred.user;
+  } catch (e) {
+    console.log("ANON AUTH ERROR:", e);
+    hint.textContent = "익명 로그인 실패 (콘솔에서 Anonymous ON 확인)";
+    alert(`익명 로그인 실패\n${e.code}\n${e.message}`);
+    throw e;
+  }
+}
+
+// -----------------------
+// 4) Lock screen (로컬 UI)
+// -----------------------
 function showLock() {
   $("lock").classList.add("show");
   $("lock").setAttribute("aria-hidden", "false");
@@ -154,7 +147,7 @@ function initLock() {
 
   $("lockForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const pass = normalizePass($("lockPass").value);
+    const pass = String($("lockPass").value || "").trim();
     const hint = $("lockHint");
     const card = document.querySelector(".lock__card");
 
@@ -174,41 +167,28 @@ function initLock() {
   });
 }
 
-// -------------------------------
-// Counter
-// -------------------------------
-function diffNow() {
+// -----------------------
+// 5) Counter
+// -----------------------
+function renderCounter() {
   const now = new Date();
   const ms = Math.max(0, now - START);
 
   const totalSeconds = Math.floor(ms / 1000);
   const totalMinutes = Math.floor(totalSeconds / 60);
-  const totalHours = Math.floor(totalMinutes / 60);
-  const totalDays = Math.floor(totalHours / 24);
+  const totalHours   = Math.floor(totalMinutes / 60);
+  const totalDays    = Math.floor(totalHours / 24);
 
   const remSeconds = totalSeconds % 60;
   const remMinutes = totalMinutes % 60;
-  const remHours = totalHours % 24;
-
-  return {
-    now,
-    totalSeconds,
-    totalMinutes,
-    totalHours,
-    totalDays,
-    hhmmss: `${pad2(remHours)}:${pad2(remMinutes)}:${pad2(remSeconds)}`,
-  };
-}
-
-function renderCounter() {
-  const { now, totalDays, totalHours, totalMinutes, totalSeconds, hhmmss } = diffNow();
+  const remHours   = totalHours % 24;
 
   $("startDateLabel").textContent = fmtDate(START);
   $("todayLabel").textContent = fmtDate(now);
 
   $("dDay").textContent = `D+${totalDays}`;
   $("sinceText").textContent = `${fmtDate(START)}부터 우리가 만든 따뜻한 시간`;
-  $("hhmmss").textContent = hhmmss;
+  $("hhmmss").textContent = `${pad2(remHours)}:${pad2(remMinutes)}:${pad2(remSeconds)}`;
 
   $("days").textContent = totalDays.toLocaleString();
   $("hours").textContent = totalHours.toLocaleString();
@@ -216,44 +196,21 @@ function renderCounter() {
   $("seconds").textContent = totalSeconds.toLocaleString();
 }
 
-function renderMilestones() {
-  const { totalDays } = diffNow();
-  const list = $("milestoneList");
+// -----------------------
+// 6) Image compression
+// -----------------------
+const MAX_IMAGE_LONG_SIDE = 1600;
+const JPG_QUALITY = 0.86;
 
-  list.innerHTML = MILESTONES.map((m) => {
-    const target = addDays(START, m.days);
-    const left = m.days - totalDays;
-    const pill = left <= 0 ? `D+${m.days}` : `D-${left}`;
-    const msg = left <= 0 ? `이미 도착했어 ♡` : `${left}일 남았어 ♡`;
-
-    return `
-      <div class="milestone">
-        <div class="milestone__left">
-          <div class="milestone__name">${escapeHtml(m.name)}</div>
-          <div class="milestone__date">${fmtDate(target)} · ${msg}</div>
-        </div>
-        <div class="pill">${pill}</div>
-      </div>
-    `;
-  }).join("");
-
-  const next = MILESTONES
-    .map((m) => ({ ...m, left: m.days - totalDays, date: addDays(START, m.days) }))
-    .filter((x) => x.left > 0)
-    .sort((a, b) => a.left - b.left)[0];
-
-  if (next) {
-    $("nextLabel").textContent = `${next.name}까지`;
-    $("nextValue").textContent = `${next.left}일 · ${fmtDate(next.date)}`;
-  } else {
-    $("nextLabel").textContent = "다음 기념일";
-    $("nextValue").textContent = "새 마일스톤을 추가해도 좋아요 ♡";
-  }
+function dataUrlToBlob(dataUrl) {
+  const [meta, b64] = dataUrl.split(",");
+  const mime = (meta.match(/data:(.*?);base64/) || [])[1] || "image/jpeg";
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
 }
 
-// -------------------------------
-// Image compress
-// -------------------------------
 function fileToDataUrlCompressed(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -271,12 +228,9 @@ function fileToDataUrlCompressed(file) {
         const canvas = document.createElement("canvas");
         canvas.width = w;
         canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
 
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, w, h);
-
-        const dataUrl = canvas.toDataURL("image/jpeg", JPG_QUALITY);
-        resolve(dataUrl);
+        resolve(canvas.toDataURL("image/jpeg", JPG_QUALITY));
       };
       img.onerror = () => reject(new Error("이미지를 불러올 수 없어요."));
       img.src = reader.result;
@@ -285,38 +239,18 @@ function fileToDataUrlCompressed(file) {
   });
 }
 
-// -------------------------------
-// Gallery state
-// -------------------------------
-let galleryAll = [];
-let galleryView = [];
-let gallerySlice = [];
+// -----------------------
+// 7) Photos (Firestore + Storage)
+// -----------------------
+let photosAll = [];
 let currentAlbum = "__ALL__";
-let page = 0;
 
-function resetPagingState(resetPage = true) {
-  if (resetPage) page = 0;
-  gallerySlice = [];
-}
-
-function applyFilterAndPaging() {
-  galleryView = (currentAlbum === "__ALL__")
-    ? [...galleryAll]
-    : galleryAll.filter(x => (x.album || "기본앨범") === currentAlbum);
-
-  const total = galleryView.length;
-  const nextEnd = Math.min(total, (page + 1) * PAGE_SIZE);
-  gallerySlice = galleryView.slice(0, nextEnd);
-
-  $("pagingHint").textContent = `${gallerySlice.length} / ${total}장`;
-  $("loadMore").style.display = (gallerySlice.length < total) ? "inline-flex" : "none";
-}
-
-function rebuildAlbumOptionsFromList(items) {
-  const albums = new Set(items.map(x => x.album || "기본앨범"));
-  const list = [...albums].sort((a,b) => a.localeCompare(b, "ko"));
+function rebuildAlbumOptions() {
   const sel = $("albumFilter");
   const prev = sel.value || "__ALL__";
+
+  const albums = new Set(photosAll.map(p => p.album || "기본앨범"));
+  const list = [...albums].sort((a,b)=>a.localeCompare(b,"ko"));
 
   sel.innerHTML = `<option value="__ALL__">전체 앨범</option>` + list.map(a =>
     `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`
@@ -328,55 +262,52 @@ function rebuildAlbumOptionsFromList(items) {
 
 function renderGallery() {
   const wrap = $("gallery");
-  $("photoCount").textContent = String(galleryAll.length);
+  $("photoCount").textContent = String(photosAll.length);
 
-  applyFilterAndPaging();
+  const view = (currentAlbum === "__ALL__")
+    ? photosAll
+    : photosAll.filter(p => (p.album || "기본앨범") === currentAlbum);
 
-  if (!gallerySlice.length) {
+  if (!view.length) {
     wrap.innerHTML = `<p class="hint">아직 사진이 없어요. 우리 첫 장을 담아볼까요?</p>`;
     return;
   }
 
-  wrap.innerHTML = gallerySlice.map((it, idx) => {
-    const caption = it.caption?.trim() ? it.caption.trim() : "캡션 없음";
-    const dateLabel = it.date ? niceShortDate(it.date) : "날짜 없음";
-    const fileLabel = it.name ? it.name : "photo";
-
+  wrap.innerHTML = view.map((p) => {
+    const caption = p.caption?.trim() ? p.caption.trim() : "캡션 없음";
+    const dateLabel = p.date ? new Date(p.date) : null;
+    const dateText = dateLabel ? `${dateLabel.getFullYear()}.${pad2(dateLabel.getMonth()+1)}.${pad2(dateLabel.getDate())}` : "날짜 없음";
     return `
-      <div class="photo" data-id="${escapeHtml(it.id)}" data-idx="${idx}">
-        <img class="photo__img" src="${it.url}" alt="${escapeHtml(caption)}" loading="lazy" />
+      <div class="photo">
+        <img class="photo__img" src="${p.url}" alt="${escapeHtml(caption)}" loading="lazy" />
         <div class="photo__tags">
-          <span class="tag">${escapeHtml(it.album || "기본앨범")}</span>
-          <span class="tag">${escapeHtml(dateLabel)}</span>
+          <span class="tag">${escapeHtml(p.album || "기본앨범")}</span>
+          <span class="tag">${escapeHtml(dateText)}</span>
         </div>
-
         <div class="photo__bar">
           <div class="photo__name">
             <div class="photo__caption">${escapeHtml(caption)}</div>
-            <div class="photo__sub">${escapeHtml(fileLabel)}</div>
+            <div class="photo__sub">${escapeHtml(p.name || "photo")}</div>
           </div>
-
           <div class="photo__actions">
-            <button class="iconBtn" type="button" title="삭제" data-del="${escapeHtml(it.id)}">✕</button>
+            <button class="iconBtn" type="button" data-del="${escapeHtml(p.id)}" title="삭제">✕</button>
           </div>
         </div>
       </div>
     `;
   }).join("");
 
-  wrap.querySelectorAll("[data-del]").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      e.stopPropagation();
+  wrap.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", async () => {
       const id = btn.getAttribute("data-del");
-      await deletePhotoFirebase(id);
+      await deletePhoto(id);
     });
   });
 }
 
-// -------------------------------
-// ✅ Firebase Photo CRUD (핵심: 업로드 실패 디버그)
-// -------------------------------
-async function uploadPhotoToStorageAndSaveMeta({ file, album, dateTs, caption, order }) {
+async function uploadOnePhoto(file, album, dateTs, caption) {
+  await ensureAnonAuth();
+
   const dataUrl = await fileToDataUrlCompressed(file);
   const blob = dataUrlToBlob(dataUrl);
 
@@ -387,176 +318,118 @@ async function uploadPhotoToStorageAndSaveMeta({ file, album, dateTs, caption, o
   try {
     await uploadBytes(storageRef, blob, { contentType: "image/jpeg" });
   } catch (e) {
-    console.log("STORAGE_BUCKET =", STORAGE_BUCKET);
-    console.log("STORAGE ERROR CODE:", e.code);
-    console.log("STORAGE ERROR MSG:", e.message);
-    console.log("FULL ERROR:", e);
-    alert(`사진 업로드 실패\n\n${e.code}\n${e.message}\n\n버킷(STORAGE_BUCKET)이 맞는지/Storage Rules를 확인해줘!`);
+    console.log("STORAGE ERROR:", e);
+    alert(`사진 업로드 실패\n${e.code}\n${e.message}\n\n(1) Anonymous ON (2) Storage Rules auth!=null 확인`);
     throw e;
   }
 
   const url = await getDownloadURL(storageRef);
 
-  const item = {
-    id,
+  await setDoc(doc(fs, "photos", id), {
     album,
-    name: humanName(file.name),
-    caption: caption?.trim() || "",
+    caption: caption || "",
     date: dateTs || null,
-    createdAt: Date.now(),
-    order: typeof order === "number" ? order : 0,
+    name: file.name || "photo",
+    url,
     storagePath,
-    url
-  };
-
-  await set(ref(db, `${PHOTOS_PATH}/${id}`), item);
+    createdAt: serverTimestamp()
+  });
 }
 
-async function deletePhotoFirebase(id) {
-  const target = galleryAll.find(x => x.id === id);
+async function deletePhoto(id) {
+  await ensureAnonAuth();
+
+  const target = photosAll.find(p => p.id === id);
   if (!target) return;
 
   if (target.storagePath) {
     try { await deleteObject(sref(storage, target.storagePath)); } catch {}
   }
-  await remove(ref(db, `${PHOTOS_PATH}/${id}`));
+  await deleteDoc(doc(fs, "photos", id));
 }
 
-async function clearAllPhotosFirebase() {
-  const tasks = galleryAll.map(async (it) => {
-    if (it.storagePath) {
-      try { await deleteObject(sref(storage, it.storagePath)); } catch {}
+async function clearAllPhotos() {
+  await ensureAnonAuth();
+  const ok = confirm("갤러리를 전부 지울까요? (사진이 정말 다 사라져요)");
+  if (!ok) return;
+
+  // Firestore 전체 문서 조회 후 삭제
+  const snap = await getDocs(collection(fs, "photos"));
+  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+  // Storage 파일 삭제
+  await Promise.allSettled(docs.map(async (p) => {
+    if (p.storagePath) {
+      try { await deleteObject(sref(storage, p.storagePath)); } catch {}
     }
-  });
-  await Promise.allSettled(tasks);
-  await remove(ref(db, PHOTOS_PATH));
+  }));
+
+  // Firestore 문서 삭제
+  await Promise.allSettled(docs.map(async (p) => deleteDoc(doc(fs, "photos", p.id))));
+
+  alert("전체 삭제 완료 ♡");
 }
 
-// -------------------------------
-// Memo (RTDB)
-// -------------------------------
-function renderMemosFromList(list) {
-  const wrap = $("memoList");
-  const memos = [...list].sort((a,b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
+function listenPhotos() {
+  // createdAt 최신순 (서버타임)
+  const q = query(photosCol, orderBy("createdAt", "desc"));
 
+  onSnapshot(q, (snap) => {
+    photosAll = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    rebuildAlbumOptions();
+    renderGallery();
+  });
+}
+
+// -----------------------
+// 8) Memos (Firestore)
+// -----------------------
+function renderMemos(memos) {
+  const wrap = $("memoList");
   if (!memos.length) {
     wrap.innerHTML = `<p class="hint">아직 메모가 없어요. 오늘의 다정함을 한 줄 남겨볼까요?</p>`;
     return;
   }
 
-  wrap.innerHTML = memos.map((m) => `
-    <div class="memo">
-      <div class="memo__top">
-        <div>
-          <div class="memo__title">${escapeHtml(m.title || "제목 없음")}</div>
-          <div class="memo__date">${fmtDate(new Date(m.createdAt))}</div>
+  wrap.innerHTML = memos.map(m => {
+    const created = m.createdAt?.toDate ? m.createdAt.toDate() : null;
+    return `
+      <div class="memo">
+        <div class="memo__top">
+          <div>
+            <div class="memo__title">${escapeHtml(m.title || "제목 없음")}</div>
+            <div class="memo__date">${created ? fmtDate(created) : ""}</div>
+          </div>
+        </div>
+        <div class="memo__body">${escapeHtml(m.body || "")}</div>
+        <div class="memo__actions">
+          <button class="btn btn--ghost" data-mdel="${escapeHtml(m.id)}">삭제</button>
         </div>
       </div>
-      <div class="memo__body">${escapeHtml(m.body || "")}</div>
-      <div class="memo__actions">
-        <button class="btn btn--ghost" data-memo-del="${escapeHtml(m.id)}">삭제</button>
-      </div>
-    </div>
-  `).join("");
+    `;
+  }).join("");
 
-  wrap.querySelectorAll("[data-memo-del]").forEach((btn) => {
+  wrap.querySelectorAll("[data-mdel]").forEach(btn => {
     btn.addEventListener("click", async () => {
-      const id = btn.getAttribute("data-memo-del");
-      await remove(ref(db, `${MEMOS_PATH}/${id}`));
+      await ensureAnonAuth();
+      const id = btn.getAttribute("data-mdel");
+      await deleteDoc(doc(fs, "memos", id));
     });
   });
 }
 
-function initMemoUI() {
-  $("memoForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const title = $("memoTitle").value.trim();
-    const body = $("memoBody").value.trim();
-    if (!title && !body) return;
-
-    const id = uid();
-    await set(ref(db, `${MEMOS_PATH}/${id}`), { id, title, body, createdAt: Date.now() });
-
-    $("memoTitle").value = "";
-    $("memoBody").value = "";
-  });
-
-  $("clearMemos").addEventListener("click", async () => {
-    await remove(ref(db, MEMOS_PATH));
-  });
-}
-
-// Backup/Restore
-function downloadJSON(filename, obj) {
-  const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-async function exportAll() {
-  const snap = await get(ref(db));
-  const all = snap.val() || {};
-  downloadJSON("yw_jy_backup.json", {
-    exportedAt: Date.now(),
-    photos: all[PHOTOS_PATH] || {},
-    memos: all[MEMOS_PATH] || {}
-  });
-}
-
-async function importAllFromFile(file) {
-  const text = await file.text();
-  const parsed = JSON.parse(text);
-
-  await set(ref(db, MEMOS_PATH), parsed?.memos || {});
-
-  const photosObj = parsed?.photos || {};
-  const photoEntries = Object.values(photosObj);
-
-  for (const p of photoEntries) {
-    if (p && p.id && p.url) {
-      await set(ref(db, `${PHOTOS_PATH}/${String(p.id)}`), {
-        id: String(p.id),
-        album: normalizeAlbum(p.album),
-        name: String(p.name || "photo"),
-        caption: String(p.caption || ""),
-        date: (typeof p.date === "number" ? p.date : null),
-        createdAt: (typeof p.createdAt === "number" ? p.createdAt : Date.now()),
-        order: (typeof p.order === "number" ? p.order : 0),
-        storagePath: p.storagePath || null,
-        url: String(p.url)
-      });
-    }
-  }
-  alert("복원 완료 ♡");
-}
-
-// Listeners
-function listenPhotos() {
-  onValue(ref(db, PHOTOS_PATH), (snap) => {
-    const obj = snap.val() || {};
-    const rows = Object.values(obj).sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
-    galleryAll = rows;
-
-    rebuildAlbumOptionsFromList(galleryAll);
-    renderGallery();
-  });
-}
-
 function listenMemos() {
-  onValue(ref(db, MEMOS_PATH), (snap) => {
-    const obj = snap.val() || {};
-    renderMemosFromList(Object.values(obj));
+  const q = query(memosCol, orderBy("createdAt", "desc"));
+  onSnapshot(q, (snap) => {
+    const memos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderMemos(memos);
   });
 }
 
-// UI handlers
-function initGalleryUI() {
+// -----------------------
+// 9) UI wiring
+// -----------------------
+function initUI() {
   $("photoDate").value = toISODateInputValue(new Date());
 
   $("photoInput").addEventListener("change", async (e) => {
@@ -565,78 +438,81 @@ function initGalleryUI() {
 
     const album = normalizeAlbum($("albumName").value);
     const dateTs = fromISODateInputValue($("photoDate").value);
-    const caption = $("photoCaption").value.trim();
+    const caption = String($("photoCaption").value || "").trim();
 
     try {
-      const startOrder = galleryAll.length;
-      for (let i = 0; i < files.length; i++) {
-        const f = files[i];
+      for (const f of files) {
         if (!f.type.startsWith("image/")) continue;
-        await uploadPhotoToStorageAndSaveMeta({
-          file: f, album, dateTs, caption, order: startOrder + i
-        });
+        await uploadOnePhoto(f, album, dateTs, caption);
       }
       e.target.value = "";
-      resetPagingState(true);
     } catch {
-      // alert는 uploadPhotoToStorage... 에서 이미 띄움
+      // alert는 내부에서 출력
     }
   });
 
   $("albumFilter").addEventListener("change", (e) => {
     currentAlbum = e.target.value;
-    resetPagingState(true);
     renderGallery();
   });
 
-  $("loadMore").addEventListener("click", () => {
-    page += 1;
+  $("resetAlbum").addEventListener("click", () => {
+    currentAlbum = "__ALL__";
+    $("albumFilter").value = "__ALL__";
     renderGallery();
   });
 
-  $("resetPaging").addEventListener("click", () => {
-    resetPagingState(true);
-    renderGallery();
+  $("clearPhotos").addEventListener("click", clearAllPhotos);
+
+  $("memoForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await ensureAnonAuth();
+
+    const title = String($("memoTitle").value || "").trim();
+    const body  = String($("memoBody").value || "").trim();
+    if (!title && !body) return;
+
+    await addDoc(memosCol, {
+      title,
+      body,
+      createdAt: serverTimestamp()
+    });
+
+    $("memoTitle").value = "";
+    $("memoBody").value = "";
   });
 
-  $("clearDB").addEventListener("click", async () => {
-    const ok = confirm("갤러리를 전부 지울까요? (사진이 정말 다 사라져요)");
-    if (!ok) return;
-    await clearAllPhotosFirebase();
-    resetPagingState(true);
-  });
-
-  $("exportDB").addEventListener("click", exportAll);
-
-  $("importDB").addEventListener("click", () => $("importFile").click());
-  $("importFile").addEventListener("change", async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      await importAllFromFile(file);
-      e.target.value = "";
-    } catch (err) {
-      alert(err?.message || "복원에 실패했어요.");
-    }
+  $("clearMemos").addEventListener("click", async () => {
+    await ensureAnonAuth();
+    const snap = await getDocs(collection(fs, "memos"));
+    await Promise.allSettled(snap.docs.map(d => deleteDoc(d.ref)));
   });
 }
 
-// Boot
-function boot() {
+// -----------------------
+// 10) Boot
+// -----------------------
+async function boot() {
   initLock();
-  initMemoUI();
-  initGalleryUI();
+  initUI();
 
+  // Counter
   renderCounter();
-  renderMilestones();
+  setInterval(renderCounter, 1000);
 
+  // Auth status watcher
+  onAuthStateChanged(auth, (user) => {
+    const hint = $("authStateHint");
+    if (!hint) return;
+    hint.textContent = user ? `인증 OK (uid: ${user.uid.slice(0,6)}…)` : "인증 없음";
+  });
+
+  // ✅ 시작 시 익명 로그인 시도
+  await ensureAnonAuth();
+
+  // Listen Firestore
   listenPhotos();
   listenMemos();
-
-  setInterval(() => {
-    renderCounter();
-    renderMilestones();
-  }, 1000);
 }
 
-boot();
+boot().catch(() => {});
