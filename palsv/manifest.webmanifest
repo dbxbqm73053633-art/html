@@ -1,6 +1,6 @@
 {
-  "name": "영우 ❤️ 지현",
-  "short_name": "영우지현",
+  "name": "Love Note",
+  "short_name": "Love Note",
   "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
