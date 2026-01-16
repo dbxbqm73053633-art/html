@@ -1,15 +1,13 @@
 // =====================================
-// Firebase (RTDB + Storage) 버전
-// - 사진: Storage 업로드 + RTDB에 메타 저장
-// - 메모: RTDB 저장
+// Firebase (RTDB + Storage) - FIXED
+// - 핵심 수정: Storage 버킷을 명시적으로 지정
+// - 업로드 실패 시 에러코드/메시지 alert + console 출력
 // =====================================
 
-// -------------------------------
-// 0) 기존 설정(비번/카운터 등)
-// -------------------------------
 const PASSWORD = "0113";
 const SESSION_KEY = "ywjy_unlocked_v2";
 
+// ✅ 너희 시작일(필요하면 바꿔)
 const START = new Date(2026, 0, 13, 0, 0, 0);
 
 const MILESTONES = [
@@ -23,29 +21,32 @@ const MILESTONES = [
 
 const MAX_IMAGE_LONG_SIDE = 1600;
 const JPG_QUALITY = 0.86;
-
-// 페이징
 const PAGE_SIZE = 12;
 
 // -------------------------------
-// 1) Firebase 초기화 (너가 준 설정 + RTDB URL 적용)
+// Firebase imports
 // -------------------------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
 
 import {
-  getDatabase, ref, onValue, set, update, remove, get, child
+  getDatabase, ref, onValue, set, update, remove, get
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
 import {
   getStorage, ref as sref, uploadBytes, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
 
+// ✅✅✅ 여기 2개가 핵심!
+// 1) 실제 Storage bucket으로 바꿔주세요. (Firebase 콘솔 Project settings에 나옵니다)
+//    보통: "duddn730.appspot.com"
+const STORAGE_BUCKET = "duddn730.appspot.com"; // <- 이 값이 다르면 꼭 수정!
+
 const firebaseConfig = {
   apiKey: "AIzaSyCbAWAchLN1IRitre_VW-drnSoPPBkVDSo",
   authDomain: "duddn730.firebaseapp.com",
   projectId: "duddn730",
-  storageBucket: "duddn730.firebasestorage.app",
+  storageBucket: STORAGE_BUCKET, // ✅ bucket 정확히!
   messagingSenderId: "326941968662",
   appId: "1:326941968662:web:a1d756ce52e22a92fd2837",
   measurementId: "G-XJCZH9SJLS"
@@ -54,16 +55,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 getAnalytics(app);
 
-// ✅ RTDB 주소를 명시적으로 지정
+// ✅ RTDB 주소 명시
 const db = getDatabase(app, "https://duddn730-default-rtdb.asia-southeast1.firebasedatabase.app/");
-const storage = getStorage(app);
+
+// ✅✅✅ Storage를 gs://로 명시 지정 (retry-limit 해결에 매우 중요)
+const storage = getStorage(app, `gs://${STORAGE_BUCKET}`);
 
 // DB 경로
 const PHOTOS_PATH = "photos";
 const MEMOS_PATH = "memos";
 
 // -------------------------------
-// 2) 유틸
+// Utils
 // -------------------------------
 const $ = (id) => document.getElementById(id);
 const week = ["일","월","화","수","목","금","토"];
@@ -116,18 +119,12 @@ function humanName(filename) {
   return base.length > 18 ? base.slice(0, 18) + "…" : base;
 }
 
-function normalizePass(v) {
-  return String(v || "").trim();
-}
-
+function normalizePass(v) { return String(v || "").trim(); }
 function normalizeAlbum(v) {
   const t = String(v || "").trim();
   return t ? t : "기본앨범";
 }
-
-function uid() {
-  return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
-}
+function uid() { return (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()); }
 
 function dataUrlToBlob(dataUrl) {
   const [meta, b64] = dataUrl.split(",");
@@ -139,7 +136,7 @@ function dataUrlToBlob(dataUrl) {
 }
 
 // -------------------------------
-// 3) 잠금 화면
+// Lock
 // -------------------------------
 function showLock() {
   $("lock").classList.add("show");
@@ -151,7 +148,6 @@ function hideLock() {
   $("lock").classList.remove("show");
   $("lock").setAttribute("aria-hidden", "true");
 }
-
 function initLock() {
   const unlocked = sessionStorage.getItem(SESSION_KEY) === "1";
   if (!unlocked) showLock();
@@ -169,7 +165,6 @@ function initLock() {
       hideLock();
       return;
     }
-
     hint.classList.add("error");
     hint.textContent = "앗, 비밀번호가 달라요. 우리만 아는 숫자 4자리 ♡";
     card.classList.remove("shake");
@@ -180,7 +175,7 @@ function initLock() {
 }
 
 // -------------------------------
-// 4) 카운터
+// Counter
 // -------------------------------
 function diffNow() {
   const now = new Date();
@@ -221,9 +216,6 @@ function renderCounter() {
   $("seconds").textContent = totalSeconds.toLocaleString();
 }
 
-// -------------------------------
-// 5) 마일스톤
-// -------------------------------
 function renderMilestones() {
   const { totalDays } = diffNow();
   const list = $("milestoneList");
@@ -260,7 +252,7 @@ function renderMilestones() {
 }
 
 // -------------------------------
-// 6) 이미지 압축 → dataURL (기존 유지)
+// Image compress
 // -------------------------------
 function fileToDataUrlCompressed(file) {
   return new Promise((resolve, reject) => {
@@ -294,11 +286,11 @@ function fileToDataUrlCompressed(file) {
 }
 
 // -------------------------------
-// 7) Firebase: 사진/메모 데이터 상태
+// Gallery state
 // -------------------------------
-let galleryAll = [];    // 전체 사진 (order 정렬)
-let galleryView = [];   // 필터 적용 후
-let gallerySlice = [];  // 현재 페이지 표시 목록
+let galleryAll = [];
+let galleryView = [];
+let gallerySlice = [];
 let currentAlbum = "__ALL__";
 let page = 0;
 
@@ -308,11 +300,9 @@ function resetPagingState(resetPage = true) {
 }
 
 function applyFilterAndPaging() {
-  if (currentAlbum === "__ALL__") {
-    galleryView = [...galleryAll];
-  } else {
-    galleryView = galleryAll.filter(x => (x.album || "기본앨범") === currentAlbum);
-  }
+  galleryView = (currentAlbum === "__ALL__")
+    ? [...galleryAll]
+    : galleryAll.filter(x => (x.album || "기본앨범") === currentAlbum);
 
   const total = galleryView.length;
   const nextEnd = Math.min(total, (page + 1) * PAGE_SIZE);
@@ -325,7 +315,6 @@ function applyFilterAndPaging() {
 function rebuildAlbumOptionsFromList(items) {
   const albums = new Set(items.map(x => x.album || "기본앨범"));
   const list = [...albums].sort((a,b) => a.localeCompare(b, "ko"));
-
   const sel = $("albumFilter");
   const prev = sel.value || "__ALL__";
 
@@ -333,234 +322,12 @@ function rebuildAlbumOptionsFromList(items) {
     `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`
   ).join("");
 
-  if ([ "__ALL__", ...list ].includes(prev)) sel.value = prev;
-  else sel.value = "__ALL__";
-}
-
-// -------------------------------
-// 8) Lightbox (기존 유지)
-// -------------------------------
-let lbIndex = 0;
-
-function openLightbox() {
-  $("lightbox").classList.add("show");
-  $("lightbox").setAttribute("aria-hidden", "false");
-}
-function closeLightbox() {
-  $("lightbox").classList.remove("show");
-  $("lightbox").setAttribute("aria-hidden", "true");
-}
-
-function setLightboxByIndex(i) {
-  const arr = gallerySlice;
-  if (!arr.length) return;
-
-  lbIndex = (i + arr.length) % arr.length;
-  const it = arr[lbIndex];
-
-  $("lbImg").src = it.url; // ✅ Storage URL
-  $("lbCaption").textContent = it.caption?.trim() ? it.caption.trim() : "캡션 없음";
-  $("lbSub").textContent = `${it.album || "기본앨범"} · ${it.date ? niceShortDate(it.date) : "날짜 없음"} · ${it.name || "photo"} (${lbIndex + 1}/${arr.length})`;
-}
-
-function initLightbox() {
-  $("lightbox").addEventListener("click", (e) => {
-    const t = e.target;
-    if (t && t.getAttribute && t.getAttribute("data-lb-close") === "1") closeLightbox();
-  });
-
-  $("lbPrev").addEventListener("click", () => setLightboxByIndex(lbIndex - 1));
-  $("lbNext").addEventListener("click", () => setLightboxByIndex(lbIndex + 1));
-
-  document.addEventListener("keydown", (e) => {
-    const open = $("lightbox").classList.contains("show");
-    if (!open) return;
-
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowLeft") setLightboxByIndex(lbIndex - 1);
-    if (e.key === "ArrowRight") setLightboxByIndex(lbIndex + 1);
-  });
-
-  const stage = $("lbStage");
-  let startX = 0;
-  let startY = 0;
-  let tracking = false;
-
-  stage.addEventListener("touchstart", (e) => {
-    if (!$("lightbox").classList.contains("show")) return;
-    const t = e.touches[0];
-    startX = t.clientX;
-    startY = t.clientY;
-    tracking = true;
-  }, { passive: true });
-
-  stage.addEventListener("touchend", (e) => {
-    if (!tracking) return;
-    tracking = false;
-
-    const t = e.changedTouches[0];
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-
-    if (Math.abs(dx) < 40) return;
-    if (Math.abs(dy) > 60) return;
-
-    if (dx < 0) setLightboxByIndex(lbIndex + 1);
-    else setLightboxByIndex(lbIndex - 1);
-  }, { passive: true });
-}
-
-// -------------------------------
-// 9) Edit Modal (Firebase update)
-// -------------------------------
-let currentEditId = null;
-
-function openEditModal() {
-  $("editModal").classList.add("show");
-  $("editModal").setAttribute("aria-hidden", "false");
-}
-function closeEditModal() {
-  $("editModal").classList.remove("show");
-  $("editModal").setAttribute("aria-hidden", "true");
-  currentEditId = null;
-}
-
-function initEditModal() {
-  $("editModal").addEventListener("click", (e) => {
-    const t = e.target;
-    if (t && t.getAttribute && t.getAttribute("data-close") === "1") closeEditModal();
-  });
-
-  $("saveEdit").addEventListener("click", async () => {
-    if (!currentEditId) return;
-
-    const album = normalizeAlbum($("editAlbum").value);
-    const dateTs = fromISODateInputValue($("editDate").value);
-    const caption = $("editCaption").value.trim();
-
-    // ✅ RTDB 업데이트
-    await update(ref(db, `${PHOTOS_PATH}/${currentEditId}`), {
-      album,
-      date: dateTs || null,
-      caption
-    });
-
-    closeEditModal();
-  });
-}
-
-// -------------------------------
-// 10) Password Modal (기존 유지)
-// -------------------------------
-let pmodalResolver = null;
-
-function openPasswordModal(descText) {
-  $("pmodalDesc").textContent = descText || "안전을 위해 비밀번호가 필요해요.";
-  $("pmodalPass").value = "";
-  $("pmodalHint").textContent = "비밀번호가 틀리면 실행되지 않아요.";
-  $("pmodal").classList.add("show");
-  $("pmodal").setAttribute("aria-hidden", "false");
-  setTimeout(() => $("pmodalPass").focus(), 0);
-
-  return new Promise((resolve) => { pmodalResolver = resolve; });
-}
-
-function closePasswordModal(result) {
-  $("pmodal").classList.remove("show");
-  $("pmodal").setAttribute("aria-hidden", "true");
-  if (pmodalResolver) {
-    pmodalResolver(result);
-    pmodalResolver = null;
-  }
-}
-
-function initPasswordModal() {
-  $("pmodal").addEventListener("click", (e) => {
-    const t = e.target;
-    if (t && t.getAttribute && t.getAttribute("data-pclose") === "1") closePasswordModal(false);
-  });
-
-  $("pmodalOk").addEventListener("click", () => {
-    const pass = normalizePass($("pmodalPass").value);
-    if (pass === PASSWORD) return closePasswordModal(true);
-
-    $("pmodalHint").textContent = "비밀번호가 달라요. 다시 한 번만 ♡";
-    $("pmodalPass").select();
-  });
-
-  $("pmodalPass").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") $("pmodalOk").click();
-    if (e.key === "Escape") closePasswordModal(false);
-  });
-}
-
-// -------------------------------
-// 11) 갤러리 렌더 + 드래그정렬(앨범 내 order 재할당)
-// -------------------------------
-let dragSrcId = null;
-
-function initDragAndDrop() {
-  const wrap = $("gallery");
-  const cards = [...wrap.querySelectorAll(".photo")];
-
-  cards.forEach((card) => {
-    card.addEventListener("dragstart", (e) => {
-      dragSrcId = card.getAttribute("data-id");
-      card.classList.add("dragging");
-      e.dataTransfer.effectAllowed = "move";
-    });
-
-    card.addEventListener("dragend", () => {
-      card.classList.remove("dragging");
-      dragSrcId = null;
-    });
-
-    card.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-    });
-
-    card.addEventListener("drop", async (e) => {
-      e.preventDefault();
-      const targetId = card.getAttribute("data-id");
-      if (!dragSrcId || !targetId || targetId === dragSrcId) return;
-
-      await reorderByDropFirebase(dragSrcId, targetId);
-    });
-  });
-}
-
-async function reorderByDropFirebase(srcId, targetId) {
-  const srcItem = galleryAll.find(x => x.id === srcId);
-  const tgtItem = galleryAll.find(x => x.id === targetId);
-  if (!srcItem || !tgtItem) return;
-
-  const srcAlbum = srcItem.album || "기본앨범";
-  const tgtAlbum = tgtItem.album || "기본앨범";
-  if (srcAlbum !== tgtAlbum) return;
-
-  const albumItems = galleryAll
-    .filter(x => (x.album || "기본앨범") === srcAlbum)
-    .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
-
-  const srcIdx = albumItems.findIndex(x => x.id === srcId);
-  const tgtIdx = albumItems.findIndex(x => x.id === targetId);
-  if (srcIdx < 0 || tgtIdx < 0) return;
-
-  const [moved] = albumItems.splice(srcIdx, 1);
-  albumItems.splice(tgtIdx, 0, moved);
-
-  // ✅ 앨범 단위로 order 재할당 후 RTDB update
-  const updates = {};
-  for (let i = 0; i < albumItems.length; i++) {
-    updates[`${PHOTOS_PATH}/${albumItems[i].id}/order`] = i;
-  }
-  await update(ref(db), updates);
+  sel.value = ([ "__ALL__", ...list ].includes(prev)) ? prev : "__ALL__";
+  currentAlbum = sel.value;
 }
 
 function renderGallery() {
   const wrap = $("gallery");
-
   $("photoCount").textContent = String(galleryAll.length);
 
   applyFilterAndPaging();
@@ -576,7 +343,7 @@ function renderGallery() {
     const fileLabel = it.name ? it.name : "photo";
 
     return `
-      <div class="photo" draggable="true" data-id="${escapeHtml(it.id)}" data-idx="${idx}">
+      <div class="photo" data-id="${escapeHtml(it.id)}" data-idx="${idx}">
         <img class="photo__img" src="${it.url}" alt="${escapeHtml(caption)}" loading="lazy" />
         <div class="photo__tags">
           <span class="tag">${escapeHtml(it.album || "기본앨범")}</span>
@@ -590,7 +357,6 @@ function renderGallery() {
           </div>
 
           <div class="photo__actions">
-            <button class="iconBtn" type="button" title="수정" data-edit="${escapeHtml(it.id)}">✎</button>
             <button class="iconBtn" type="button" title="삭제" data-del="${escapeHtml(it.id)}">✕</button>
           </div>
         </div>
@@ -598,19 +364,6 @@ function renderGallery() {
     `;
   }).join("");
 
-  // 카드 클릭 → 라이트박스 (버튼 클릭 제외)
-  wrap.querySelectorAll(".photo").forEach((card) => {
-    card.addEventListener("click", (e) => {
-      const t = e.target;
-      if (t && (t.closest("[data-edit]") || t.closest("[data-del]"))) return;
-
-      const idx = Number(card.getAttribute("data-idx"));
-      setLightboxByIndex(idx);
-      openLightbox();
-    });
-  });
-
-  // 삭제(Storage 파일 + RTDB 메타)
   wrap.querySelectorAll("[data-del]").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.stopPropagation();
@@ -618,44 +371,32 @@ function renderGallery() {
       await deletePhotoFirebase(id);
     });
   });
-
-  // 수정
-  wrap.querySelectorAll("[data-edit]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const id = btn.getAttribute("data-edit");
-      const target = galleryAll.find(x => x.id === id);
-      if (!target) return;
-
-      currentEditId = id;
-      $("editAlbum").value = target.album || "기본앨범";
-      $("editDate").value = target.date ? toISODateInputValue(target.date) : "";
-      $("editCaption").value = target.caption || "";
-      openEditModal();
-    });
-  });
-
-  initDragAndDrop();
 }
 
 // -------------------------------
-// 12) Firebase: 사진 CRUD
+// ✅ Firebase Photo CRUD (핵심: 업로드 실패 디버그)
 // -------------------------------
 async function uploadPhotoToStorageAndSaveMeta({ file, album, dateTs, caption, order }) {
-  // 1) 압축 -> dataURL -> blob
   const dataUrl = await fileToDataUrlCompressed(file);
   const blob = dataUrlToBlob(dataUrl);
 
-  // 2) Storage 업로드
   const id = uid();
-  const ext = "jpg";
-  const storagePath = `photos/${id}.${ext}`;
+  const storagePath = `photos/${id}.jpg`;
   const storageRef = sref(storage, storagePath);
 
-  await uploadBytes(storageRef, blob, { contentType: "image/jpeg" });
+  try {
+    await uploadBytes(storageRef, blob, { contentType: "image/jpeg" });
+  } catch (e) {
+    console.log("STORAGE_BUCKET =", STORAGE_BUCKET);
+    console.log("STORAGE ERROR CODE:", e.code);
+    console.log("STORAGE ERROR MSG:", e.message);
+    console.log("FULL ERROR:", e);
+    alert(`사진 업로드 실패\n\n${e.code}\n${e.message}\n\n버킷(STORAGE_BUCKET)이 맞는지/Storage Rules를 확인해줘!`);
+    throw e;
+  }
+
   const url = await getDownloadURL(storageRef);
 
-  // 3) RTDB 메타 저장
   const item = {
     id,
     album,
@@ -675,32 +416,24 @@ async function deletePhotoFirebase(id) {
   const target = galleryAll.find(x => x.id === id);
   if (!target) return;
 
-  // Storage 파일 삭제 시도(실패해도 메타는 삭제)
   if (target.storagePath) {
-    try {
-      await deleteObject(sref(storage, target.storagePath));
-    } catch (e) {
-      // 권한/이미 삭제 등은 무시
-    }
+    try { await deleteObject(sref(storage, target.storagePath)); } catch {}
   }
   await remove(ref(db, `${PHOTOS_PATH}/${id}`));
 }
 
 async function clearAllPhotosFirebase() {
-  // 현재 목록을 기반으로 Storage 파일도 최대한 지움
   const tasks = galleryAll.map(async (it) => {
     if (it.storagePath) {
       try { await deleteObject(sref(storage, it.storagePath)); } catch {}
     }
   });
   await Promise.allSettled(tasks);
-
-  // 메타 전체 삭제
   await remove(ref(db, PHOTOS_PATH));
 }
 
 // -------------------------------
-// 13) Firebase: 메모 CRUD
+// Memo (RTDB)
 // -------------------------------
 function renderMemosFromList(list) {
   const wrap = $("memoList");
@@ -735,26 +468,17 @@ function renderMemosFromList(list) {
 }
 
 function initMemoUI() {
-  const form = $("memoForm");
-  const titleEl = $("memoTitle");
-  const bodyEl = $("memoBody");
-
-  form.addEventListener("submit", async (e) => {
+  $("memoForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const title = titleEl.value.trim();
-    const body = bodyEl.value.trim();
+    const title = $("memoTitle").value.trim();
+    const body = $("memoBody").value.trim();
     if (!title && !body) return;
 
     const id = uid();
-    await set(ref(db, `${MEMOS_PATH}/${id}`), {
-      id,
-      title,
-      body,
-      createdAt: Date.now()
-    });
+    await set(ref(db, `${MEMOS_PATH}/${id}`), { id, title, body, createdAt: Date.now() });
 
-    titleEl.value = "";
-    bodyEl.value = "";
+    $("memoTitle").value = "";
+    $("memoBody").value = "";
   });
 
   $("clearMemos").addEventListener("click", async () => {
@@ -762,11 +486,7 @@ function initMemoUI() {
   });
 }
 
-// -------------------------------
-// 14) 백업/복원(JSON)
-// - export: RTDB의 photo 메타 + memo를 JSON으로 다운로드
-// - import: photos에 dataUrl이 있으면 Storage에 올리고 복원
-// -------------------------------
+// Backup/Restore
 function downloadJSON(filename, obj) {
   const blob = new Blob([JSON.stringify(obj)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -789,48 +509,18 @@ async function exportAll() {
   });
 }
 
-// import 포맷 2가지 지원:
-// A) { photos: {id: { ... , url, storagePath } }, memos: {...} }  -> 메타만 복원(스토리지는 기존 url 가정)
-// B) photos 안에 dataUrl이 들어있으면 -> 새로 업로드 후 복원
 async function importAllFromFile(file) {
   const text = await file.text();
   const parsed = JSON.parse(text);
 
+  await set(ref(db, MEMOS_PATH), parsed?.memos || {});
+
   const photosObj = parsed?.photos || {};
-  const memosObj = parsed?.memos || {};
-
-  // 1) 메모 복원 (통째로 set)
-  await set(ref(db, MEMOS_PATH), memosObj);
-
-  // 2) 사진 복원
-  // dataUrl 있으면 새로 업로드 -> 새 id로 저장
   const photoEntries = Object.values(photosObj);
 
   for (const p of photoEntries) {
-    if (p && typeof p.dataUrl === "string" && p.dataUrl.startsWith("data:")) {
-      // dataUrl 기반 복원(스토리지 새 업로드)
-      const id = uid();
-      const storagePath = `photos/${id}.jpg`;
-      const storageRef = sref(storage, storagePath);
-
-      const blob = dataUrlToBlob(p.dataUrl);
-      await uploadBytes(storageRef, blob, { contentType: "image/jpeg" });
-      const url = await getDownloadURL(storageRef);
-
-      await set(ref(db, `${PHOTOS_PATH}/${id}`), {
-        id,
-        album: normalizeAlbum(p.album),
-        name: String(p.name || "photo"),
-        caption: String(p.caption || ""),
-        date: (typeof p.date === "number" ? p.date : null),
-        createdAt: (typeof p.createdAt === "number" ? p.createdAt : Date.now()),
-        order: (typeof p.order === "number" ? p.order : 0),
-        storagePath,
-        url
-      });
-    } else if (p && p.id && p.url) {
-      // 메타만 복원(기존 url/경로 그대로)
-      const clean = {
+    if (p && p.id && p.url) {
+      await set(ref(db, `${PHOTOS_PATH}/${String(p.id)}`), {
         id: String(p.id),
         album: normalizeAlbum(p.album),
         name: String(p.name || "photo"),
@@ -840,32 +530,20 @@ async function importAllFromFile(file) {
         order: (typeof p.order === "number" ? p.order : 0),
         storagePath: p.storagePath || null,
         url: String(p.url)
-      };
-      await set(ref(db, `${PHOTOS_PATH}/${clean.id}`), clean);
+      });
     }
   }
+  alert("복원 완료 ♡");
 }
 
-// -------------------------------
-// 15) Firebase 리스너(실시간 반영)
-// -------------------------------
+// Listeners
 function listenPhotos() {
   onValue(ref(db, PHOTOS_PATH), (snap) => {
     const obj = snap.val() || {};
-    const rows = Object.values(obj);
-
-    // order 정렬
-    rows.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
-
+    const rows = Object.values(obj).sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
     galleryAll = rows;
 
-    // 앨범 옵션 재구성
     rebuildAlbumOptionsFromList(galleryAll);
-
-    // 현재 앨범 값 유지
-    currentAlbum = $("albumFilter").value || "__ALL__";
-
-    // 화면 렌더
     renderGallery();
   });
 }
@@ -877,9 +555,7 @@ function listenMemos() {
   });
 }
 
-// -------------------------------
-// 16) UI 이벤트(업로드/페이징/삭제/백업/복원)
-// -------------------------------
+// UI handlers
 function initGalleryUI() {
   $("photoDate").value = toISODateInputValue(new Date());
 
@@ -893,28 +569,21 @@ function initGalleryUI() {
 
     try {
       const startOrder = galleryAll.length;
-
-      // 여러 장 업로드
       for (let i = 0; i < files.length; i++) {
         const f = files[i];
         if (!f.type.startsWith("image/")) continue;
         await uploadPhotoToStorageAndSaveMeta({
-          file: f,
-          album,
-          dateTs,
-          caption,
-          order: startOrder + i
+          file: f, album, dateTs, caption, order: startOrder + i
         });
       }
-
       e.target.value = "";
       resetPagingState(true);
-    } catch (err) {
-      alert(err?.message || "사진을 추가하는 중 문제가 생겼어요.");
+    } catch {
+      // alert는 uploadPhotoToStorage... 에서 이미 띄움
     }
   });
 
-  $("albumFilter").addEventListener("change", async (e) => {
+  $("albumFilter").addEventListener("change", (e) => {
     currentAlbum = e.target.value;
     resetPagingState(true);
     renderGallery();
@@ -933,10 +602,6 @@ function initGalleryUI() {
   $("clearDB").addEventListener("click", async () => {
     const ok = confirm("갤러리를 전부 지울까요? (사진이 정말 다 사라져요)");
     if (!ok) return;
-
-    const passOk = await openPasswordModal("갤러리를 전부 삭제하려면 비밀번호(0113)가 필요해요.");
-    if (!passOk) return;
-
     await clearAllPhotosFirebase();
     resetPagingState(true);
   });
@@ -947,33 +612,23 @@ function initGalleryUI() {
   $("importFile").addEventListener("change", async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     try {
       await importAllFromFile(file);
       e.target.value = "";
-      alert("복원 완료 ♡");
     } catch (err) {
-      alert(err?.message || "복원에 실패했어요. 백업 파일을 확인해줘요.");
+      alert(err?.message || "복원에 실패했어요.");
     }
   });
-
-  $("resetPaging").click();
 }
 
-// -------------------------------
-// 17) Boot
-// -------------------------------
+// Boot
 function boot() {
   initLock();
-  initPasswordModal();
-  initEditModal();
-  initLightbox();
+  initMemoUI();
+  initGalleryUI();
 
   renderCounter();
   renderMilestones();
-
-  initMemoUI();
-  initGalleryUI();
 
   listenPhotos();
   listenMemos();

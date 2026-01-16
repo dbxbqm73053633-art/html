@@ -40,7 +40,7 @@
       <form id="lockForm" class="lock__form">
         <label class="lock__label" for="lockPass">비밀번호</label>
         <div class="lock__row">
-          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="8" placeholder="" autocomplete="off" />
+          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="8" autocomplete="off" />
           <button class="btn btn--primary" type="submit">열기</button>
         </div>
         <p class="lock__hint" id="lockHint">비밀번호는 숫자 4자리예요.</p>
@@ -68,7 +68,7 @@
   </header>
 
   <main class="container">
-    <!-- HERO (Video) -->
+    <!-- HERO -->
     <section class="hero" aria-label="메인">
       <div class="hero__media">
         <video
@@ -166,19 +166,17 @@
             <div class="nextBox__label" id="nextLabel">—</div>
             <div class="nextBox__value" id="nextValue">—</div>
           </div>
-          <p class="hint">
-            소소한 하루도 특별한 날이 되니까요. 기본 마일스톤은 자동으로 계산해요 ♡
-          </p>
+          <p class="hint">기본 마일스톤은 자동으로 계산해요 ♡</p>
         </article>
       </div>
     </section>
 
-    <!-- PHOTOS (Firebase Storage + RTDB) -->
+    <!-- PHOTOS -->
     <section id="photos" class="section">
       <div class="section__head">
         <div>
           <h2 class="section__title">추억사진</h2>
-          <p class="section__desc">앨범으로 모아두면, 사진이 많아도 깔끔하고 찾기 쉬워요.</p>
+          <p class="section__desc">사진 파일은 Storage, 정보는 RTDB에 저장해요.</p>
         </div>
       </div>
 
@@ -189,7 +187,7 @@
           <div class="upload">
             <label class="label">
               앨범 이름
-              <input id="albumName" class="input" type="text" maxlength="24" placeholder="예) 첫 여행, 주말 데이트, 파리" />
+              <input id="albumName" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
             </label>
 
             <label class="label">
@@ -205,11 +203,6 @@
             <label class="upload__btn btn btn--primary" for="photoInput">사진 고르기 (여러 장 가능)</label>
             <input id="photoInput" class="upload__input" type="file" accept="image/*" multiple />
 
-            <div class="upload__hint">
-              <span class="dot"></span>
-              <span>사진이 많아져도 앨범/페이징으로 화면이 길어지지 않아요.</span>
-            </div>
-
             <div class="upload__row">
               <button class="btn btn--soft" type="button" id="clearDB">갤러리 전체 삭제</button>
               <button class="btn btn--ghost" type="button" id="exportDB">백업(JSON)</button>
@@ -218,23 +211,21 @@
             </div>
 
             <p class="hint">
-              * 여러 장 선택하면 위의 앨범/날짜/캡션이 동일하게 적용돼요.<br />
-              * 각 사진은 카드의 “✎”에서 언제든 수정할 수 있어요.
+              업로드가 안 되면 콘솔(F12)에서 에러코드를 확인해요.<br />
+              이 버전은 업로드 실패 사유를 alert로도 보여줘요.
             </p>
           </div>
         </article>
 
         <article class="card">
           <div class="card__title">
-            내 앨범
-            <span class="count" id="photoCount">0</span>
+            내 앨범 <span class="count" id="photoCount">0</span>
           </div>
 
           <div class="albumBar">
             <select id="albumFilter" class="input albumSelect" aria-label="앨범 필터">
               <option value="__ALL__">전체 앨범</option>
             </select>
-
             <button class="btn btn--ghost" type="button" id="resetPaging">처음으로</button>
           </div>
 
@@ -262,12 +253,12 @@
       </div>
     </section>
 
-    <!-- MEMO (Firebase RTDB) -->
+    <!-- MEMO -->
     <section id="memo" class="section">
       <div class="section__head">
         <div>
           <h2 class="section__title">다정한 메모</h2>
-          <p class="section__desc">서로에게 남기는 말은, 시간이 지나도 따뜻해요.</p>
+          <p class="section__desc">메모는 Firebase Realtime Database에 저장돼요.</p>
         </div>
       </div>
 
@@ -278,20 +269,18 @@
           <form id="memoForm" class="form">
             <label class="label">
               제목
-              <input id="memoTitle" class="input" type="text" maxlength="40" placeholder="예) 오늘도 너라서 좋았어" />
+              <input id="memoTitle" class="input" type="text" maxlength="40" />
             </label>
 
             <label class="label">
               내용
-              <textarea id="memoBody" class="textarea" maxlength="500" placeholder="우리만 아는 말, 약속, 다짐, 추억…"></textarea>
+              <textarea id="memoBody" class="textarea" maxlength="500"></textarea>
             </label>
 
             <div class="row">
               <button class="btn btn--primary" type="submit">저장</button>
               <button class="btn btn--soft" type="button" id="clearMemos">메모 전체 삭제</button>
             </div>
-
-            <p class="hint">※ 메모는 Firebase Realtime Database에 저장됩니다.</p>
           </form>
         </article>
 
@@ -314,7 +303,7 @@
         <div class="modal__body">
           <label class="label">
             앨범
-            <input id="editAlbum" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
+            <input id="editAlbum" class="input" type="text" maxlength="24" />
           </label>
 
           <label class="label">
@@ -324,7 +313,7 @@
 
           <label class="label">
             캡션(40자)
-            <input id="editCaption" class="input" type="text" maxlength="40" placeholder="짧게, 다정하게 ♡" />
+            <input id="editCaption" class="input" type="text" maxlength="40" />
           </label>
 
           <div class="row">
@@ -356,7 +345,7 @@
       </div>
     </div>
 
-    <!-- Password Modal (delete all) -->
+    <!-- Password Modal -->
     <div class="pmodal" id="pmodal" aria-hidden="true">
       <div class="pmodal__backdrop" data-pclose="1"></div>
       <div class="pmodal__panel" role="dialog" aria-modal="true" aria-label="비밀번호 확인">
@@ -368,7 +357,7 @@
         <p class="pmodal__desc" id="pmodalDesc">안전을 위해 비밀번호가 필요해요.</p>
 
         <div class="pmodal__row">
-          <input id="pmodalPass" class="input" type="password" inputmode="numeric" maxlength="8" placeholder="0113" autocomplete="off" />
+          <input id="pmodalPass" class="input" type="password" inputmode="numeric" maxlength="8" autocomplete="off" />
           <button class="btn btn--primary" type="button" id="pmodalOk">확인</button>
         </div>
         <p class="hint" id="pmodalHint">비밀번호가 틀리면 실행되지 않아요.</p>
@@ -383,7 +372,7 @@
     </footer>
   </main>
 
-  <!-- ✅ 이제 index.js를 모듈로 로드 (Firebase 모듈 import 필요) -->
+  <!-- ✅ Firebase 모듈을 쓰므로 module로 로드 -->
   <script type="module" src="./js/index.js"></script>
 </body>
 </html>
