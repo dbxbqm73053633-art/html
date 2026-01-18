@@ -8,19 +8,22 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#ffffff">
 
+  <!-- iOS 홈화면 아이콘(선택) -->
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./css/index.css" />
 </head>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js");
-  }
-</script>
 
 <body>
   <div class="bg" aria-hidden="true"></div>
 
-  <!-- 🔒 Entrance Lock Screen (로컬 비번 잠금 UI) -->
+  <!-- 🔒 Entrance Lock Screen -->
   <div class="lock" id="lock" aria-hidden="true">
     <div class="lock__card" role="dialog" aria-modal="true" aria-label="비밀번호 잠금">
       <div class="lock__badge">♡</div>
@@ -33,7 +36,7 @@
       <form id="lockForm" class="lock__form">
         <label class="lock__label" for="lockPass">비밀번호</label>
         <div class="lock__row">
-          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="8" autocomplete="off" />
+          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="12" placeholder="" autocomplete="off" />
           <button class="btn btn--primary" type="submit">열기</button>
         </div>
         <p class="lock__hint" id="lockHint">비밀번호는 숫자 4자리예요.</p>
@@ -54,13 +57,14 @@
       <nav class="nav" aria-label="상단 메뉴">
         <a href="#counter">함께한시간</a>
         <a href="#photos">추억사진</a>
+        <a href="#milestones">기념일</a>
         <a href="#memo">메모</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <!-- HERO -->
+    <!-- HERO (Video) -->
     <section class="hero" aria-label="메인">
       <div class="hero__media">
         <video
@@ -83,8 +87,8 @@
             <span class="hero__titleGrad">오늘도 더 예뻐</span>
           </h1>
           <p class="hero__sub">
-            사진은 Storage, 데이터는 Firestore에 저장해요.<br />
-            (익명 로그인으로 안정적으로 업로드)
+            함께한 날을 다정하게 세고,<br />
+            추억은 앨범으로 깔끔하게 모아둘게요.
           </p>
 
           <div class="hero__chips">
@@ -133,30 +137,44 @@
           <div class="divider"></div>
 
           <div class="stats">
-            <div class="stat"><div class="stat__label">총 일수</div><div class="stat__value" id="days">0</div></div>
-            <div class="stat"><div class="stat__label">총 시간</div><div class="stat__value" id="hours">0</div></div>
-            <div class="stat"><div class="stat__label">총 분</div><div class="stat__value" id="minutes">0</div></div>
-            <div class="stat"><div class="stat__label">총 초</div><div class="stat__value" id="seconds">0</div></div>
+            <div class="stat">
+              <div class="stat__label">총 일수</div>
+              <div class="stat__value" id="days">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">총 시간</div>
+              <div class="stat__value" id="hours">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">총 분</div>
+              <div class="stat__value" id="minutes">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat__label">총 초</div>
+              <div class="stat__value" id="seconds">0</div>
+            </div>
           </div>
         </article>
 
         <article class="card">
-          <div class="card__title">Firebase 상태</div>
+          <div class="card__title">다음 기념일</div>
           <div class="nextBox">
-            <div class="nextBox__label">익명 로그인</div>
-            <div class="nextBox__value" id="authStateHint">확인 중…</div>
+            <div class="nextBox__label" id="nextLabel">—</div>
+            <div class="nextBox__value" id="nextValue">—</div>
           </div>
-          <p class="hint">업로드 문제는 대부분 “Anonymous ON + Rules(auth!=null)”로 해결돼요.</p>
+          <p class="hint">
+            소소한 하루도 특별한 날이 되니까요. 기본 마일스톤은 자동으로 계산해요 ♡
+          </p>
         </article>
       </div>
     </section>
 
-    <!-- PHOTOS -->
+    <!-- PHOTOS (Firestore + Storage + Albums + Paging) -->
     <section id="photos" class="section">
       <div class="section__head">
         <div>
           <h2 class="section__title">추억사진</h2>
-          <p class="section__desc">Storage(파일) + Firestore(메타데이터) 조합으로 저장돼요.</p>
+          <p class="section__desc">이제 사진과 메모가 모든 기기에서 공유돼요 (Firebase).</p>
         </div>
       </div>
 
@@ -164,52 +182,76 @@
         <article class="card">
           <div class="card__title">사진 추가</div>
 
-          <label class="label">
-            앨범 이름
-            <input id="albumName" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
-          </label>
+          <div class="upload">
+            <label class="label">
+              앨범 이름
+              <input id="albumName" class="input" type="text" maxlength="24" placeholder="예) 첫 여행, 주말 데이트, 파리" />
+            </label>
 
-          <label class="label">
-            사진 날짜
-            <input id="photoDate" class="input" type="date" />
-          </label>
+            <label class="label">
+              사진 날짜
+              <input id="photoDate" class="input" type="date" />
+            </label>
 
-          <label class="label">
-            짧은 캡션
-            <input id="photoCaption" class="input" type="text" maxlength="40" placeholder="예) 너 웃는 거, 내 최애" />
-          </label>
+            <label class="label">
+              짧은 캡션
+              <input id="photoCaption" class="input" type="text" maxlength="40" placeholder="예) 너 웃는 거, 내 최애" />
+            </label>
 
-          <label class="upload__btn btn btn--primary" for="photoInput">사진 고르기 (여러 장 가능)</label>
-          <input id="photoInput" class="upload__input" type="file" accept="image/*" multiple />
+            <label class="upload__btn btn btn--primary" for="photoInput">사진 고르기 (여러 장 가능)</label>
+            <input id="photoInput" class="upload__input" type="file" accept="image/*" multiple />
 
-          <div class="upload__row">
-            <button class="btn btn--soft" type="button" id="clearPhotos">갤러리 전체 삭제</button>
+            <div class="upload__hint">
+              <span class="dot"></span>
+              <span>Firebase에 저장되어 다른 기기에서도 같은 사진을 볼 수 있어요.</span>
+            </div>
           </div>
-
-          <p class="hint">사진이 안 올라가면: (1) Anonymous ON (2) Rules auth!=null (3) 정식 브라우저(카톡 인앱 X)</p>
         </article>
 
         <article class="card">
-          <div class="card__title">내 앨범 <span class="count" id="photoCount">0</span></div>
+          <div class="card__title">
+            내 앨범
+            <span class="count" id="photoCount">0</span>
+          </div>
 
           <div class="albumBar">
             <select id="albumFilter" class="input albumSelect" aria-label="앨범 필터">
               <option value="__ALL__">전체 앨범</option>
             </select>
-            <button class="btn btn--ghost" type="button" id="resetAlbum">필터 해제</button>
+
+            <button class="btn btn--ghost" type="button" id="resetPaging">처음으로</button>
           </div>
 
           <div class="gallery" id="gallery" aria-label="추억사진 갤러리"></div>
+
+          <div class="paging">
+            <button class="btn btn--soft" type="button" id="loadMore">더 보기</button>
+            <div class="paging__hint" id="pagingHint">—</div>
+          </div>
         </article>
       </div>
     </section>
 
-    <!-- MEMO -->
+    <!-- MILESTONES -->
+    <section id="milestones" class="section">
+      <div class="section__head">
+        <div>
+          <h2 class="section__title">기념일</h2>
+          <p class="section__desc">도착한 날은 더 반짝이게, 다가오는 날은 더 설레게.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="milestones" id="milestoneList"></div>
+      </div>
+    </section>
+
+    <!-- MEMO (Firestore) -->
     <section id="memo" class="section">
       <div class="section__head">
         <div>
           <h2 class="section__title">다정한 메모</h2>
-          <p class="section__desc">메모는 Firestore에 저장돼요.</p>
+          <p class="section__desc">이제 메모도 Firebase에 저장되어 함께 공유돼요.</p>
         </div>
       </div>
 
@@ -220,18 +262,20 @@
           <form id="memoForm" class="form">
             <label class="label">
               제목
-              <input id="memoTitle" class="input" type="text" maxlength="40" />
+              <input id="memoTitle" class="input" type="text" maxlength="40" placeholder="예) 오늘도 너라서 좋았어" />
             </label>
 
             <label class="label">
               내용
-              <textarea id="memoBody" class="textarea" maxlength="500"></textarea>
+              <textarea id="memoBody" class="textarea" maxlength="500" placeholder="우리만 아는 말, 약속, 다짐, 추억…"></textarea>
             </label>
 
             <div class="row">
               <button class="btn btn--primary" type="submit">저장</button>
               <button class="btn btn--soft" type="button" id="clearMemos">메모 전체 삭제</button>
             </div>
+
+            <p class="hint">※ 메모는 Firestore를 사용합니다.</p>
           </form>
         </article>
 
@@ -242,6 +286,60 @@
       </div>
     </section>
 
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal" aria-hidden="true">
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="사진 정보 수정">
+        <div class="modal__head">
+          <div class="modal__title">사진 정보 수정</div>
+          <button class="iconBtn" type="button" data-close="1" aria-label="닫기">✕</button>
+        </div>
+
+        <div class="modal__body">
+          <label class="label">
+            앨범
+            <input id="editAlbum" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
+          </label>
+
+          <label class="label">
+            날짜
+            <input id="editDate" class="input" type="date" />
+          </label>
+
+          <label class="label">
+            캡션(40자)
+            <input id="editCaption" class="input" type="text" maxlength="40" placeholder="짧게, 다정하게 ♡" />
+          </label>
+
+          <div class="row">
+            <button class="btn btn--primary" type="button" id="saveEdit">저장</button>
+            <button class="btn btn--ghost" type="button" data-close="1">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+      <div class="lightbox__backdrop" data-lb-close="1"></div>
+
+      <div class="lightbox__panel" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+        <button class="lightbox__close iconBtn" type="button" data-lb-close="1" aria-label="닫기">✕</button>
+
+        <button class="lightbox__nav lightbox__nav--prev" type="button" id="lbPrev" aria-label="이전">‹</button>
+        <button class="lightbox__nav lightbox__nav--next" type="button" id="lbNext" aria-label="다음">›</button>
+
+        <div class="lightbox__stage" id="lbStage">
+          <img class="lightbox__img" id="lbImg" alt="사진 크게 보기" draggable="false" />
+        </div>
+
+        <div class="lightbox__meta">
+          <div class="lightbox__cap" id="lbCaption">—</div>
+          <div class="lightbox__sub" id="lbSub">—</div>
+        </div>
+      </div>
+    </div>
+
     <footer class="footer">
       <div class="footer__inner">
         <span>Made with ♡</span>
@@ -250,6 +348,11 @@
     </footer>
   </main>
 
+  <script>
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+  </script>
+
+  <!-- Firebase 버전은 JS에서 모듈로 import -->
   <script type="module" src="./js/index.js"></script>
 </body>
 </html>

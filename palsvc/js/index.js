@@ -1,97 +1,137 @@
-// =====================================================
-// Firestore + Storage + Anonymous Auth
-// - Photos: Storage(file) + Firestore(meta)
-// - Memos : Firestore
-// =====================================================
+/* ===============================
+   Firebase + Firestore + Storage
+   (No Auth) Shared by roomKey
+   =============================== */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+/* ---------- 0) 설정 ---------- */
 
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+const PASSWORD = "0113"; // 잠금 비번 (= roomKey로도 사용)
+const SESSION_KEY = "ywjy_unlocked_v2";
 
+// 함께 시작 날짜 (기존과 동일)
+const START = new Date(2026, 0, 13, 0, 0, 0);
+
+const MILESTONES = [
+  { days: 100, name: "100일 (우리, 꽤 멋지게 여기까지)" },
+  { days: 200, name: "200일 (서로에게 더 편해진 날)" },
+  { days: 365, name: "1주년 (처음부터 지금까지, 너라서)" },
+  { days: 500, name: "500일 (사랑은 오늘도 진행 중)" },
+  { days: 730, name: "2주년 (익숙함 속 설렘)" },
+  { days: 1000, name: "1000일 (우리만의 전설)" },
+];
+
+// 이미지 업로드 압축
+const MAX_IMAGE_LONG_SIDE = 1600;
+const JPG_QUALITY = 0.86;
+
+// 페이징
+const PAGE_SIZE = 12;
+
+/* ---------- 1) Firebase 모듈 import ---------- */
+// HTML에서 <script type="module" src="./js/index.js"></script> 로 로딩되는 전제
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
   getFirestore,
   collection,
   doc,
-  setDoc,
   addDoc,
+  setDoc,
+  getDoc,
+  getDocs,
   deleteDoc,
-  onSnapshot,
+  updateDoc,
   query,
+  where,
   orderBy,
+  limit,
+  startAfter,
   serverTimestamp,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+  writeBatch,
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 import {
   getStorage,
-  ref as sref,
+  ref as sRef,
   uploadBytes,
   getDownloadURL,
-  deleteObject
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
+  deleteObject,
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
-// -----------------------
-// 1) Config
-// -----------------------
-const PASSWORD = "0113";
-const SESSION_KEY = "ywjy_unlocked_v3";
-
-// ✅ 우리 시작일(원하는 날짜로 수정 가능)
-const START = new Date(2026, 0, 13, 0, 0, 0);
-
-// ✅ 콘솔(Project settings)에서 본 Storage bucket 값으로!
-const STORAGE_BUCKET = "duddn730.appspot.com";
+/* ---------- 2) Firebase 초기화 ---------- */
 
 const firebaseConfig = {
   apiKey: "AIzaSyCbAWAchLN1IRitre_VW-drnSoPPBkVDSo",
   authDomain: "duddn730.firebaseapp.com",
+  databaseURL: "https://duddn730-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "duddn730",
-  storageBucket: STORAGE_BUCKET,
+  storageBucket: "duddn730.firebasestorage.app",
   messagingSenderId: "326941968662",
   appId: "1:326941968662:web:a1d756ce52e22a92fd2837",
-  measurementId: "G-XJCZH9SJLS"
+  measurementId: "G-XJCZH9SJLS",
 };
 
 const app = initializeApp(firebaseConfig);
-getAnalytics(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-const auth = getAuth(app);
-const fs = getFirestore(app);
-const storage = getStorage(app, `gs://${STORAGE_BUCKET}`);
+/* ---------- 3) 유틸 ---------- */
 
-// Firestore collections
-const photosCol = collection(fs, "photos");
-const memosCol  = collection(fs, "memos");
-
-// -----------------------
-// 2) DOM helpers
-// -----------------------
 const $ = (id) => document.getElementById(id);
+const week = ["일", "월", "화", "수", "목", "금", "토"];
 const pad2 = (n) => String(n).padStart(2, "0");
 
 function fmtDate(d) {
-  const week = ["일","월","화","수","목","금","토"];
-  return `${d.getFullYear()}.${pad2(d.getMonth()+1)}.${pad2(d.getDate())} (${week[d.getDay()]})`;
-}
-
-function toISODateInputValue(date) {
-  return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}`;
-}
-function fromISODateInputValue(v) {
-  if (!v) return null;
-  const [y,m,d] = v.split("-").map(Number);
-  if (!y || !m || !d) return null;
-  return new Date(y, m-1, d, 0,0,0).getTime();
+  const y = d.getFullYear();
+  const m = pad2(d.getMonth() + 1);
+  const day = pad2(d.getDate());
+  return `${y}.${m}.${day} (${week[d.getDay()]})`;
 }
 
 function escapeHtml(str) {
   return String(str ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function toISODateInputValue(tsOrDate) {
+  if (!tsOrDate) return "";
+  const d = tsOrDate instanceof Date ? tsOrDate : new Date(tsOrDate);
+  const y = d.getFullYear();
+  const m = pad2(d.getMonth() + 1);
+  const day = pad2(d.getDate());
+  return `${y}-${m}-${day}`;
+}
+
+function fromISODateInputValue(v) {
+  if (!v) return null;
+  const [y, m, d] = v.split("-").map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d, 0, 0, 0).getTime();
+}
+
+function niceShortDate(ts) {
+  if (!ts) return "날짜 없음";
+  const d = new Date(ts);
+  return `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}`;
+}
+
+function humanName(filename) {
+  if (!filename) return "photo";
+  const base = filename.replace(/\.[^/.]+$/, "");
+  return base.length > 18 ? base.slice(0, 18) + "…" : base;
+}
+
+function normalizePass(v) {
+  return String(v || "").trim();
 }
 
 function normalizeAlbum(v) {
@@ -99,38 +139,20 @@ function normalizeAlbum(v) {
   return t ? t : "기본앨범";
 }
 
-function uid() {
-  return crypto.randomUUID ? crypto.randomUUID() : (String(Date.now()) + Math.random());
+/** roomId 만들기: 비번 기반으로 같은 비번이면 같은 room */
+async function makeRoomId(pass) {
+  // 브라우저 crypto.subtle 지원 전제 (대부분 OK)
+  const enc = new TextEncoder().encode(`room:${pass}`);
+  const hash = await crypto.subtle.digest("SHA-256", enc);
+  const hex = [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  // 너무 길 필요 없으니 앞 24자만
+  return hex.slice(0, 24);
 }
 
-// -----------------------
-// 3) Anonymous Auth
-// -----------------------
-async function ensureAnonAuth() {
-  const hint = $("authStateHint");
-  if (!hint) return;
+/* ---------- 4) 잠금 화면 ---------- */
 
-  if (auth.currentUser) {
-    hint.textContent = `인증 OK (uid: ${auth.currentUser.uid.slice(0,6)}…)`;
-    return auth.currentUser;
-  }
+let roomId = null;
 
-  hint.textContent = "익명 로그인 중…";
-  try {
-    const cred = await signInAnonymously(auth);
-    hint.textContent = `인증 OK (uid: ${cred.user.uid.slice(0,6)}…)`;
-    return cred.user;
-  } catch (e) {
-    console.log("ANON AUTH ERROR:", e);
-    hint.textContent = "익명 로그인 실패 (콘솔에서 Anonymous ON 확인)";
-    alert(`익명 로그인 실패\n${e.code}\n${e.message}`);
-    throw e;
-  }
-}
-
-// -----------------------
-// 4) Lock screen (로컬 UI)
-// -----------------------
 function showLock() {
   $("lock").classList.add("show");
   $("lock").setAttribute("aria-hidden", "false");
@@ -141,13 +163,14 @@ function hideLock() {
   $("lock").classList.remove("show");
   $("lock").setAttribute("aria-hidden", "true");
 }
+
 function initLock() {
   const unlocked = sessionStorage.getItem(SESSION_KEY) === "1";
   if (!unlocked) showLock();
 
-  $("lockForm").addEventListener("submit", (e) => {
+  $("lockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const pass = String($("lockPass").value || "").trim();
+    const pass = normalizePass($("lockPass").value);
     const hint = $("lockHint");
     const card = document.querySelector(".lock__card");
 
@@ -156,8 +179,14 @@ function initLock() {
       hint.classList.remove("error");
       hint.textContent = "열렸어요. 우리만의 공간으로 ♡";
       hideLock();
+
+      // roomId 세팅
+      roomId = await makeRoomId(pass);
+      await ensureRoomDoc();
+      await bootFirebaseData(); // 사진/메모 불러오기 시작
       return;
     }
+
     hint.classList.add("error");
     hint.textContent = "앗, 비밀번호가 달라요. 우리만 아는 숫자 4자리 ♡";
     card.classList.remove("shake");
@@ -167,28 +196,40 @@ function initLock() {
   });
 }
 
-// -----------------------
-// 5) Counter
-// -----------------------
-function renderCounter() {
+/* ---------- 5) 카운터 ---------- */
+
+function diffNow() {
   const now = new Date();
   const ms = Math.max(0, now - START);
 
   const totalSeconds = Math.floor(ms / 1000);
   const totalMinutes = Math.floor(totalSeconds / 60);
-  const totalHours   = Math.floor(totalMinutes / 60);
-  const totalDays    = Math.floor(totalHours / 24);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalDays = Math.floor(totalHours / 24);
 
   const remSeconds = totalSeconds % 60;
   const remMinutes = totalMinutes % 60;
-  const remHours   = totalHours % 24;
+  const remHours = totalHours % 24;
+
+  return {
+    now,
+    totalSeconds,
+    totalMinutes,
+    totalHours,
+    totalDays,
+    hhmmss: `${pad2(remHours)}:${pad2(remMinutes)}:${pad2(remSeconds)}`,
+  };
+}
+
+function renderCounter() {
+  const { now, totalDays, totalHours, totalMinutes, totalSeconds, hhmmss } = diffNow();
 
   $("startDateLabel").textContent = fmtDate(START);
   $("todayLabel").textContent = fmtDate(now);
 
   $("dDay").textContent = `D+${totalDays}`;
   $("sinceText").textContent = `${fmtDate(START)}부터 우리가 만든 따뜻한 시간`;
-  $("hhmmss").textContent = `${pad2(remHours)}:${pad2(remMinutes)}:${pad2(remSeconds)}`;
+  $("hhmmss").textContent = hhmmss;
 
   $("days").textContent = totalDays.toLocaleString();
   $("hours").textContent = totalHours.toLocaleString();
@@ -196,240 +237,512 @@ function renderCounter() {
   $("seconds").textContent = totalSeconds.toLocaleString();
 }
 
-// -----------------------
-// 6) Image compression
-// -----------------------
-const MAX_IMAGE_LONG_SIDE = 1600;
-const JPG_QUALITY = 0.86;
+/* ---------- 6) 마일스톤 ---------- */
 
-function dataUrlToBlob(dataUrl) {
-  const [meta, b64] = dataUrl.split(",");
-  const mime = (meta.match(/data:(.*?);base64/) || [])[1] || "image/jpeg";
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-  return new Blob([arr], { type: mime });
+function renderMilestones() {
+  const { totalDays } = diffNow();
+  const list = $("milestoneList");
+
+  list.innerHTML = MILESTONES.map((m) => {
+    const target = addDays(START, m.days);
+    const left = m.days - totalDays;
+    const pill = left <= 0 ? `D+${m.days}` : `D-${left}`;
+    const msg = left <= 0 ? `이미 도착했어 ♡` : `${left}일 남았어 ♡`;
+
+    return `
+      <div class="milestone">
+        <div class="milestone__left">
+          <div class="milestone__name">${escapeHtml(m.name)}</div>
+          <div class="milestone__date">${fmtDate(target)} · ${msg}</div>
+        </div>
+        <div class="pill">${pill}</div>
+      </div>
+    `;
+  }).join("");
+
+  const next = MILESTONES
+    .map((m) => ({ ...m, left: m.days - totalDays, date: addDays(START, m.days) }))
+    .filter((x) => x.left > 0)
+    .sort((a, b) => a.left - b.left)[0];
+
+  if (next) {
+    $("nextLabel").textContent = `${next.name}까지`;
+    $("nextValue").textContent = `${next.left}일 · ${fmtDate(next.date)}`;
+  } else {
+    $("nextLabel").textContent = "다음 기념일";
+    $("nextValue").textContent = "새 마일스톤을 추가해도 좋아요 ♡";
+  }
 }
 
-function fileToDataUrlCompressed(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("파일을 읽을 수 없어요."));
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const { width, height } = img;
-        const longSide = Math.max(width, height);
-        const scale = longSide > MAX_IMAGE_LONG_SIDE ? (MAX_IMAGE_LONG_SIDE / longSide) : 1;
+/* ---------- 7) Firestore 경로 ---------- */
 
-        const w = Math.round(width * scale);
-        const h = Math.round(height * scale);
+function roomDocRef() {
+  return doc(db, "rooms", roomId);
+}
+function photosColRef() {
+  return collection(db, "rooms", roomId, "photos");
+}
+function memosColRef() {
+  return collection(db, "rooms", roomId, "memos");
+}
 
-        const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+async function ensureRoomDoc() {
+  // 방 문서가 없으면 만든다 (메타용)
+  const ref = roomDocRef();
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      createdAt: serverTimestamp(),
+      hint: "No-auth room. Share by password(roomKey).",
+    });
+  }
+}
 
-        resolve(canvas.toDataURL("image/jpeg", JPG_QUALITY));
-      };
-      img.onerror = () => reject(new Error("이미지를 불러올 수 없어요."));
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
+/* ---------- 8) 이미지 압축 + 업로드 ---------- */
+
+async function fileToJpegBlobCompressed(file) {
+  const dataUrl = await new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onerror = () => reject(new Error("파일을 읽을 수 없어요."));
+    r.onload = () => resolve(r.result);
+    r.readAsDataURL(file);
   });
+
+  const img = await new Promise((resolve, reject) => {
+    const i = new Image();
+    i.onload = () => resolve(i);
+    i.onerror = () => reject(new Error("이미지를 불러올 수 없어요."));
+    i.src = dataUrl;
+  });
+
+  const { width, height } = img;
+  const longSide = Math.max(width, height);
+  const scale = longSide > MAX_IMAGE_LONG_SIDE ? MAX_IMAGE_LONG_SIDE / longSide : 1;
+
+  const w = Math.round(width * scale);
+  const h = Math.round(height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, w, h);
+
+  const blob = await new Promise((resolve) =>
+    canvas.toBlob((b) => resolve(b), "image/jpeg", JPG_QUALITY)
+  );
+
+  if (!blob) throw new Error("이미지 변환에 실패했어요.");
+  return blob;
 }
 
-// -----------------------
-// 7) Photos (Firestore + Storage)
-// -----------------------
-let photosAll = [];
-let currentAlbum = "__ALL__";
+/* ---------- 9) 사진첩 (Firestore + Storage) ---------- */
 
-function rebuildAlbumOptions() {
+let galleryAll = [];     // 현재 로딩된(필터 기준) 전체(페이지 누적)
+let gallerySlice = [];   // 현재 화면 표시 목록 (= galleryAll)
+let currentAlbum = "__ALL__";
+let lastDocSnap = null;  // 페이징 커서
+
+let dragSrcId = null;
+
+// 라이트박스 인덱스
+let lbIndex = 0;
+
+function openLightbox() {
+  $("lightbox").classList.add("show");
+  $("lightbox").setAttribute("aria-hidden", "false");
+}
+function closeLightbox() {
+  $("lightbox").classList.remove("show");
+  $("lightbox").setAttribute("aria-hidden", "true");
+}
+
+function setLightboxByIndex(i) {
+  const arr = gallerySlice;
+  if (!arr.length) return;
+
+  lbIndex = (i + arr.length) % arr.length;
+  const it = arr[lbIndex];
+
+  $("lbImg").src = it.url;
+  $("lbCaption").textContent = it.caption?.trim() ? it.caption.trim() : "캡션 없음";
+  $("lbSub").textContent =
+    `${it.album || "기본앨범"} · ${it.date ? niceShortDate(it.date) : "날짜 없음"} · ${it.name || "photo"} (${lbIndex + 1}/${arr.length})`;
+}
+
+function initLightbox() {
+  $("lightbox").addEventListener("click", (e) => {
+    const t = e.target;
+    if (t && t.getAttribute && t.getAttribute("data-lb-close") === "1") closeLightbox();
+  });
+
+  $("lbPrev").addEventListener("click", () => setLightboxByIndex(lbIndex - 1));
+  $("lbNext").addEventListener("click", () => setLightboxByIndex(lbIndex + 1));
+
+  document.addEventListener("keydown", (e) => {
+    const open = $("lightbox").classList.contains("show");
+    if (!open) return;
+
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") setLightboxByIndex(lbIndex - 1);
+    if (e.key === "ArrowRight") setLightboxByIndex(lbIndex + 1);
+  });
+
+  // 모바일 스와이프
+  const stage = $("lbStage");
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  stage.addEventListener("touchstart", (e) => {
+    if (!$("lightbox").classList.contains("show")) return;
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    tracking = true;
+  }, { passive: true });
+
+  stage.addEventListener("touchend", (e) => {
+    if (!tracking) return;
+    tracking = false;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    if (Math.abs(dx) < 40) return;
+    if (Math.abs(dy) > 60) return;
+
+    if (dx < 0) setLightboxByIndex(lbIndex + 1);
+    else setLightboxByIndex(lbIndex - 1);
+  }, { passive: true });
+}
+
+function resetPagingState() {
+  lastDocSnap = null;
+  galleryAll = [];
+  gallerySlice = [];
+  $("pagingHint").textContent = "—";
+  $("loadMore").style.display = "inline-flex";
+}
+
+async function fetchNextPhotosPage() {
+  const col = photosColRef();
+
+  // 앨범 필터
+  let qBase = null;
+  if (currentAlbum === "__ALL__") {
+    qBase = query(col, orderBy("order", "asc"), limit(PAGE_SIZE));
+  } else {
+    // album + order 조합은 인덱스가 필요할 수 있어요.
+    qBase = query(
+      col,
+      where("album", "==", currentAlbum),
+      orderBy("order", "asc"),
+      limit(PAGE_SIZE)
+    );
+  }
+
+  const qPaged = lastDocSnap ? query(qBase, startAfter(lastDocSnap)) : qBase;
+  const snap = await getDocs(qPaged);
+
+  if (snap.empty) {
+    $("loadMore").style.display = "none";
+    return;
+  }
+
+  lastDocSnap = snap.docs[snap.docs.length - 1];
+
+  const rows = snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      id: d.id,
+      album: data.album || "기본앨범",
+      caption: data.caption || "",
+      date: typeof data.date === "number" ? data.date : null,
+      name: data.name || "photo",
+      url: data.url || "",
+      storagePath: data.storagePath || "",
+      order: typeof data.order === "number" ? data.order : 0,
+      createdAt: data.createdAt || null,
+    };
+  });
+
+  galleryAll = [...galleryAll, ...rows];
+  gallerySlice = [...galleryAll];
+
+  $("photoCount").textContent = String(gallerySlice.length);
+
+  // 페이징 힌트
+  $("pagingHint").textContent = `${gallerySlice.length}장 표시 중`;
+}
+
+async function rebuildAlbumOptions() {
+  // 작은 앱 기준: 전체를 한번 훑어서 앨범 목록 만든다
+  const snap = await getDocs(query(photosColRef(), orderBy("createdAt", "desc"), limit(1500)));
+  const albums = new Set();
+  snap.forEach((d) => {
+    const a = (d.data()?.album || "기본앨범").trim();
+    albums.add(a || "기본앨범");
+  });
+
+  const list = [...albums].sort((a, b) => a.localeCompare(b, "ko"));
   const sel = $("albumFilter");
   const prev = sel.value || "__ALL__";
 
-  const albums = new Set(photosAll.map(p => p.album || "기본앨범"));
-  const list = [...albums].sort((a,b)=>a.localeCompare(b,"ko"));
+  sel.innerHTML =
+    `<option value="__ALL__">전체 앨범</option>` +
+    list.map((a) => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
 
-  sel.innerHTML = `<option value="__ALL__">전체 앨범</option>` + list.map(a =>
-    `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`
-  ).join("");
-
-  sel.value = ([ "__ALL__", ...list ].includes(prev)) ? prev : "__ALL__";
-  currentAlbum = sel.value;
+  // 기존 선택 유지
+  if ([ "__ALL__", ...list ].includes(prev)) sel.value = prev;
+  else sel.value = "__ALL__";
 }
 
-function renderGallery() {
+async function renderGallery() {
   const wrap = $("gallery");
-  $("photoCount").textContent = String(photosAll.length);
 
-  const view = (currentAlbum === "__ALL__")
-    ? photosAll
-    : photosAll.filter(p => (p.album || "기본앨범") === currentAlbum);
-
-  if (!view.length) {
+  if (!gallerySlice.length) {
     wrap.innerHTML = `<p class="hint">아직 사진이 없어요. 우리 첫 장을 담아볼까요?</p>`;
     return;
   }
 
-  wrap.innerHTML = view.map((p) => {
-    const caption = p.caption?.trim() ? p.caption.trim() : "캡션 없음";
-    const dateLabel = p.date ? new Date(p.date) : null;
-    const dateText = dateLabel ? `${dateLabel.getFullYear()}.${pad2(dateLabel.getMonth()+1)}.${pad2(dateLabel.getDate())}` : "날짜 없음";
+  wrap.innerHTML = gallerySlice.map((it, idx) => {
+    const caption = it.caption?.trim() ? it.caption.trim() : "캡션 없음";
+    const dateLabel = it.date ? niceShortDate(it.date) : "날짜 없음";
+    const fileLabel = it.name ? it.name : "photo";
+
     return `
-      <div class="photo">
-        <img class="photo__img" src="${p.url}" alt="${escapeHtml(caption)}" loading="lazy" />
+      <div class="photo" draggable="true" data-id="${escapeHtml(it.id)}" data-idx="${idx}">
+        <img class="photo__img" src="${escapeHtml(it.url)}" alt="${escapeHtml(caption)}" loading="lazy" />
         <div class="photo__tags">
-          <span class="tag">${escapeHtml(p.album || "기본앨범")}</span>
-          <span class="tag">${escapeHtml(dateText)}</span>
+          <span class="tag">${escapeHtml(it.album || "기본앨범")}</span>
+          <span class="tag">${escapeHtml(dateLabel)}</span>
         </div>
+
         <div class="photo__bar">
           <div class="photo__name">
             <div class="photo__caption">${escapeHtml(caption)}</div>
-            <div class="photo__sub">${escapeHtml(p.name || "photo")}</div>
+            <div class="photo__sub">${escapeHtml(fileLabel)}</div>
           </div>
+
           <div class="photo__actions">
-            <button class="iconBtn" type="button" data-del="${escapeHtml(p.id)}" title="삭제">✕</button>
+            <button class="iconBtn" type="button" title="수정" data-edit="${escapeHtml(it.id)}">✎</button>
+            <button class="iconBtn" type="button" title="삭제" data-del="${escapeHtml(it.id)}">✕</button>
           </div>
         </div>
       </div>
     `;
   }).join("");
 
-  wrap.querySelectorAll("[data-del]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const id = btn.getAttribute("data-del");
-      await deletePhoto(id);
+  // 카드 클릭 → 라이트박스 (버튼 클릭 제외)
+  wrap.querySelectorAll(".photo").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && (t.closest("[data-edit]") || t.closest("[data-del]"))) return;
+
+      const idx = Number(card.getAttribute("data-idx"));
+      setLightboxByIndex(idx);
+      openLightbox();
     });
   });
+
+  // 삭제
+  wrap.querySelectorAll("[data-del]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute("data-del");
+      const ok = confirm("이 사진을 삭제할까요? (Storage에서도 지워져요)");
+      if (!ok) return;
+
+      await deletePhotoById(id);
+      await refreshPhotos(true);
+    });
+  });
+
+  // 수정
+  wrap.querySelectorAll("[data-edit]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute("data-edit");
+      const target = gallerySlice.find((x) => x.id === id);
+      if (!target) return;
+
+      currentEditId = id;
+      $("editAlbum").value = target.album || "기본앨범";
+      $("editDate").value = target.date ? toISODateInputValue(target.date) : "";
+      $("editCaption").value = target.caption || "";
+      openEditModal();
+    });
+  });
+
+  initDragAndDrop();
 }
 
 async function uploadOnePhoto(file, album, dateTs, caption) {
-  await ensureAnonAuth();
+  const blob = await fileToJpegBlobCompressed(file);
 
-  const dataUrl = await fileToDataUrlCompressed(file);
-  const blob = dataUrlToBlob(dataUrl);
+  // order = 현재 전체 사진 수 기준으로 끝에 붙이기
+  // (정확도: 동시에 업로드하면 약간 엇갈릴 수 있지만, 커플앱은 충분)
+  const countSnap = await getDocs(query(photosColRef(), orderBy("order", "asc"), limit(1)));
+  // 위는 최솟값이라 의미 없음 → 그냥 createdAt 기반으로 order 대충 마지막으로:
+  // 더 정확히 하려면 별도 counter 문서 필요.
+  // 여기서는 Date.now()로 order를 큰 값으로 넣자.
+  const orderValue = Date.now();
 
-  const id = uid();
-  const storagePath = `photos/${id}.jpg`;
-  const storageRef = sref(storage, storagePath);
-
-  try {
-    await uploadBytes(storageRef, blob, { contentType: "image/jpeg" });
-  } catch (e) {
-    console.log("STORAGE ERROR:", e);
-    alert(`사진 업로드 실패\n${e.code}\n${e.message}\n\n(1) Anonymous ON (2) Storage Rules auth!=null 확인`);
-    throw e;
-  }
-
-  const url = await getDownloadURL(storageRef);
-
-  await setDoc(doc(fs, "photos", id), {
+  // 먼저 Firestore doc 만들고 id 확보
+  const docRef = await addDoc(photosColRef(), {
     album,
-    caption: caption || "",
+    caption: caption?.trim() || "",
     date: dateTs || null,
-    name: file.name || "photo",
-    url,
-    storagePath,
-    createdAt: serverTimestamp()
+    name: humanName(file.name),
+    createdAt: Date.now(),
+    order: orderValue,
+    url: "",
+    storagePath: "",
   });
+
+  const path = `rooms/${roomId}/photos/${docRef.id}.jpg`;
+  const fileRef = sRef(storage, path);
+
+  await uploadBytes(fileRef, blob, { contentType: "image/jpeg" });
+  const url = await getDownloadURL(fileRef);
+
+  await updateDoc(docRef, { url, storagePath: path });
+
+  return true;
 }
 
-async function deletePhoto(id) {
-  await ensureAnonAuth();
+async function deletePhotoById(id) {
+  const ref = doc(db, "rooms", roomId, "photos", id);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
 
-  const target = photosAll.find(p => p.id === id);
-  if (!target) return;
-
-  if (target.storagePath) {
-    try { await deleteObject(sref(storage, target.storagePath)); } catch {}
-  }
-  await deleteDoc(doc(fs, "photos", id));
-}
-
-async function clearAllPhotos() {
-  await ensureAnonAuth();
-  const ok = confirm("갤러리를 전부 지울까요? (사진이 정말 다 사라져요)");
-  if (!ok) return;
-
-  // Firestore 전체 문서 조회 후 삭제
-  const snap = await getDocs(collection(fs, "photos"));
-  const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-  // Storage 파일 삭제
-  await Promise.allSettled(docs.map(async (p) => {
-    if (p.storagePath) {
-      try { await deleteObject(sref(storage, p.storagePath)); } catch {}
+  const data = snap.data();
+  const path = data?.storagePath;
+  if (path) {
+    try {
+      await deleteObject(sRef(storage, path));
+    } catch (e) {
+      // Storage 파일이 이미 없을 수도 있으니 무시
     }
-  }));
-
-  // Firestore 문서 삭제
-  await Promise.allSettled(docs.map(async (p) => deleteDoc(doc(fs, "photos", p.id))));
-
-  alert("전체 삭제 완료 ♡");
+  }
+  await deleteDoc(ref);
 }
 
-function listenPhotos() {
-  // createdAt 최신순 (서버타임)
-  const q = query(photosCol, orderBy("createdAt", "desc"));
+/* ---- Edit Modal ---- */
+let currentEditId = null;
 
-  onSnapshot(q, (snap) => {
-    photosAll = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    rebuildAlbumOptions();
-    renderGallery();
+function openEditModal() {
+  $("editModal").classList.add("show");
+  $("editModal").setAttribute("aria-hidden", "false");
+}
+function closeEditModal() {
+  $("editModal").classList.remove("show");
+  $("editModal").setAttribute("aria-hidden", "true");
+  currentEditId = null;
+}
+
+function initEditModal() {
+  $("editModal").addEventListener("click", (e) => {
+    const t = e.target;
+    if (t && t.getAttribute && t.getAttribute("data-close") === "1") closeEditModal();
+  });
+
+  $("saveEdit").addEventListener("click", async () => {
+    if (!currentEditId) return;
+
+    const album = normalizeAlbum($("editAlbum").value);
+    const dateTs = fromISODateInputValue($("editDate").value);
+    const caption = $("editCaption").value.trim();
+
+    const ref = doc(db, "rooms", roomId, "photos", currentEditId);
+    await updateDoc(ref, {
+      album,
+      date: dateTs,
+      caption,
+    });
+
+    closeEditModal();
+    await refreshPhotos(true);
   });
 }
 
-// -----------------------
-// 8) Memos (Firestore)
-// -----------------------
-function renderMemos(memos) {
-  const wrap = $("memoList");
-  if (!memos.length) {
-    wrap.innerHTML = `<p class="hint">아직 메모가 없어요. 오늘의 다정함을 한 줄 남겨볼까요?</p>`;
-    return;
-  }
+/* ---- Drag & Drop order ---- */
+function initDragAndDrop() {
+  const wrap = $("gallery");
+  const cards = [...wrap.querySelectorAll(".photo")];
 
-  wrap.innerHTML = memos.map(m => {
-    const created = m.createdAt?.toDate ? m.createdAt.toDate() : null;
-    return `
-      <div class="memo">
-        <div class="memo__top">
-          <div>
-            <div class="memo__title">${escapeHtml(m.title || "제목 없음")}</div>
-            <div class="memo__date">${created ? fmtDate(created) : ""}</div>
-          </div>
-        </div>
-        <div class="memo__body">${escapeHtml(m.body || "")}</div>
-        <div class="memo__actions">
-          <button class="btn btn--ghost" data-mdel="${escapeHtml(m.id)}">삭제</button>
-        </div>
-      </div>
-    `;
-  }).join("");
+  cards.forEach((card) => {
+    card.addEventListener("dragstart", (e) => {
+      dragSrcId = card.getAttribute("data-id");
+      card.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    });
 
-  wrap.querySelectorAll("[data-mdel]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      await ensureAnonAuth();
-      const id = btn.getAttribute("data-mdel");
-      await deleteDoc(doc(fs, "memos", id));
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      dragSrcId = null;
+    });
+
+    card.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    });
+
+    card.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      const targetId = card.getAttribute("data-id");
+      if (!dragSrcId || !targetId || targetId === dragSrcId) return;
+
+      await reorderByDrop(dragSrcId, targetId);
+      await refreshPhotos(true);
     });
   });
 }
 
-function listenMemos() {
-  const q = query(memosCol, orderBy("createdAt", "desc"));
-  onSnapshot(q, (snap) => {
-    const memos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderMemos(memos);
-  });
+async function reorderByDrop(srcId, targetId) {
+  // 같은 앨범 안에서만 재정렬
+  const src = gallerySlice.find((x) => x.id === srcId);
+  const tgt = gallerySlice.find((x) => x.id === targetId);
+  if (!src || !tgt) return;
+
+  const album = src.album || "기본앨범";
+  if ((tgt.album || "기본앨범") !== album) return;
+
+  // 해당 앨범 전체를 order 순으로 가져온 뒤 재정렬
+  // (인덱스 필요할 수 있음: album + order)
+  const snap = await getDocs(query(
+    photosColRef(),
+    where("album", "==", album),
+    orderBy("order", "asc"),
+    limit(1500)
+  ));
+
+  const arr = snap.docs.map((d) => ({
+    id: d.id,
+    order: d.data()?.order ?? 0
+  }));
+
+  const srcIdx = arr.findIndex((x) => x.id === srcId);
+  const tgtIdx = arr.findIndex((x) => x.id === targetId);
+  if (srcIdx < 0 || tgtIdx < 0) return;
+
+  const [moved] = arr.splice(srcIdx, 1);
+  arr.splice(tgtIdx, 0, moved);
+
+  // order 재할당 (간단하게 10 단위로)
+  const batch = writeBatch(db);
+  for (let i = 0; i < arr.length; i++) {
+    const ref = doc(db, "rooms", roomId, "photos", arr[i].id);
+    batch.update(ref, { order: i * 10 });
+  }
+  await batch.commit();
 }
 
-// -----------------------
-// 9) UI wiring
-// -----------------------
-function initUI() {
+/* ---- 사진 UI init ---- */
+function initGalleryUI() {
   $("photoDate").value = toISODateInputValue(new Date());
 
   $("photoInput").addEventListener("change", async (e) => {
@@ -438,81 +751,173 @@ function initUI() {
 
     const album = normalizeAlbum($("albumName").value);
     const dateTs = fromISODateInputValue($("photoDate").value);
-    const caption = String($("photoCaption").value || "").trim();
+    const caption = $("photoCaption").value.trim();
 
     try {
+      // 여러 장 업로드
       for (const f of files) {
         if (!f.type.startsWith("image/")) continue;
         await uploadOnePhoto(f, album, dateTs, caption);
       }
       e.target.value = "";
-    } catch {
-      // alert는 내부에서 출력
+
+      await rebuildAlbumOptions();
+      await refreshPhotos(true);
+    } catch (err) {
+      alert(err?.message || "사진 업로드 중 문제가 생겼어요.");
     }
   });
 
-  $("albumFilter").addEventListener("change", (e) => {
+  $("albumFilter").addEventListener("change", async (e) => {
     currentAlbum = e.target.value;
-    renderGallery();
+    await refreshPhotos(true);
   });
 
-  $("resetAlbum").addEventListener("click", () => {
-    currentAlbum = "__ALL__";
-    $("albumFilter").value = "__ALL__";
-    renderGallery();
+  $("loadMore").addEventListener("click", async () => {
+    await fetchNextPhotosPage();
+    await renderGallery();
   });
 
-  $("clearPhotos").addEventListener("click", clearAllPhotos);
+  $("resetPaging").addEventListener("click", async () => {
+    await refreshPhotos(true);
+  });
+}
 
-  $("memoForm").addEventListener("submit", async (e) => {
+async function refreshPhotos(reset = false) {
+  if (reset) resetPagingState();
+  await fetchNextPhotosPage();
+  await renderGallery();
+}
+
+/* ---------- 10) 메모 (Firestore) ---------- */
+
+async function addMemo(title, body) {
+  await addDoc(memosColRef(), {
+    title: title?.trim() || "",
+    body: body?.trim() || "",
+    createdAt: Date.now(),
+  });
+}
+
+async function deleteMemo(id) {
+  await deleteDoc(doc(db, "rooms", roomId, "memos", id));
+}
+
+async function clearAllMemos() {
+  const pass = prompt("메모를 전부 삭제하려면 비밀번호를 입력해요.");
+  if (normalizePass(pass) !== PASSWORD) {
+    alert("비밀번호가 달라요. 삭제하지 않았어요.");
+    return;
+  }
+
+  const snap = await getDocs(query(memosColRef(), orderBy("createdAt", "desc"), limit(2000)));
+  if (snap.empty) return;
+
+  const batch = writeBatch(db);
+  snap.forEach((d) => batch.delete(d.ref));
+  await batch.commit();
+}
+
+async function renderMemos() {
+  const wrap = $("memoList");
+
+  const snap = await getDocs(query(memosColRef(), orderBy("createdAt", "desc"), limit(200)));
+  const memos = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+  if (!memos.length) {
+    wrap.innerHTML = `<p class="hint">아직 메모가 없어요. 오늘의 다정함을 한 줄 남겨볼까요?</p>`;
+    return;
+  }
+
+  wrap.innerHTML = memos.map((m) => `
+    <div class="memo">
+      <div class="memo__top">
+        <div>
+          <div class="memo__title">${escapeHtml(m.title || "제목 없음")}</div>
+          <div class="memo__date">${fmtDate(new Date(m.createdAt || Date.now()))}</div>
+        </div>
+      </div>
+      <div class="memo__body">${escapeHtml(m.body || "")}</div>
+      <div class="memo__actions">
+        <button class="btn btn--ghost" data-memo-del="${escapeHtml(m.id)}">삭제</button>
+      </div>
+    </div>
+  `).join("");
+
+  wrap.querySelectorAll("[data-memo-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-memo-del");
+      const ok = confirm("이 메모를 삭제할까요?");
+      if (!ok) return;
+      await deleteMemo(id);
+      await renderMemos();
+    });
+  });
+}
+
+function initMemo() {
+  const form = $("memoForm");
+  const titleEl = $("memoTitle");
+  const bodyEl = $("memoBody");
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    await ensureAnonAuth();
-
-    const title = String($("memoTitle").value || "").trim();
-    const body  = String($("memoBody").value || "").trim();
+    const title = titleEl.value.trim();
+    const body = bodyEl.value.trim();
     if (!title && !body) return;
 
-    await addDoc(memosCol, {
-      title,
-      body,
-      createdAt: serverTimestamp()
-    });
+    await addMemo(title, body);
 
-    $("memoTitle").value = "";
-    $("memoBody").value = "";
+    titleEl.value = "";
+    bodyEl.value = "";
+    await renderMemos();
   });
 
   $("clearMemos").addEventListener("click", async () => {
-    await ensureAnonAuth();
-    const snap = await getDocs(collection(fs, "memos"));
-    await Promise.allSettled(snap.docs.map(d => deleteDoc(d.ref)));
+    const ok = confirm("메모를 전부 삭제할까요?");
+    if (!ok) return;
+    await clearAllMemos();
+    await renderMemos();
   });
 }
 
-// -----------------------
-// 10) Boot
-// -----------------------
+/* ---------- 11) Firebase 데이터 부트 ---------- */
+
+async function bootFirebaseData() {
+  // 사진/메모 공유 영역 초기 로딩
+  await rebuildAlbumOptions();
+  currentAlbum = $("albumFilter").value || "__ALL__";
+  resetPagingState();
+  await refreshPhotos(true);
+
+  await renderMemos();
+}
+
+/* ---------- 12) Boot ---------- */
+
 async function boot() {
   initLock();
-  initUI();
+  initEditModal();
+  initLightbox();
 
-  // Counter
   renderCounter();
-  setInterval(renderCounter, 1000);
+  renderMilestones();
+  initMemo();
+  initGalleryUI();
 
-  // Auth status watcher
-  onAuthStateChanged(auth, (user) => {
-    const hint = $("authStateHint");
-    if (!hint) return;
-    hint.textContent = user ? `인증 OK (uid: ${user.uid.slice(0,6)}…)` : "인증 없음";
-  });
+  // 잠금이 이미 풀린 상태면 바로 room 세팅 후 데이터 로딩
+  const unlocked = sessionStorage.getItem(SESSION_KEY) === "1";
+  if (unlocked) {
+    roomId = await makeRoomId(PASSWORD);
+    await ensureRoomDoc();
+    await bootFirebaseData();
+    hideLock();
+  }
 
-  // ✅ 시작 시 익명 로그인 시도
-  await ensureAnonAuth();
-
-  // Listen Firestore
-  listenPhotos();
-  listenMemos();
+  setInterval(() => {
+    renderCounter();
+    renderMilestones();
+  }, 1000);
 }
 
-boot().catch(() => {});
+boot();
