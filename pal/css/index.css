@@ -1,3 +1,4 @@
+/* 네가 올린 기존 css 그대로 */
 :root{
   --bg1:#fff7fb;
   --bg2:#f3fbff;
@@ -96,7 +97,6 @@ body{
   42%{ transform: scale(1); }
   100%{ transform: scale(1); }
 }
-/* 모션 선호도 존중 */
 @media (prefers-reduced-motion: reduce){
   .beat{ animation: none; }
 }
@@ -688,7 +688,7 @@ body{
   height: min(62vh, 640px);
   background: rgba(255,255,255,.65);
   overflow:hidden;
-  touch-action: pan-y; /* ✅ 수평 스와이프 허용 + 세로 스크롤 유지 */
+  touch-action: pan-y;
 }
 .lightbox__img{
   width:100%;
@@ -733,52 +733,6 @@ body{
 .lightbox__nav--prev{ left: 12px; }
 .lightbox__nav--next{ right: 12px; }
 .lightbox__nav:hover{ transform: translateY(-50%) translateY(-1px); }
-
-/* ============ Password Modal ============ */
-.pmodal{
-  position:fixed;
-  inset:0;
-  display:none;
-  z-index:55;
-}
-.pmodal.show{ display:block; }
-.pmodal__backdrop{
-  position:absolute; inset:0;
-  background: rgba(10,12,20,.25);
-  backdrop-filter: blur(6px);
-}
-.pmodal__panel{
-  position:relative;
-  width:min(520px, calc(100% - 28px));
-  margin: 14vh auto 0;
-  border-radius: 18px;
-  border: 1px solid rgba(20,25,38,.10);
-  background: rgba(255,255,255,.90);
-  box-shadow: var(--shadow);
-  padding: 14px 14px;
-}
-.pmodal__head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding: 6px 4px 12px;
-  border-bottom: 1px solid rgba(20,25,38,.10);
-}
-.pmodal__title{ font-weight: 900; font-size: 14px; }
-.pmodal__desc{
-  margin: 12px 4px 10px;
-  color: rgba(18,23,38,.70);
-  font-weight: 800;
-  font-size: 13.5px;
-  line-height: 1.7;
-}
-.pmodal__row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding: 0 4px 4px;
-}
 
 /* ============ Lock Screen ============ */
 .lock{
