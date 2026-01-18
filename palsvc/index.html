@@ -169,7 +169,7 @@
       </div>
     </section>
 
-    <!-- PHOTOS (Firestore + Storage + Albums + Paging) -->
+    <!-- PHOTOS -->
     <section id="photos" class="section">
       <div class="section__head">
         <div>
@@ -246,7 +246,7 @@
       </div>
     </section>
 
-    <!-- MEMO (Firestore) -->
+    <!-- MEMO -->
     <section id="memo" class="section">
       <div class="section__head">
         <div>
@@ -286,39 +286,6 @@
       </div>
     </section>
 
-    <!-- Edit Modal -->
-    <div class="modal" id="editModal" aria-hidden="true">
-      <div class="modal__backdrop" data-close="1"></div>
-      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="사진 정보 수정">
-        <div class="modal__head">
-          <div class="modal__title">사진 정보 수정</div>
-          <button class="iconBtn" type="button" data-close="1" aria-label="닫기">✕</button>
-        </div>
-
-        <div class="modal__body">
-          <label class="label">
-            앨범
-            <input id="editAlbum" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
-          </label>
-
-          <label class="label">
-            날짜
-            <input id="editDate" class="input" type="date" />
-          </label>
-
-          <label class="label">
-            캡션(40자)
-            <input id="editCaption" class="input" type="text" maxlength="40" placeholder="짧게, 다정하게 ♡" />
-          </label>
-
-          <div class="row">
-            <button class="btn btn--primary" type="button" id="saveEdit">저장</button>
-            <button class="btn btn--ghost" type="button" data-close="1">취소</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox" aria-hidden="true">
       <div class="lightbox__backdrop" data-lb-close="1"></div>
@@ -352,7 +319,6 @@
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
   </script>
 
-  <!-- Firebase 버전은 JS에서 모듈로 import -->
   <script type="module" src="./js/index.js"></script>
 </body>
 </html>

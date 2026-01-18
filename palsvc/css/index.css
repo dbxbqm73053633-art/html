@@ -485,13 +485,14 @@ body{
   flex-wrap:wrap;
 }
 
-/* ============ Gallery ============ */
+/* ============ Gallery (CLEAN) ============ */
 .gallery{
   margin-top:12px;
   display:grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
 }
+
 .photo{
   position:relative;
   border-radius: 16px;
@@ -501,71 +502,60 @@ body{
   box-shadow: var(--shadow2);
   min-height: 160px;
 }
+
 .photo__img{
   width:100%;
-  height: 160px;
+  height: 180px;
   object-fit: cover;
   display:block;
-}
-.photo__tags{
-  position:absolute;
-  left:10px;
-  top:10px;
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.tag{
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.82);
-  border: 1px solid rgba(20,25,38,.10);
-  font-weight: 900;
-  font-size: 12px;
-  color: rgba(18,23,38,.78);
+  transform: scale(1.01);
 }
 
-.photo__bar{
+.photo__controls{
   position:absolute;
-  left:10px; right:10px; bottom:10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.84);
-  border: 1px solid rgba(20,25,38,.10);
-}
-.photo__name{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  overflow:hidden;
-}
-.photo__caption{
-  font-size: 12px;
-  font-weight: 900;
-  color: rgba(18,23,38,.82);
-  overflow:hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.photo__sub{
-  font-size: 11px;
-  font-weight: 800;
-  color: rgba(18,23,38,.55);
-  overflow:hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.photo__actions{
+  right:10px;
+  top:10px;
   display:flex;
   gap:8px;
-  align-items:center;
+  opacity:0;
+  transform: translateY(-2px);
+  transition: .18s ease;
+  pointer-events:none;
 }
-.photo[draggable="true"]{ cursor: grab; }
-.photo.dragging{ opacity:.55; transform: scale(.98); }
+
+.photo:hover .photo__controls{
+  opacity:1;
+  transform: translateY(0);
+  pointer-events:auto;
+}
+
+/* 모바일은 hover 없으니 항상 보이게(너무 지저분하지 않게 약하게) */
+@media (hover: none){
+  .photo__controls{
+    opacity:1;
+    transform:none;
+    pointer-events:auto;
+  }
+}
+
+.iconBtn.iconBtn--mini{
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(20,25,38,.10);
+  background: rgba(255,255,255,.88);
+  cursor:pointer;
+  font-weight: 900;
+}
+
+.iconBtn.iconBtn--mini:active{ transform: scale(.98); }
+
+/* responsive */
+@media (max-width: 520px){
+  .gallery{ grid-template-columns: 1fr; }
+  .photo__img{ height: 210px; }
+}
+
 
 /* ============ Milestones ============ */
 .milestones{ display:grid; gap:10px; margin-top:4px; }
