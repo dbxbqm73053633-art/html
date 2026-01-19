@@ -479,13 +479,8 @@ body{
   width:8px; height:8px; border-radius:999px;
   background: linear-gradient(135deg, var(--p1), var(--p2));
 }
-.upload__row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
 
-/* ============ Gallery ============ */
+/* ============ Gallery (CLEAN: delete button only) ============ */
 .gallery{
   margin-top:12px;
   display:grid;
@@ -500,6 +495,7 @@ body{
   background: rgba(255,255,255,.68);
   box-shadow: var(--shadow2);
   min-height: 160px;
+  cursor: zoom-in;
 }
 .photo__img{
   width:100%;
@@ -507,65 +503,26 @@ body{
   object-fit: cover;
   display:block;
 }
-.photo__tags{
-  position:absolute;
-  left:10px;
-  top:10px;
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.tag{
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.82);
-  border: 1px solid rgba(20,25,38,.10);
-  font-weight: 900;
-  font-size: 12px;
-  color: rgba(18,23,38,.78);
-}
 
-.photo__bar{
+/* 카드에는 삭제 버튼만 (구석) */
+.photo__del{
   position:absolute;
-  left:10px; right:10px; bottom:10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.84);
-  border: 1px solid rgba(20,25,38,.10);
-}
-.photo__name{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  overflow:hidden;
-}
-.photo__caption{
-  font-size: 12px;
+  top:8px;
+  left:8px;
+  width:34px;
+  height:34px;
+  border-radius: 12px;
+  border: 1px solid rgba(20,25,38,.12);
+  background: rgba(255,255,255,.86);
+  box-shadow: 0 12px 26px rgba(24, 32, 54, .12);
+  display:grid;
+  place-items:center;
+  font-size: 16px;
   font-weight: 900;
-  color: rgba(18,23,38,.82);
-  overflow:hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  cursor: pointer;
 }
-.photo__sub{
-  font-size: 11px;
-  font-weight: 800;
-  color: rgba(18,23,38,.55);
-  overflow:hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.photo__actions{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.photo[draggable="true"]{ cursor: grab; }
-.photo.dragging{ opacity:.55; transform: scale(.98); }
+.photo__del:hover{ transform: translateY(-1px); }
+.photo__del:active{ transform: translateY(0px) scale(.98); }
 
 /* ============ Milestones ============ */
 .milestones{ display:grid; gap:10px; margin-top:4px; }
@@ -618,40 +575,6 @@ body{
 }
 .memo__actions{ margin-top:10px; display:flex; justify-content:flex-end; }
 
-/* ============ Modal (Edit) ============ */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  z-index:50;
-}
-.modal.show{ display:block; }
-.modal__backdrop{
-  position:absolute; inset:0;
-  background: rgba(10, 12, 20, .28);
-  backdrop-filter: blur(6px);
-}
-.modal__panel{
-  position:relative;
-  width:min(520px, calc(100% - 28px));
-  margin: 12vh auto 0;
-  border-radius: 18px;
-  border: 1px solid rgba(20,25,38,.10);
-  background: rgba(255,255,255,.90);
-  box-shadow: var(--shadow);
-  padding: 14px 14px;
-}
-.modal__head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding: 6px 4px 12px;
-  border-bottom: 1px solid rgba(20,25,38,.10);
-}
-.modal__title{ font-weight: 900; font-size: 14px; }
-.modal__body{ padding: 12px 4px 6px; display:grid; gap: 12px; }
-
 /* ============ Lightbox ============ */
 .lightbox{
   position:fixed;
@@ -703,11 +626,6 @@ body{
   border-top: 1px solid rgba(20,25,38,.10);
   background: rgba(255,255,255,.90);
 }
-.lightbox__cap{
-  font-weight: 900;
-  font-size: 14px;
-  color: rgba(18,23,38,.88);
-}
 .lightbox__sub{
   margin-top: 4px;
   font-weight: 800;
@@ -733,6 +651,27 @@ body{
 .lightbox__nav--prev{ left: 12px; }
 .lightbox__nav--next{ right: 12px; }
 .lightbox__nav:hover{ transform: translateY(-50%) translateY(-1px); }
+
+/* ✅ Lightbox edit form */
+.lightbox__form{ display:grid; gap:10px; }
+.lbLabel{
+  display:grid;
+  gap:6px;
+  font-weight:900;
+  color: rgba(18,23,38,.70);
+  font-size:12.5px;
+}
+.lbRow{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+}
+.lightbox__saveHint{
+  font-weight:900;
+  font-size:12px;
+  color: rgba(18,23,38,.56);
+}
 
 /* ============ Lock Screen ============ */
 .lock{

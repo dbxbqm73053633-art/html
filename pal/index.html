@@ -8,7 +8,6 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#ffffff">
 
-  <!-- iOS 홈화면 아이콘(선택) -->
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -286,40 +285,7 @@
       </div>
     </section>
 
-    <!-- Edit Modal -->
-    <div class="modal" id="editModal" aria-hidden="true">
-      <div class="modal__backdrop" data-close="1"></div>
-      <div class="modal__panel" role="dialog" aria-modal="true" aria-label="사진 정보 수정">
-        <div class="modal__head">
-          <div class="modal__title">사진 정보 수정</div>
-          <button class="iconBtn" type="button" data-close="1" aria-label="닫기">✕</button>
-        </div>
-
-        <div class="modal__body">
-          <label class="label">
-            앨범
-            <input id="editAlbum" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
-          </label>
-
-          <label class="label">
-            날짜
-            <input id="editDate" class="input" type="date" />
-          </label>
-
-          <label class="label">
-            캡션(40자)
-            <input id="editCaption" class="input" type="text" maxlength="40" placeholder="짧게, 다정하게 ♡" />
-          </label>
-
-          <div class="row">
-            <button class="btn btn--primary" type="button" id="saveEdit">저장</button>
-            <button class="btn btn--ghost" type="button" data-close="1">취소</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lightbox -->
+    <!-- Lightbox (EDIT INSIDE) -->
     <div class="lightbox" id="lightbox" aria-hidden="true">
       <div class="lightbox__backdrop" data-lb-close="1"></div>
 
@@ -334,8 +300,29 @@
         </div>
 
         <div class="lightbox__meta">
-          <div class="lightbox__cap" id="lbCaption">—</div>
-          <div class="lightbox__sub" id="lbSub">—</div>
+          <div class="lightbox__form" aria-label="사진 정보 수정">
+            <label class="lbLabel">
+              앨범
+              <input id="lbAlbum" class="input" type="text" maxlength="24" placeholder="예) 첫 여행" />
+            </label>
+
+            <div class="lbRow">
+              <label class="lbLabel">
+                날짜
+                <input id="lbDate" class="input" type="date" />
+              </label>
+
+              <button class="btn btn--primary" type="button" id="lbSave">저장</button>
+            </div>
+
+            <label class="lbLabel">
+              짧은 캡션 (40자)
+              <input id="lbCaptionInput" class="input" type="text" maxlength="40" placeholder="짧게, 다정하게 ♡" />
+            </label>
+
+            <div class="lightbox__sub" id="lbSub">—</div>
+            <div class="lightbox__saveHint" id="lbSaveHint">—</div>
+          </div>
         </div>
       </div>
     </div>
@@ -352,7 +339,6 @@
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
   </script>
 
-  <!-- Firebase 버전은 JS에서 모듈로 import -->
   <script type="module" src="./js/index.js"></script>
 </body>
 </html>
