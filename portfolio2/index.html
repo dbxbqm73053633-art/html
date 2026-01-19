@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>김영우 | UX-Driven Developer & Designer</title>
+  <meta name="description" content="AI를 활용한 UI/UX 디자인과 프론트엔드 구현 포트폴리오 - 김영우" />
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header" id="top">
+    <div class="container header__inner">
+      <a href="#top" class="brand" aria-label="홈으로">
+        <span class="brand__mark" aria-hidden="true">
+          <span class="brand__markText">YW</span>
+          <span class="brand__shine"></span>
+        </span>
+        <span class="brand__text">
+          <strong>KIM YOUNG WOO</strong>
+          <em>UX-Driven Developer & Designer</em>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="주요 메뉴">
+        <button class="nav__toggle" type="button" aria-label="메뉴 열기" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="nav__list" id="navList">
+          <li><a href="#top">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#design">Design</a></li>
+          <li><a href="#developer">Developer</a></li>
+          <li><a href="#contact" class="btn btn--sm">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" aria-label="메인 소개">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="container hero__inner">
+        <div class="hero__copy reveal">
+          <p class="kicker">UX-Driven Developer & Designer</p>
+
+          <h1 class="hero__title">
+            디자인의 가치를<br />
+            <span class="accent">기술로 실현하는</span><br />
+            <span class="hero__name">김영우</span>입니다.
+          </h1>
+
+          <p class="hero__desc">
+            AI로 아이디어·카피·구조를 빠르게 설계하고,<br />
+            디자인 시스템으로 정리한 뒤 <b>바로 동작하는 웹</b>으로 구현합니다.
+          </p>
+
+          <div class="hero__cta">
+            <a class="btn" href="#design">View My Works</a>
+            <a class="btn btn--ghost" href="#contact">Contact Me</a>
+          </div>
+
+          <div class="hero__badges">
+            <span class="badge">AI Draft → Figma → Implement</span>
+            <span class="badge">UI/UX · Web/App</span>
+            <span class="badge">HTML · CSS · JavaScript</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2>About</h2>
+          <p>AI와 디자인 시스템을 활용해 “설계부터 구현까지” 빠르고 정확하게 완성합니다.</p>
+        </div>
+
+        <div class="about reveal">
+          <div class="about__card">
+            <h3>AI 기반 설계</h3>
+            <p class="muted">
+              ChatGPT/AI 도구로 요구사항을 정리하고, IA·카피·컴포넌트 구조 초안을 빠르게 만듭니다.
+              이후 Figma에서 그리드·타이포·컴포넌트 기준으로 정교화해 일관된 UI를 설계합니다.
+            </p>
+          </div>
+          <div class="about__card">
+            <h3>디자인 → 구현까지</h3>
+            <p class="muted">
+              단순한 목업에서 끝내지 않고, HTML/CSS/JS로 실제 동작하는 화면을 구현합니다.
+              반응형·접근성(키보드/ARIA)·애니메이션을 함께 고려해 완성도를 끌어올립니다.
+            </p>
+          </div>
+          <div class="about__card">
+            <h3>업무 스타일</h3>
+            <p class="muted">
+              “빠른 프로토타입 → 검증 → 개선”을 반복하며, 결과물을 눈에 보이게 만들고
+              기준(디자인 시스템)으로 정리해 유지보수와 확장성을 확보합니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="section" id="skills">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2>Skills</h2>
+          <p>실무에서 자주 쓰는 역량을 핵심만 정리했습니다.</p>
+        </div>
+
+        <div class="tabs reveal" data-tabs>
+          <div class="tabs__nav" role="tablist" aria-label="Skills 탭">
+            <button class="tabs__btn is-active" type="button" role="tab" aria-selected="true" data-tab="skill">Skills</button>
+            <button class="tabs__btn" type="button" role="tab" aria-selected="false" data-tab="license">License</button>
+            <button class="tabs__btn" type="button" role="tab" aria-selected="false" data-tab="education">Education</button>
+          </div>
+
+          <!-- Skills panel -->
+          <div class="tabs__panel is-active" role="tabpanel" data-panel="skill">
+            <div class="bars" data-skill-bars>
+              <div class="bar" data-level="90">
+                <div class="bar__top">
+                  <span class="bar__label">UI/UX Design</span>
+                  <span class="bar__value"><span data-count>0</span>%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </div>
+
+              <div class="bar" data-level="85">
+                <div class="bar__top">
+                  <span class="bar__label">Web Development</span>
+                  <span class="bar__value"><span data-count>0</span>%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </div>
+
+              <div class="bar" data-level="80">
+                <div class="bar__top">
+                  <span class="bar__label">JavaScript / React</span>
+                  <span class="bar__value"><span data-count>0</span>%</span>
+                </div>
+                <div class="bar__track"><span class="bar__fill"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- License panel -->
+          <div class="tabs__panel" role="tabpanel" data-panel="license">
+            <div class="panelCard">
+              <h3>License</h3>
+              <ul class="list">
+                <li>정보처리기능사</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Education panel -->
+          <div class="tabs__panel" role="tabpanel" data-panel="education">
+            <div class="panelCard">
+              <h3>Education</h3>
+              <p class="muted">
+                KD-아카데미 김포캠퍼스<br />
+                AI를 활용한 UI/UX 웹개발 과정 (2025.09.12 ~ 2026.01.13)
+              </p>
+              <h4>기타</h4>
+              <p class="muted">관련 기술 및 실무 프로젝트 연구</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Design Portfolio -->
+    <section class="section" id="design">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2>Design</h2>
+          <p>목업 중심으로 정리했습니다. 클릭하면 크게 볼 수 있습니다.</p>
+        </div>
+
+        <div class="grid cards">
+          <article class="card reveal" data-modal data-title="Megabox Cinema UI" data-tools="AI 활용 · Figma · Photoshop">
+            <div class="card__media">
+              <img src="./images/Avatar.png" alt="Megabox Cinema UI 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Megabox Cinema UI</h3>
+              <p>큐레이션/상세/예매 흐름을 안정적인 다크 UI로 구성.</p>
+              <div class="chips">
+                <span class="chip">AI Draft</span><span class="chip">Figma</span><span class="chip">Photoshop</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Curation Detail Page" data-tools="AI 활용 · Figma">
+            <div class="card__media">
+              <img src="./images/avatatq.png" alt="큐레이션 상세 페이지 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Curation Detail Page</h3>
+              <p>포스터 중심 정보 구조 + 추천 영역을 균형 있게 배치.</p>
+              <div class="chips">
+                <span class="chip">AI Copy</span><span class="chip">Typography</span><span class="chip">Grid</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Bakery Promotion" data-tools="AI 활용 · Photoshop · Figma">
+            <div class="card__media">
+              <img src="./images/bbang.png" alt="베이커리 프로모션 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Bakery Promotion</h3>
+              <p>오프라인 매장 프로모션을 PC 환경에 맞춘 레이아웃.</p>
+              <div class="chips">
+                <span class="chip">AI Layout</span><span class="chip">PS</span><span class="chip">Figma</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Fitness Hub App" data-tools="AI 활용 · Figma · Illustrator">
+            <div class="card__media">
+              <img src="./images/hells.png" alt="Fitness Hub 앱 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Fitness Hub App</h3>
+              <p>로그인/마이페이지 중심으로 접근성을 강화한 모바일 UI.</p>
+              <div class="chips">
+                <span class="chip">AI Copy</span><span class="chip">Figma</span><span class="chip">Mobile</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Fitness Hub Brand Board" data-tools="AI 활용 · Figma · Branding">
+            <div class="card__media">
+              <img src="./images/hells2.png" alt="Fitness Hub 브랜딩 보드 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Fitness Hub Brand Board</h3>
+              <p>브랜드/온보딩/타이포/컴포넌트를 한 장으로 정리.</p>
+              <div class="chips">
+                <span class="chip">AI Structure</span><span class="chip">Brand</span><span class="chip">System</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Pure Water Ad" data-tools="AI 활용 · Photoshop">
+            <div class="card__media">
+              <img src="./images/pure.png" alt="정수기 광고 비주얼 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Pure Water Ad</h3>
+              <p>제품 중심 톤앤매너 + 카피 계층 구조로 설득력 강화.</p>
+              <div class="chips">
+                <span class="chip">AI Copy</span><span class="chip">Key Visual</span><span class="chip">PS</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Subway Brand Board" data-tools="AI 활용 · Figma">
+            <div class="card__media">
+              <img src="./images/Subway.png" alt="서브웨이 브랜딩 보드 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Subway Brand Board</h3>
+              <p>브랜드 컬러/아이콘/온보딩 흐름을 한 장으로 정리.</p>
+              <div class="chips">
+                <span class="chip">AI Draft</span><span class="chip">System</span><span class="chip">Board</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal" data-modal data-title="Mobile Ticket UI" data-tools="AI 활용 · Figma">
+            <div class="card__media">
+              <img src="./images/super.png" alt="모바일 티켓 UI 목업" loading="lazy" />
+            </div>
+            <div class="card__body">
+              <h3>Mobile Ticket UI</h3>
+              <p>네온 톤 UI로 예매/티켓 흐름을 강조한 콘셉트.</p>
+              <div class="chips">
+                <span class="chip">AI Concept</span><span class="chip">UI</span><span class="chip">Mockup</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Developer Projects -->
+    <section class="section" id="developer">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2>Developer</h2>
+          <p>실제 작업물 Live 링크입니다. 썸네일은 프로젝트 화면 캡처로 표시합니다.</p>
+        </div>
+
+        <div class="webgrid reveal">
+          <article class="wcard">
+            <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/app2" target="_blank" rel="noopener">
+              <img src="./images/any.png" alt="반려동물 동반여행 서비스 썸네일" loading="lazy">
+              <span class="wcard__tag">Pet · Map</span>
+            </a>
+            <div class="wcard__body">
+              <h3>반려동물 동반여행 서비스</h3>
+              <p class="muted">지역/분류/키워드 기반 탐색 + 지도 연동 UI.</p>
+              <div class="wcard__meta">
+                <span class="pillmini">HTML</span><span class="pillmini">CSS</span><span class="pillmini">JS</span>
+              </div>
+              <div class="wcard__links">
+                <a class="btn btn--sm" href="https://dbxbqm73053633-art.github.io/html/app2" target="_blank" rel="noopener">Live</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="wcard">
+            <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/10_app/index.html" target="_blank" rel="noopener">
+              <img src="./images/busan.png" alt="부산 맛집 어플 썸네일" loading="lazy">
+              <span class="wcard__tag">Location · Map</span>
+            </a>
+            <div class="wcard__body">
+              <h3>부산 맛집 어플</h3>
+              <p class="muted">현 위치 기반 맛집 탐색 + 리스트 UI.</p>
+              <div class="wcard__meta">
+                <span class="pillmini">HTML</span><span class="pillmini">CSS</span><span class="pillmini">JS</span>
+              </div>
+              <div class="wcard__links">
+                <a class="btn btn--sm" href="https://dbxbqm73053633-art.github.io/html/10_app/index.html" target="_blank" rel="noopener">Live</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="wcard">
+            <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/kim/index.html" target="_blank" rel="noopener">
+              <img src="./images/hub.png" alt="Fitness Hub 헬스장 어플 썸네일" loading="lazy">
+              <span class="wcard__tag">Mobile · App UI</span>
+            </a>
+            <div class="wcard__body">
+              <h3>Fitness Hub 헬스장 어플</h3>
+              <p class="muted">브랜딩 기반 스플래시/로그인 UI 중심.</p>
+              <div class="wcard__meta">
+                <span class="pillmini">HTML</span><span class="pillmini">CSS</span><span class="pillmini">JS</span>
+              </div>
+              <div class="wcard__links">
+                <a class="btn btn--sm" href="https://dbxbqm73053633-art.github.io/html/kim/index.html" target="_blank" rel="noopener">Live</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="wcard">
+            <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/ott/index.html" target="_blank" rel="noopener">
+              <img src="./images/mo.png" alt="OTTMOVI 영화관 썸네일" loading="lazy">
+              <span class="wcard__tag">Movie · UI</span>
+            </a>
+            <div class="wcard__body">
+              <h3>OTTMOVI 영화관</h3>
+              <p class="muted">영화 탐색/리스트 UI 구성 (섹션 구조 중심).</p>
+              <div class="wcard__meta">
+                <span class="pillmini">HTML</span><span class="pillmini">CSS</span><span class="pillmini">JS</span>
+              </div>
+              <div class="wcard__links">
+                <a class="btn btn--sm" href="https://dbxbqm73053633-art.github.io/html/ott/index.html" target="_blank" rel="noopener">Live</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="wcard">
+            <a class="wcard__thumb" href="https://dbxbqm73053633-art.github.io/html/2.weather/index.html" target="_blank" rel="noopener">
+              <img src="./images/today.png" alt="전세계 오늘의 날씨 썸네일" loading="lazy">
+              <span class="wcard__tag">Weather · Search</span>
+            </a>
+            <div class="wcard__body">
+              <h3>전세계 오늘의 날씨</h3>
+              <p class="muted">도시 검색/현재 위치 기반의 정보 UI.</p>
+              <div class="wcard__meta">
+                <span class="pillmini">HTML</span><span class="pillmini">CSS</span><span class="pillmini">JS</span>
+              </div>
+              <div class="wcard__links">
+                <a class="btn btn--sm" href="https://dbxbqm73053633-art.github.io/html/2.weather/index.html" target="_blank" rel="noopener">Live</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section section--contact" id="contact">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2>Contact</h2>
+          <p>프로젝트/협업 문의는 아래 폼으로 편하게 보내주세요.</p>
+        </div>
+
+        <div class="contactPro reveal">
+          <div class="contactPro__left">
+            <h3 class="contactPro__title">Contact Me</h3>
+            <p class="muted">연락 가능한 정보입니다.</p>
+
+            <div class="cinfo">
+              <div class="cinfo__row">
+                <span class="cinfo__icon" aria-hidden="true">✉</span>
+                <a class="link" href="mailto:sunaide@naver.com">sunaide@naver.com</a>
+              </div>
+              <div class="cinfo__row">
+                <span class="cinfo__icon" aria-hidden="true">☎</span>
+                <a class="link" href="tel:01080992842">010-8099-2842</a>
+              </div>
+              <div class="cinfo__row">
+                <span class="cinfo__icon" aria-hidden="true">⌂</span>
+                <span>경기도 김포시</span>
+              </div>
+            </div>
+
+            <a class="btn btn--download" href="#" aria-label="이력서 다운로드">이력서 다운로드</a>
+          </div>
+
+          <form class="contactPro__form" id="contactForm">
+            <label class="field">
+              <span class="field__label">Your Name</span>
+              <input type="text" name="name" autocomplete="name" placeholder="Your Name" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Your Email</span>
+              <input type="email" name="email" autocomplete="email" placeholder="Your Email" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Phone</span>
+              <input type="tel" name="phone" autocomplete="tel" placeholder="010-0000-0000" />
+            </label>
+
+            <label class="field field--area">
+              <span class="field__label">Your Message</span>
+              <textarea name="message" placeholder="Your Message" rows="7" required></textarea>
+            </label>
+
+            <div class="form__actions">
+              <button class="btn" type="submit">Submit</button>
+              <p class="form__hint muted">* Submit 시 메일앱이 열리며 내용이 자동으로 채워집니다.</p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>© <span id="year"></span> KIM YOUNG WOO. All rights reserved.</p>
+      <a href="#top" class="toTop" aria-label="맨 위로">↑</a>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="이미지 크게 보기">
+    <div class="modal__overlay" data-close></div>
+    <div class="modal__panel" role="document">
+      <button class="modal__close" type="button" aria-label="닫기" data-close>✕</button>
+      <div class="modal__head">
+        <h3 id="modalTitle">Project</h3>
+        <p id="modalTools" class="muted">Tools</p>
+      </div>
+      <div class="modal__body">
+        <img id="modalImg" src="" alt="" />
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/index.js" defer></script>
+</body>
+</html>
