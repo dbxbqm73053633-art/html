@@ -35,7 +35,7 @@
       <form id="lockForm" class="lock__form">
         <label class="lock__label" for="lockPass">비밀번호</label>
         <div class="lock__row">
-          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="12" placeholder="" autocomplete="off" />
+          <input id="lockPass" class="lock__input" type="password" inputmode="numeric" maxlength="12" autocomplete="off" />
           <button class="btn btn--primary" type="submit">열기</button>
         </div>
         <p class="lock__hint" id="lockHint">비밀번호는 숫자 4자리예요.</p>
@@ -43,6 +43,21 @@
 
       <div class="lock__foot">Made with ♡ for two</div>
     </div>
+  </div>
+
+  <!-- 🎵 Background Music -->
+  <audio id="bgm" preload="auto" loop>
+    <source src="./music/첫눈에 피어난 지선.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- 🎵 Floating Music Controller -->
+  <div class="music" aria-label="배경음악 컨트롤">
+    <button class="music__btn" id="musicToggle" type="button" aria-label="배경음악 재생/정지">▶︎</button>
+    <div class="music__meta">
+      <div class="music__title">사랑해 지선아</div>
+      <div class="music__sub" id="musicState">꺼짐</div>
+    </div>
+    <input class="music__vol" id="musicVol" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="볼륨" />
   </div>
 
   <header class="topbar">
@@ -168,7 +183,7 @@
       </div>
     </section>
 
-    <!-- PHOTOS (Firestore + Storage + Albums + Paging) -->
+    <!-- PHOTOS -->
     <section id="photos" class="section">
       <div class="section__head">
         <div>
@@ -245,7 +260,7 @@
       </div>
     </section>
 
-    <!-- MEMO (Firestore) -->
+    <!-- MEMO -->
     <section id="memo" class="section">
       <div class="section__head">
         <div>
@@ -285,7 +300,7 @@
       </div>
     </section>
 
-    <!-- Lightbox (EDIT INSIDE) -->
+    <!-- Lightbox -->
     <div class="lightbox" id="lightbox" aria-hidden="true">
       <div class="lightbox__backdrop" data-lb-close="1"></div>
 
@@ -338,7 +353,6 @@
   <script>
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
   </script>
-
   <script type="module" src="./js/index.js"></script>
 </body>
 </html>

@@ -22,8 +22,7 @@ body{
   margin:0;
   color:var(--text);
   font-family:"Pretendard","Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:
-    radial-gradient(900px 520px at 10% 0%, rgba(255,94,168,.22), transparent 60%),
+  background:a    radial-gradient(900px 520px at 10% 0%, rgba(255,94,168,.22), transparent 60%),
     radial-gradient(900px 520px at 90% 15%, rgba(124,92,255,.16), transparent 60%),
     radial-gradient(900px 520px at 50% 95%, rgba(34,199,199,.16), transparent 60%),
     linear-gradient(180deg, var(--bg1), var(--bg2));
@@ -819,4 +818,59 @@ body{
   .chip{
     min-width: 0;
   }
+}
+
+/* ====== Music Floating UI ====== */
+.music{
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 80;
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(20,25,38,.10);
+  background: rgba(255,255,255,.80);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow2);
+}
+
+.music__btn{
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid rgba(20,25,38,.10);
+  background: linear-gradient(135deg, rgba(255,94,168,.18), rgba(124,92,255,.14));
+  font-weight: 900;
+  cursor:pointer;
+}
+
+.music__meta{ min-width: 120px; }
+.music__title{
+  font-weight: 900;
+  font-size: 12.5px;
+  color: rgba(18,23,38,.86);
+}
+.music__sub{
+  margin-top: 3px;
+  font-weight: 800;
+  font-size: 11.5px;
+  color: rgba(18,23,38,.56);
+}
+
+.music__vol{
+  width: 100px;
+}
+
+@media (max-width: 520px){
+  .music{
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    justify-content: space-between;
+  }
+  .music__vol{ width: 120px; }
 }

@@ -1,5 +1,6 @@
 /* ===============================
-   영우 ♡ 지선 - index.js (gallery clean + lightbox edit)
+   영우 ♡ 지선 - index.js
+   (album ghost fix + BGM)
    =============================== */
 
 /* ---------- Lock / Room ---------- */
@@ -108,11 +109,6 @@ function fromISODateInputValue(v) {
   if (!y || !m || !d) return null;
   return new Date(y, m - 1, d, 0, 0, 0).getTime();
 }
-function niceShortDate(ts) {
-  if (!ts) return "날짜 없음";
-  const d = new Date(ts);
-  return `${d.getFullYear()}.${pad2(d.getMonth() + 1)}.${pad2(d.getDate())}`;
-}
 function humanName(filename) {
   if (!filename) return "photo";
   const base = filename.replace(/\.[^/.]+$/, "");
@@ -128,6 +124,70 @@ function normalizeAlbum(v) {
 function safeAlert(msg, err) {
   console.error(msg, err);
   alert(`${msg}\n\n${err?.message || String(err)}`);
+}
+function hasValidUrl(data) {
+  const url = String(data?.url || "").trim();
+  return url.length > 0;
+}
+
+/* ===============================
+   🎵 Background Music
+   =============================== */
+let bgmReady = false;
+
+function setMusicUI(isPlaying) {
+  const btn = $("musicToggle");
+  const state = $("musicState");
+  btn.textContent = isPlaying ? "❚❚" : "▶︎";
+  state.textContent = isPlaying ? "재생 중" : "꺼짐";
+}
+
+async function tryPlayBgm() {
+  const audio = $("bgm");
+  if (!audio) return;
+
+  audio.volume = Number($("musicVol")?.value ?? 0.6);
+
+  try {
+    await audio.play();
+    bgmReady = true;
+    setMusicUI(true);
+  } catch {
+    // 모바일 정책상 사용자 제스처 없으면 실패할 수 있음
+    setMusicUI(false);
+  }
+}
+
+function pauseBgm() {
+  const audio = $("bgm");
+  if (!audio) return;
+  audio.pause();
+  setMusicUI(false);
+}
+
+function initBgm() {
+  const audio = $("bgm");
+  if (!audio) return;
+
+  // UI
+  $("musicVol").addEventListener("input", () => {
+    audio.volume = Number($("musicVol").value);
+  });
+
+  $("musicToggle").addEventListener("click", async () => {
+    if (audio.paused) {
+      await tryPlayBgm();
+    } else {
+      pauseBgm();
+    }
+  });
+
+  // 첫 사용자 입력에서 자동 재생 시도 (정책 우회 X, 정상 UX)
+  const unlockOnce = async () => {
+    if (bgmReady) return;
+    await tryPlayBgm();
+  };
+  window.addEventListener("pointerdown", unlockOnce, { once: true });
 }
 
 /* ===============================
@@ -171,6 +231,9 @@ function initLock() {
       hint.classList.remove("error");
       hint.textContent = "열렸어요. 우리만의 공간으로 ♡";
       hideLock();
+
+      // ✅ 잠금 해제 후 배경음악 재생 시도 (사용자 제스처 기반)
+      await tryPlayBgm();
 
       try {
         roomId = await makeRoomId(pass);
@@ -353,6 +416,7 @@ async function fetchNextPhotosPage() {
 
   const rows = snap.docs
     .map((d) => ({ id: d.id, ...d.data() }))
+    // ✅ url이 있는 사진만 "실제 사진"으로 취급
     .filter((x) => typeof x.url === "string" && x.url.trim().length > 0)
     .map((x) => ({
       id: x.id,
@@ -373,11 +437,15 @@ async function fetchNextPhotosPage() {
   $("pagingHint").textContent = `${gallerySlice.length}장 표시 중`;
 }
 
+/* ✅ 앨범 목록을 "실제 사진(url 존재)" 기준으로만 생성 */
 async function rebuildAlbumOptions() {
   const snap = await getDocs(query(photosColRef(), orderBy("createdAt", "desc"), limit(1500)));
   const albums = new Set();
+
   snap.forEach((d) => {
-    const a = String(d.data()?.album || "기본앨범").trim();
+    const data = d.data();
+    if (!hasValidUrl(data)) return; // ✅ 핵심: url 없는 문서는 앨범에 포함 X
+    const a = String(data?.album || "기본앨범").trim();
     albums.add(a || "기본앨범");
   });
 
@@ -390,6 +458,16 @@ async function rebuildAlbumOptions() {
     list.map((a) => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
 
   sel.value = ([ "__ALL__", ...list ].includes(prev)) ? prev : "__ALL__";
+}
+
+/* ✅ 특정 앨범이 비면 자동으로 전체로 복귀 */
+function ensureAlbumNotGhost() {
+  if (currentAlbum !== "__ALL__" && gallerySlice.length === 0) {
+    currentAlbum = "__ALL__";
+    $("albumFilter").value = "__ALL__";
+    return true;
+  }
+  return false;
 }
 
 /* ---------- Lightbox ---------- */
@@ -428,13 +506,8 @@ async function saveLightboxEdits() {
   const caption = $("lbCaptionInput").value.trim();
 
   const ref = doc(db, "rooms", roomId, "photos", lbPhotoId);
-  await updateDoc(ref, {
-    album,
-    date: dateTs || null,
-    caption,
-  });
+  await updateDoc(ref, { album, date: dateTs || null, caption });
 
-  // 로컬 목록 즉시 반영
   const patchLocal = (arr) => {
     const idx = arr.findIndex((x) => x.id === lbPhotoId);
     if (idx >= 0) arr[idx] = { ...arr[idx], album, date: dateTs || null, caption };
@@ -444,10 +517,8 @@ async function saveLightboxEdits() {
 
   $("lbSaveHint").textContent = "저장 완료 ♡";
 
-  // 앨범 옵션 갱신
   await rebuildAlbumOptions();
 
-  // 특정 앨범 필터 중인데, 앨범명이 바뀌면 목록에서 빠질 수 있음
   if (currentAlbum !== "__ALL__" && album !== currentAlbum) {
     await refreshPhotos(true);
     closeLightbox();
@@ -483,7 +554,6 @@ function initLightbox() {
     if (e.key === "ArrowLeft") setLightboxByIndex(lbIndex - 1);
     if (e.key === "ArrowRight") setLightboxByIndex(lbIndex + 1);
 
-    // Ctrl/Cmd + S 저장
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
       e.preventDefault();
       $("lbSave").click();
@@ -510,7 +580,6 @@ async function renderGallery() {
     `;
   }).join("");
 
-  // 카드 클릭 -> 라이트박스 (삭제 버튼 클릭은 제외)
   wrap.querySelectorAll(".photo").forEach((card) => {
     card.addEventListener("click", (e) => {
       if (e.target?.closest?.("[data-del]")) return;
@@ -520,7 +589,6 @@ async function renderGallery() {
     });
   });
 
-  // 삭제 버튼
   wrap.querySelectorAll("[data-del]").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.stopPropagation();
@@ -583,7 +651,15 @@ async function deletePhotoById(id) {
 
 async function refreshPhotos(reset = false) {
   if (reset) resetPagingState();
+
   await fetchNextPhotosPage();
+
+  // ✅ 특정 앨범에서 결과가 0이면 전체로 되돌리고 다시 로드
+  if (ensureAlbumNotGhost()) {
+    resetPagingState();
+    await fetchNextPhotosPage();
+  }
+
   await renderGallery();
 }
 
@@ -752,6 +828,7 @@ async function bootFirebaseData() {
    Boot
    =============================== */
 async function boot() {
+  initBgm();
   initLock();
   initLightbox();
 
@@ -761,7 +838,6 @@ async function boot() {
   initMemo();
   initGalleryUI();
 
-  // 이미 잠금 해제 세션이면 자동 부팅
   const unlocked = sessionStorage.getItem(SESSION_KEY) === "1";
   if (unlocked) {
     try {
@@ -769,6 +845,7 @@ async function boot() {
       await ensureRoomDoc();
       await bootFirebaseData();
       hideLock();
+      // 세션 자동 부팅이어도, 사용자 첫 입력에서 재생되도록 initBgm가 처리
     } catch (err) {
       console.error("[AUTO BOOT FAIL]", err);
       sessionStorage.removeItem(SESSION_KEY);
@@ -776,7 +853,6 @@ async function boot() {
     }
   }
 
-  // 1초마다 카운터 갱신
   setInterval(() => {
     renderCounter();
     renderMilestones();
