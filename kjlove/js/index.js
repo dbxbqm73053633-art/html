@@ -530,6 +530,7 @@ async function renderGallery() {
 
       try {
         await deletePhotoById(id);
+        await rebuildAlbumOptions();
         await refreshPhotos(true);
       } catch (err) {
         safeAlert("사진 삭제에 실패했어요.", err);

@@ -807,3 +807,16 @@ body{
   .albumBar{ flex-direction: column; align-items: stretch; }
   .paging{ flex-direction: column; align-items: stretch; }
 }
+@media (max-width: 520px){
+  /* 우리 시작 / 오늘을 같은 줄로 */
+  .hero__chips{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* 기존 chip에 min-width가 있어서 2칸 배치가 깨질 수 있어요 */
+  .chip{
+    min-width: 0;
+  }
+}
