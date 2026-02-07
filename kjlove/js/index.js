@@ -472,10 +472,12 @@ function ensureAlbumNotGhost() {
 
 /* ---------- Lightbox ---------- */
 function openLightbox() {
+  document.body.classList.add("lb-open");
   $("lightbox").classList.add("show");
   $("lightbox").setAttribute("aria-hidden", "false");
 }
 function closeLightbox() {
+  document.body.classList.remove("lb-open");
   $("lightbox").classList.remove("show");
   $("lightbox").setAttribute("aria-hidden", "true");
 }
@@ -494,7 +496,6 @@ function setLightboxByIndex(i) {
   $("lbDate").value = it.date ? toISODateInputValue(it.date) : "";
   $("lbCaptionInput").value = it.caption?.trim() ? it.caption.trim() : "";
 
-  $("lbSub").textContent = `${it.name || "photo"} · ${lbIndex + 1}/${arr.length}`;
   $("lbSaveHint").textContent = "수정 후 저장을 눌러주세요. (Ctrl/Cmd + S 가능)";
 }
 

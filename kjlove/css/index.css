@@ -907,3 +907,23 @@ main.container {
 @media (max-width: 520px){
   #memoList{ max-height: 420px; }
 }
+
+/* ✅ 라이트박스 열릴 때 음악바 숨기기 */
+body.lb-open .music{
+  transform: translateY(140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 애니메이션 부드럽게 */
+.music{
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+#lbSub {
+  display: none;
+}
+
+body.lb-open{
+  overflow: hidden !important;
+}
