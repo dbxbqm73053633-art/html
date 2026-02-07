@@ -887,10 +887,10 @@ body{
 
 /* ✅ 음악바에 메모/푸터가 가리지 않게: 메인 컨텐츠 바닥 여백 확실히 확보 */
 main.container {
-  padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+  padding-bottom: calc(180px + env(safe-area-inset-bottom)) !important;
 }
 
 /* (보조) footer도 더 아래로 밀어서 겹침 체감 줄이기 */
 .footer {
-  margin-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+  margin-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
 }
