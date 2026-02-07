@@ -1,13 +1,13 @@
 /* ===============================
-   영우 ♡ 지현 - index.js (gallery clean + lightbox edit)
+   영우 ♡ 지선 - index.js (gallery clean + lightbox edit)
    =============================== */
 
 /* ---------- Lock / Room ---------- */
-const PASSWORD = "0113";
+const PASSWORD = "0205";
 const SESSION_KEY = "ywjy_unlocked_v2";
 
 /* ---------- Couple Start Date ---------- */
-const START = new Date(2026, 0, 13, 0, 0, 0);
+const START = new Date(2026, 1, 5, 0, 0, 0);
 
 /* ---------- Milestones ---------- */
 const MILESTONES = [
