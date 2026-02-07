@@ -1,4 +1,9 @@
-/* 네가 올린 기존 css 그대로 */
+/* ===============================
+   영우 ♡ 지선 - index.css (FULL)
+   - 기존 스타일 유지
+   - 하단 고정 음악바 겹침 완전 해결(아이폰 safe-area 포함)
+   =============================== */
+
 :root{
   --bg1:#fff7fb;
   --bg2:#f3fbff;
@@ -14,19 +19,27 @@
   --r: 18px;
   --shadow: 0 24px 60px rgba(24, 32, 54, .10);
   --shadow2: 0 14px 34px rgba(24, 32, 54, .10);
+
+  /* ✅ 음악바 높이(겹침 방지용) */
+  --music-bar-height: 96px;
 }
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; }
+
 body{
   margin:0;
   color:var(--text);
   font-family:"Pretendard","Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:a    radial-gradient(900px 520px at 10% 0%, rgba(255,94,168,.22), transparent 60%),
+  background:
+    radial-gradient(900px 520px at 10% 0%, rgba(255,94,168,.22), transparent 60%),
     radial-gradient(900px 520px at 90% 15%, rgba(124,92,255,.16), transparent 60%),
     radial-gradient(900px 520px at 50% 95%, rgba(34,199,199,.16), transparent 60%),
     linear-gradient(180deg, var(--bg1), var(--bg2));
   overflow-x:hidden;
+
+  /* ✅ 하단 고정 음악바 때문에 마지막 콘텐츠가 안 가리도록 */
+  padding-bottom: calc(var(--music-bar-height) + 56px + env(safe-area-inset-bottom));
 }
 
 .bg{
@@ -270,9 +283,8 @@ body{
   gap:10px;
   align-items:center;
 }
-.albumSelect{
-  flex:1;
-}
+.albumSelect{ flex:1; }
+
 .paging{
   margin-top: 12px;
   display:flex;
@@ -479,7 +491,7 @@ body{
   background: linear-gradient(135deg, var(--p1), var(--p2));
 }
 
-/* ============ Gallery (CLEAN: delete button only) ============ */
+/* ============ Gallery ============ */
 .gallery{
   margin-top:12px;
   display:grid;
@@ -502,8 +514,6 @@ body{
   object-fit: cover;
   display:block;
 }
-
-/* 카드에는 삭제 버튼만 (구석) */
 .photo__del{
   position:absolute;
   top:8px;
@@ -651,7 +661,6 @@ body{
 .lightbox__nav--next{ right: 12px; }
 .lightbox__nav:hover{ transform: translateY(-50%) translateY(-1px); }
 
-/* ✅ Lightbox edit form */
 .lightbox__form{ display:grid; gap:10px; }
 .lbLabel{
   display:grid;
@@ -792,40 +801,16 @@ body{
   font-size:12.5px;
 }
 
-/* responsive */
-@media (max-width: 980px){
-  .grid--2{ grid-template-columns: 1fr; }
-  .hero__media{ min-height: 470px; }
-  .stats{ grid-template-columns: repeat(2, 1fr); }
-  .live{ text-align:left; }
-}
-@media (max-width: 520px){
-  .gallery{ grid-template-columns: 1fr; }
-  .nav{ gap:6px; }
-  .nav a{ padding:10px 10px; }
-  .albumBar{ flex-direction: column; align-items: stretch; }
-  .paging{ flex-direction: column; align-items: stretch; }
-}
-@media (max-width: 520px){
-  /* 우리 시작 / 오늘을 같은 줄로 */
-  .hero__chips{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  /* 기존 chip에 min-width가 있어서 2칸 배치가 깨질 수 있어요 */
-  .chip{
-    min-width: 0;
-  }
-}
-
-/* ====== Music Floating UI ====== */
+/* ===============================
+   🎵 Music Floating UI
+   =============================== */
 .music{
   position: fixed;
+  left: 14px;
   right: 14px;
-  bottom: 14px;
-  z-index: 80;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 90;
+
   display:flex;
   align-items:center;
   gap:10px;
@@ -833,7 +818,7 @@ body{
   padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid rgba(20,25,38,.10);
-  background: rgba(255,255,255,.80);
+  background: rgba(255,255,255,.84);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow2);
 }
@@ -846,13 +831,21 @@ body{
   background: linear-gradient(135deg, rgba(255,94,168,.18), rgba(124,92,255,.14));
   font-weight: 900;
   cursor:pointer;
+  flex: 0 0 auto;
 }
 
-.music__meta{ min-width: 120px; }
+.music__meta{
+  min-width: 120px;
+  flex: 1;
+  overflow:hidden;
+}
 .music__title{
   font-weight: 900;
   font-size: 12.5px;
   color: rgba(18,23,38,.86);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .music__sub{
   margin-top: 3px;
@@ -862,15 +855,32 @@ body{
 }
 
 .music__vol{
-  width: 100px;
+  width: 130px;
 }
 
+/* ===============================
+   responsive
+   =============================== */
+@media (max-width: 980px){
+  .grid--2{ grid-template-columns: 1fr; }
+  .hero__media{ min-height: 470px; }
+  .stats{ grid-template-columns: repeat(2, 1fr); }
+  .live{ text-align:left; }
+}
 @media (max-width: 520px){
-  .music{
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-    justify-content: space-between;
+  .gallery{ grid-template-columns: 1fr; }
+  .nav{ gap:6px; }
+  .nav a{ padding:10px 10px; }
+  .albumBar{ flex-direction: column; align-items: stretch; }
+  .paging{ flex-direction: column; align-items: stretch; }
+
+  /* 우리 시작 / 오늘을 같은 줄로 */
+  .hero__chips{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
+  .chip{ min-width: 0; }
+
   .music__vol{ width: 120px; }
 }
