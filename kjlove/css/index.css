@@ -894,3 +894,16 @@ main.container {
 .footer {
   margin-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
 }
+
+/* 저장된 메모 영역을 내부 스크롤로 (페이지 길이 폭주 방지) */
+#memoList{
+  max-height: 380px;      /* 원하는 높이로 조절 */
+  overflow-y: auto;
+  padding-right: 6px;     /* 스크롤바 공간 */
+  scroll-behavior: smooth;
+}
+
+/* 모바일은 조금 더 높게 */
+@media (max-width: 520px){
+  #memoList{ max-height: 420px; }
+}
